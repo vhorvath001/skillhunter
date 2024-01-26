@@ -1,0 +1,32 @@
+{
+  "prog-langs": [
+    {
+      "id": "0",
+      "name": "Java",
+      "desc": "Java programming language",
+      "level": "3",
+      "pattern": "{\"patternList\":[\"33\",\"44\"]}"
+    },
+    {
+      "id": "1",
+      "name": "Python",
+      "desc": "",
+      "level": "2",
+      "pattern": "{\"patternList\": [\"11\"] }"
+    },
+    {
+      "id": "2",
+      "name": "1C++",
+      "desc": "1cplusplus",
+      "level": "2",
+      "pattern": ""
+    },
+    {
+      "id": "3",
+      "name": "a",
+      "desc": "",
+      "level": "",
+      "pattern": "{\"patternList\":[\"22\"]}"
+    }
+  ]
+}
