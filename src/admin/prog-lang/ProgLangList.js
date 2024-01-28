@@ -10,16 +10,40 @@ import { client } from '../../api/client';
 import Table from 'react-bootstrap/Table';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
+import Paginator from '../../utils/Paginator';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
 const ProgLangList = () => {
     const newProgLangFormId = 'newProgLangForm';
     const resourceName = '/prog-langs';
+    const maxItemsPerPage = 4;
+
     const [ progLangs, setProgLangs ] = useState([]);
+    const [ showedProgLangs, setShowedProgLangs] = useState([]);
+    
+    const [ currentPage, setCurrentPage ] = useState(1);
+    const [ maxPage, setMaxPage ] = useState(0);
+
     const { data, isLoading, fetchError } = useAxiosFetch(resourceName);
 
     useEffect(() => {
-        setProgLangs(data);
+        setProgLangs(sortProgLangs(data));
+        setShowedProgLangs(data.slice(0,maxItemsPerPage));
     }, [data]);
+
+    useEffect(() => {
+        setMaxPage(progLangs.length % maxItemsPerPage === 0 ? 
+            Math.floor(progLangs.length / maxItemsPerPage) : 
+            Math.floor(progLangs.length / maxItemsPerPage) + 1);
+    }, [progLangs]);
+
+    const sortProgLangs = (l) => {
+        l.sort((a,b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1 : 
+                        a.name.toLowerCase() === b.name.toLowerCase() ? 0 : -1);
+        return l;
+    }
 
     const handleSave = async (e, handleClose, setErrorMessage) => {
         e.preventDefault();
@@ -40,7 +64,6 @@ const ProgLangList = () => {
             }
         });
         formDataObj.pattern = JSON.stringify({'patternList': patterns});
-        console.log(formDataObj);
         try {
             const resp = await axios({
                 method: verb, 
@@ -48,9 +71,9 @@ const ProgLangList = () => {
                 data: formDataObj 
             });
             if (verb === 'POST') {
-                setProgLangs([...progLangs, resp.data]);
+                setProgLangs( sortProgLangs([...progLangs, resp.data]) );
             } else {
-                setProgLangs(progLangs.map((progLang) => progLang.id == resp.data.id ? resp.data : progLang));
+                setProgLangs( sortProgLangs(progLangs.map((progLang) => progLang.id == resp.data.id ? resp.data : progLang)) );
             }
             handleClose();
         } catch (err) {
@@ -65,7 +88,7 @@ const ProgLangList = () => {
                 method: 'DELETE',
                 url: client.defaults.baseURL + resourceName + `/${id}` 
             });
-            setProgLangs(progLangs.filter((progLang) => progLang.id !== id));
+            setProgLangs( sortProgLangs(progLangs.filter((progLang) => progLang.id !== id)) );
             handleClose()
         } catch(err) {
             setErrorMessage(err.message);
@@ -90,7 +113,7 @@ const ProgLangList = () => {
                         <Table striped bordered hover>
                             <ProgLangListHeader />
                             <tbody>
-                                {progLangs.map((progLang) => (
+                                {showedProgLangs.map((progLang) => (
                                     <ProgLangRow 
                                         key={progLang.id} 
                                         record={progLang} 
@@ -100,14 +123,29 @@ const ProgLangList = () => {
                                 ))}
                             </tbody>
                         </Table>
-                        <ModalForm 
-                            body={ <ProgLangForm formId={newProgLangFormId} /> } 
-                            title='Add a new Programming Language' 
-                            icon={ <Button variant="outline-primary">
-                                        Create
-                                        <FcAddRow size={25} className='ms-2' role='button'/>
-                                   </Button> }
-                            handleSave={handleSave} />
+                        <Container>
+                            <Row>
+                                <Col className='col-4'>
+                                    <ModalForm 
+                                        body={ <ProgLangForm formId={newProgLangFormId} /> } 
+                                        title='Add a new Programming Language' 
+                                        icon={ <Button variant="outline-primary">
+                                                    Create
+                                                    <FcAddRow size={25} className='ms-2' role='button'/>
+                                              </Button> }
+                                        handleSave={handleSave} />                                    
+                                </Col>
+                                <Col className='col-8'>
+                                    <Paginator 
+                                        list={progLangs}
+                                        maxItemsPerPage={maxItemsPerPage}
+                                        maxPage={maxPage}
+                                        currentPage={currentPage}
+                                        setShowedList={setShowedProgLangs}
+                                        setCurrentPage={setCurrentPage} />
+                                </Col>
+                            </Row>
+                        </Container>
                     </div>
                 }
             </main>

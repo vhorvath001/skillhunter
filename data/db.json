@@ -12,21 +12,56 @@
       "name": "Python",
       "desc": "",
       "level": "2",
-      "pattern": "{\"patternList\": [\"11\"] }"
+      "pattern": "{\"patternList\":[\"11\"]}"
     },
     {
       "id": "2",
-      "name": "1C++",
+      "name": "C++",
       "desc": "1cplusplus",
       "level": "2",
       "pattern": ""
     },
     {
       "id": "3",
-      "name": "a",
+      "name": "K++",
       "desc": "",
       "level": "",
-      "pattern": "{\"patternList\":[\"22\"]}"
+      "pattern": "{\"patternList\":[]}"
+    },
+    {
+      "id": "4",
+      "name": "2",
+      "desc": "",
+      "level": "",
+      "pattern": "{\"patternList\":[]}"
+    },
+    {
+      "id": "5",
+      "name": "z1",
+      "desc": "",
+      "level": "",
+      "pattern": "{\"patternList\":[]}"
+    },
+    {
+      "id": "6",
+      "name": "z2",
+      "desc": "",
+      "level": "",
+      "pattern": "{\"patternList\":[]}"
+    },
+    {
+      "id": "7",
+      "name": "z3",
+      "desc": "",
+      "level": "",
+      "pattern": "{\"patternList\":[]}"
+    },
+    {
+      "id": "8",
+      "name": "z4",
+      "desc": "",
+      "level": "",
+      "pattern": "{\"patternList\":[]}"
     }
   ]
 }
