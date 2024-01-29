@@ -5,8 +5,9 @@ import Alert from 'react-bootstrap/Alert';
 import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
+import Form from 'react-bootstrap/Form';
 
-const ModalForm = ({ title, body, icon, handleSave }) => {
+const ModalForm = ({ formId, title, body, icon, handleSave }) => {
     const [show, setShow] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
@@ -14,7 +15,6 @@ const ModalForm = ({ title, body, icon, handleSave }) => {
         setShow(false);
         setErrorMessage('');
     }
-    const save = (e) => handleSave(e, handleClose, setErrorMessage);
 
     return (
         <>
@@ -22,29 +22,31 @@ const ModalForm = ({ title, body, icon, handleSave }) => {
                 {icon}
             </span>
             <Modal show={show} onHide={handleClose} size="lg">
-                <Modal.Header closeButton>
-                    <Modal.Title>{title}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    {body}
-                </Modal.Body>
-                <Modal.Footer>
-                    <Container>
-                        <Row>
-                            <Col xs={12} md={9}>
-                                {errorMessage &&
-                                    <Alert key='danger' variant='danger'>
-                                        {errorMessage}
-                                    </Alert>
-                                }
-                            </Col>
-                            <Col xs={12} md={3}>
-                                <Button className='mx-2 mt-3 mb-4' variant='secondary' onClick={handleClose}>Close</Button>
-                                <Button className='mx-2 mt-3 mb-4' variant='primary' onClick={save}>Save</Button>
-                            </Col>
-                        </Row>
-                    </Container>
-                </Modal.Footer>
+                <Form id={formId} onSubmit={(e) => handleSave(e, handleClose, setErrorMessage)}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>{title}</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        {body}
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Container>
+                            <Row>
+                                <Col xs={12} md={9}>
+                                    {errorMessage &&
+                                        <Alert key='danger' variant='danger'>
+                                            {errorMessage}
+                                        </Alert>
+                                    }
+                                </Col>
+                                <Col xs={12} md={3}>
+                                    <Button className='mx-2 mt-3 mb-4' variant='secondary' onClick={handleClose}>Close</Button>
+                                    <Button className='mx-2 mt-3 mb-4' variant='primary' type='submit'>Save</Button>
+                                </Col>
+                            </Row>
+                        </Container>
+                    </Modal.Footer>
+                </Form>
             </Modal>
         </>
     )

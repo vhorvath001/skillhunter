@@ -9,14 +9,19 @@ const ProgLangRow = ( { record, formId, handleSave, handleDelete } ) => {
             <td>{record.name}</td>
             <td>
                 <ModalForm 
-                    body={ <ProgLangForm 
-                                record={record} 
-                                formId={formId} />} 
+                    body={ <ProgLangForm record={record} />} 
+                    formId={formId}
                     title='Edit an existing Programming Language' 
-                    icon={ <FcEditImage size={25} role='button' /> }
+                    icon={ <FcEditImage 
+                            size={25} 
+                            role='button'
+                            title='Editing the programming language.' /> }
                     handleSave={handleSave} className='me-1' />
                 <ModalConfirmation
-                    icon={<FcDeleteRow size={25} role='button' />} 
+                    icon={<FcDeleteRow 
+                            size={25} 
+                            role='button'
+                            title='Deleting the programming language.' />} 
                     message='Are you sure to delete the record?'
                     id={record.id}
                     handleOperation={handleDelete} />

@@ -37,6 +37,7 @@ const ProgLangList = () => {
         setMaxPage(progLangs.length % maxItemsPerPage === 0 ? 
             Math.floor(progLangs.length / maxItemsPerPage) : 
             Math.floor(progLangs.length / maxItemsPerPage) + 1);
+        setShowedProgLangs(progLangs.slice( (currentPage-1) * maxItemsPerPage, (currentPage) * maxItemsPerPage ));
     }, [progLangs]);
 
     const sortProgLangs = (l) => {
@@ -47,7 +48,7 @@ const ProgLangList = () => {
 
     const handleSave = async (e, handleClose, setErrorMessage) => {
         e.preventDefault();
-        const formData = new FormData(document.getElementById(newProgLangFormId));
+        const formData = new FormData(e.currentTarget);
         const formDataObj = Object.fromEntries(formData.entries());
         let verb = 'PUT';
         if (formDataObj.id == '-1') {
@@ -73,7 +74,12 @@ const ProgLangList = () => {
             if (verb === 'POST') {
                 setProgLangs( sortProgLangs([...progLangs, resp.data]) );
             } else {
-                setProgLangs( sortProgLangs(progLangs.map((progLang) => progLang.id == resp.data.id ? resp.data : progLang)) );
+                setProgLangs( sortProgLangs(progLangs.map((progLang) => {
+                    console.log(`progLang.id: ${progLang.id}`);
+                    console.log(`resp.data.id: ${resp.data.id}`);
+                    console.log(progLang.id == resp.data.id);
+                    return progLang.id == resp.data.id ? resp.data : progLang;
+                })) );
             }
             handleClose();
         } catch (err) {
@@ -127,11 +133,17 @@ const ProgLangList = () => {
                             <Row>
                                 <Col className='col-4'>
                                     <ModalForm 
-                                        body={ <ProgLangForm formId={newProgLangFormId} /> } 
+                                        body={ <ProgLangForm /> } 
+                                        formId={newProgLangFormId}
                                         title='Add a new Programming Language' 
-                                        icon={ <Button variant="outline-primary">
+                                        icon={ <Button 
+                                                variant='outline-primary' 
+                                                title='Creating a new programming language to be processed.'>
                                                     Create
-                                                    <FcAddRow size={25} className='ms-2' role='button'/>
+                                                    <FcAddRow 
+                                                        size={25} 
+                                                        className='ms-2' 
+                                                        role='button'/>
                                               </Button> }
                                         handleSave={handleSave} />                                    
                                 </Col>

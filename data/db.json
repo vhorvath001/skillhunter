@@ -18,8 +18,8 @@
       "id": "2",
       "name": "C++",
       "desc": "1cplusplus",
-      "level": "2",
-      "pattern": ""
+      "level": "",
+      "pattern": "{\"patternList\":[]}"
     },
     {
       "id": "3",
@@ -31,8 +31,9 @@
     {
       "id": "4",
       "name": "2",
-      "desc": "",
-      "level": "",
+      "desc": "22334455",
+      "sourceFiles": "1",
+      "level": "1",
       "pattern": "{\"patternList\":[]}"
     },
     {
