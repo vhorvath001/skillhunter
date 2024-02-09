@@ -1,0 +1,381 @@
+package com.lv.gi.rating.orchestration.flow;
+
+import com.lv.gi.rating.orchestration.customerpricing.CustomerPricingControl;
+import com.lv.gi.rating.orchestration.de.DataEnrichmentControlService;
+import com.lv.gi.rating.orchestration.model.HomeQuoteModel;
+import com.lv.gi.rating.orchestration.model.QuoteLineOfBusiness;
+import com.lv.gi.rating.orchestration.model.TransactionType;
+import com.lv.gi.rating.orchestration.transformer.ModelToOrchestrationResponseTransformer;
+import com.lv.gi.rating.orchestration.transformer.OrchestrationRequestToModelTransformer;
+import com.lv.gi.rating.schema.quote.home.core.ControlType;
+import com.lv.gi.rating.schema.quote.home.quotestore.HomeStoreQuoteResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.integration.dsl.EnricherSpec;
+import org.springframework.integration.dsl.IntegrationFlow;
+import org.springframework.integration.dsl.RouterSpec;
+import org.springframework.integration.dsl.channel.MessageChannels;
+import org.springframework.integration.dsl.support.Consumer;
+import org.springframework.integration.dsl.support.Function;
+import org.springframework.integration.router.MethodInvokingRouter;
+import org.springframework.integration.transformer.ContentEnricher;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageChannel;
+
+@Configuration
+public class QuoteRequestFlowConfig {
+
+    public static final String ORCH_REQUEST_INPUT = "orch.input";
+    public static final String ORCH_REQUEST_OUTPUT = "orch.output";
+    public static final String GENERATION_CODE_INPUT_CHANNEL = "enrich.generationCode.input";
+    public static final String GENERATION_CODE_OUTPUT_CHANNEL = "enrich.generationCode.output";
+
+    public static final String POLARIS_REQUEST_INPUT_CHANNEL = "enrich.polarisRequest.input";
+    public static final String POLARIS_REQUEST__OUTPUT_CHANNEL = "enrich.polarisRequest.output";
+    public static final String PERSISTENT_FACTORS_OUTPUT_INPUT_CHANNEL = "enrich.persistentFactorsRequest.input";
+    public static final String PERSISTENT_FACTORS_OUTPUT_OUTPUT_CHANNEL = "enrich.persistentFactorsRequest.output";
+
+    public static final String DE_CALCULATION_INPUT_CHANNEL = "enrich.deCalculation.input";
+    public static final String DE_CALCULATION_OUTPUT_CHANNEL = "enrich.deCalculation.output";
+    public static final String PERSISTENT_SERIALISATION_FOR_RESPONSE_INPUT_CHANNEL = "enrich.outgoingPersistentData.input";
+    public static final String PERSISTENT_SERIALISATION_FOR_RESPONSE_OUTPUT_CHANNEL = "enrich.outgoingPersistentData.output";
+    public static final String DE_SERVICE_CALL_INPUT_CHANNEL = "enrich.dataEnrichmentServiceCall.input";
+    public static final String DE_SERVICE_CALL_OUTPUT_CHANNEL = "enrich.dataEnrichmentServiceCall.output";
+    public static final String DE_SERVICE_RESPONSE_PROCESSOR_INPUT_CHANNEL = "enrich.dataEnrichmentServiceResponseProcessor.input";
+    public static final String DE_SERVICE_RESPONSE_PROCESSOR_OUTPUT_CHANNEL = "enrich.dataEnrichmentServiceResponseProcessor.output";
+    public static final String CUSTOMER_PRICING_RETREIVAL_SERVICE_CALL_INPUT_CHANNEL = "enrich.customerPricingServiceCall.input";
+    public static final String CUSTOMER_PRICING_RETREIVAL_SERVICE_CALL_OUTPUT_CHANNEL = "enrich.customerPricingServiceCall.output";
+    public static final String POLARIS_QUOTE_INPUT_CHANNEL = "enrich.polarisQuote.input";
+    public static final String POLARIS_QUOTE_OUTPUT_CHANNEL = "enrich.polarisQuote.output";
+    public static final String STORE_QUOTE_INPUT_CHANNEL = "enrich.storeQuote.input";
+    public static final String STORE_QUOTE_OUTPUT_CHANNEL = "enrich.storeQuote.output";
+    public static final String POL_MESSAGE_TO_QUOTE_RESULT_INPUT_CHANNEL = "enrich.polMessageToQuoteResult.input";
+    public static final String POL_MESSAGE_TO_QUOTE_RESULT_OUTPUT_CHANNEL = "enrich.polMessageToQuoteResult.output";
+    public static final String PERSISTENT_RATING_INPUT_MAPPER_INPUT_CHANNEL = "enrich.persistentRatingInputMapper.input";
+    public static final String PERSISTENT_RATING_INPUT_MAPPER_OUTPUT_CHANNEL = "enrich.persistentRatingInputMapper.output";
+
+
+    public static final String POL_REQUEST_MODEL_SETTER = "polarisRequestMessage";
+    public static final String POL_RESPONSE_MODEL_SETTER = "polarisResponseMessage";
+    public static final String QUOTE_RESULT_MODEL_SETTER = "quoteResult";
+    public static final String QUOTE_RESULT_QUOTE_ID_SETTER = "quoteResult.quoteId";
+    public static final String PERSISTENT_FACTORS_MODEL_SETTER = "persistentFactors";
+    public static final String CALCULATED_DATA_ENRICHMENTS_MODEL_SETTER = "calculatedDataEnrichments";
+    public static final String DE_RESPONSE_MODEL_SETTER = "dataEnrichmentServiceResponse";
+    public static final String CUSTOMER_PRICING_MODEL_SETTER = "customerPricingServiceResponse";
+    public static final String CUSTOMER_PRICING_RENEWAL_FACTORS = "customerPricingRetrieveRenewalFactors";
+    public static final String GENERATION_CODE_MODEL_SETTER = "request.control.generationCode";
+    public static final String LINE_OF_BUSINESS_HEADER_NAME = "lineOfBusiness";
+
+
+    @Autowired
+    private transient OrchestrationRequestToModelTransformer orchestrationRequestToModelTransformer;
+
+    @Autowired
+    private transient ModelToOrchestrationResponseTransformer modelToOrchestrationResponseTransformer;
+
+    @Autowired
+    private transient DataEnrichmentControlService dataEnrichmentControlService;
+    
+    @Autowired
+    private transient CustomerPricingControl customerPricingControl;
+
+    @Bean(name = ORCH_REQUEST_INPUT)
+    public MessageChannel quoteRequestInputChannel() {
+        return MessageChannels.direct().get();
+    }
+
+    @Bean(name = ORCH_REQUEST_OUTPUT)
+    public MessageChannel quoteResponseOutputChannel() {
+        return MessageChannels.direct().get();
+    }
+
+
+    @Bean(name = POLARIS_REQUEST_INPUT_CHANNEL)
+    public MessageChannel polarisRequestEnrichmentInputChannel() {
+        return MessageChannels.direct().get();
+    }
+
+    @Bean(name = POLARIS_REQUEST__OUTPUT_CHANNEL)
+    public MessageChannel polarisRequestEnrichmentOutputChannel() {
+        return MessageChannels.direct().get();
+    }
+
+    @Bean(name = PERSISTENT_FACTORS_OUTPUT_INPUT_CHANNEL)
+    public MessageChannel persistentFactorsRequestEnrichmentInputChannel() {
+        return MessageChannels.direct().get();
+    }
+
+    @Bean(name = PERSISTENT_FACTORS_OUTPUT_OUTPUT_CHANNEL)
+    public MessageChannel persistentFactorsRequestEnrichmentOutputChannel() {
+        return MessageChannels.direct().get();
+    }
+
+
+    @Bean(name = GENERATION_CODE_INPUT_CHANNEL)
+    public MessageChannel generationCodeEnrichmentInputChannel() {
+        return MessageChannels.direct().get();
+    }
+
+    @Bean(name = GENERATION_CODE_OUTPUT_CHANNEL)
+    public MessageChannel generationCodeEnrichmentOutputChannel() {
+        return MessageChannels.direct().get();
+    }
+
+    @Bean(name = DE_CALCULATION_INPUT_CHANNEL)
+    public MessageChannel deCalculationEnrichmentInputChannel() {
+        return MessageChannels.direct().get();
+    }
+
+    @Bean(name = DE_CALCULATION_OUTPUT_CHANNEL)
+    public MessageChannel deCalculationEnrichmentOutputChannel() {
+        return MessageChannels.direct().get();
+    }
+
+    @Bean(name = DE_SERVICE_CALL_INPUT_CHANNEL)
+    public MessageChannel dataEnrichmentServiceEnrichmentInputChannel() {
+        return MessageChannels.direct().get();
+    }
+
+    @Bean(name = DE_SERVICE_CALL_OUTPUT_CHANNEL)
+    public MessageChannel dataEnrichmentServiceEnrichmentOutputChannel() {
+        return MessageChannels.direct().get();
+    }
+
+    @Bean(name = DE_SERVICE_RESPONSE_PROCESSOR_INPUT_CHANNEL)
+    public MessageChannel dataEnrichmentServiceResponseProcessorEnrichmentInputChannel() {
+        return MessageChannels.direct().get();
+    }
+
+    @Bean(name = DE_SERVICE_RESPONSE_PROCESSOR_OUTPUT_CHANNEL)
+    public MessageChannel dataEnrichmentServiceResponseProcessorEnrichmentOutputChannel() {
+        return MessageChannels.direct().get();
+    }
+
+    @Bean(name = CUSTOMER_PRICING_RETREIVAL_SERVICE_CALL_INPUT_CHANNEL)
+    public MessageChannel customerPricingRetrievalServiceEnrichmentInputChannel() {
+        return MessageChannels.direct().get();
+    }
+
+    @Bean(name = CUSTOMER_PRICING_RETREIVAL_SERVICE_CALL_OUTPUT_CHANNEL)
+    public MessageChannel customerPricingRetrievalServiceEnrichmentOutputChannel() {
+        return MessageChannels.direct().get();
+    }
+
+    @Bean(name = POLARIS_QUOTE_INPUT_CHANNEL)
+    public MessageChannel polarisQuoteEnrichmentInputChannel() {
+        return MessageChannels.direct().get();
+    }
+
+    @Bean(name = POLARIS_QUOTE_OUTPUT_CHANNEL)
+    public MessageChannel polarisQuoteEnrichmentOutputChannel() {
+        return MessageChannels.direct().get();
+    }
+
+    @Bean(name = PERSISTENT_SERIALISATION_FOR_RESPONSE_INPUT_CHANNEL)
+    public MessageChannel outgoingPersistentDataEnrichmentInputChannel() {
+        return MessageChannels.direct().get();
+    }
+
+    @Bean(name = PERSISTENT_SERIALISATION_FOR_RESPONSE_OUTPUT_CHANNEL)
+    public MessageChannel outgoingPersistentDataEnrichmentOutputChannel() {
+        return MessageChannels.direct().get();
+    }
+
+    @Bean(name = STORE_QUOTE_INPUT_CHANNEL)
+    public MessageChannel storeQuoteEnrichmentInputChannel() {
+        return MessageChannels.direct().get();
+    }
+
+    @Bean(name = STORE_QUOTE_OUTPUT_CHANNEL)
+    public MessageChannel storeQuoteEnrichmentOutputChannel() {
+        return MessageChannels.direct().get();
+    }
+
+    @Bean(name = POL_MESSAGE_TO_QUOTE_RESULT_INPUT_CHANNEL)
+    public MessageChannel polMessageToQuoteResultInputChannel() {
+        return MessageChannels.direct().get();
+    }
+
+    @Bean(name = POL_MESSAGE_TO_QUOTE_RESULT_OUTPUT_CHANNEL)
+    public MessageChannel polMessageToQuoteResultOutputChannel() {
+        return MessageChannels.direct().get();
+    }
+
+    @Bean(name = PERSISTENT_RATING_INPUT_MAPPER_INPUT_CHANNEL)
+    public MessageChannel persistentRatingInputMapperInputChannel() {
+        return MessageChannels.direct().get();
+    }
+
+    @Bean(name = PERSISTENT_RATING_INPUT_MAPPER_OUTPUT_CHANNEL)
+    public MessageChannel persistentRatingInputMapperOutputChannel() {
+        return MessageChannels.direct().get();
+    }
+
+    @Bean
+    public IntegrationFlow processQuoteRequest() {
+        return flow -> flow.channel(ORCH_REQUEST_INPUT)
+                .transform(orchestrationRequestToModelTransformer)  // This includes extracting the data enrichments.
+                .enrichHeaders(h -> h.<HomeQuoteModel>headerFunction(LINE_OF_BUSINESS_HEADER_NAME, hqm -> QuoteLineOfBusiness.fromString(hqm.getPayload().getRequest().getControl().getLineOfBusinessCode())))
+                .enrich(this::generationCodeEnricher)
+                .enrich(this::deCalculationEnricher)
+                .route(ifDEGatewayCallRequired(), routeToDataEnrichmentGatewayOrBypassCall())
+                .route(ifRetrieveCustomerPricingRenewalFactorsRequired(), routeToCustomerPricingGatewayOrBypassCall())
+
+                // Insert here enricher to transform HQM -> PolMessage(Input) and set on HomeQuoteModel (uses polarisRequestPayloadMessageMapper)
+                .enrich(this::polarisRequestEnricher)
+                .enrich(this::persistentFactorsRequestEnricher)
+
+                .enrich(this::polarisQuoteEnricher)
+                .enrich(this::persistentRatingInputMapperEnricher)
+                .enrich(this::polarisOutputToQuoteResultEnricher)
+                .enrich(this::outgoingPersistentDataSerialisationEnricher)
+                .enrich(this::storeQuoteEnricher)
+                .transform(modelToOrchestrationResponseTransformer)
+                .channel(ORCH_REQUEST_OUTPUT);
+    }
+
+    Function<HomeQuoteModel, Boolean> ifDEGatewayCallRequired() {
+        return hqm -> dataEnrichmentControlService.requiresCallToDataEnrichmentGateway(hqm.getCalculatedDataEnrichments());
+    }
+
+    Consumer<RouterSpec<Boolean, MethodInvokingRouter>> routeToDataEnrichmentGatewayOrBypassCall()
+    {
+       return rs -> rs.resolutionRequired(false)
+               .subFlowMapping(true, sf ->
+                        sf.enrich(this::dataEnrichmentGatewayServiceCallEnricher)
+                          .enrich(this::dataEnrichmentGatewayServiceResponseProcessorEnricher)
+                )
+               .defaultOutputToParentFlow();
+    }
+    
+    Function<HomeQuoteModel, Boolean> ifRetrieveCustomerPricingRenewalFactorsRequired() {
+        return homeQuoteModel -> {
+            final ControlType control = homeQuoteModel.getRequest().getControl();
+            final QuoteLineOfBusiness lineOfBusiness = QuoteLineOfBusiness.fromString(control.getLineOfBusinessCode());
+            final TransactionType transactionType = TransactionType.lookup(control.getTransactionType());
+            return customerPricingControl.shouldRetrieveRenewalFactors(lineOfBusiness, transactionType);
+        };
+    }
+    
+    Consumer<RouterSpec<Boolean, MethodInvokingRouter>> routeToCustomerPricingGatewayOrBypassCall() {
+        return routerSpec -> routerSpec.resolutionRequired(false)
+                .subFlowMapping(true, subFlow ->
+                        subFlow.enrich(this::customerPricingRetrievalGatewayServiceCallEnricher)
+                )
+                .defaultOutputToParentFlow();
+    }
+
+    private ContentEnricher polarisRequestEnricher(final EnricherSpec enricherSpec) { //NOSONAR There is a Sonar rule which thinks this private method isn't used even though it is
+        return enricherSpec
+                .requestPayload(Message::getPayload)
+                .requestChannel(polarisRequestEnrichmentInputChannel())
+                .replyChannel(polarisRequestEnrichmentOutputChannel())
+                .propertyFunction(POL_REQUEST_MODEL_SETTER, Message::getPayload)
+                .get();
+    }
+
+    private ContentEnricher persistentFactorsRequestEnricher(final EnricherSpec enricherSpec) { //NOSONAR There is a Sonar rule which thinks this private method isn't used even though it is
+        return enricherSpec
+                .requestPayload(Message::getPayload)
+                .requestChannel(persistentFactorsRequestEnrichmentInputChannel())
+                .replyChannel(persistentFactorsRequestEnrichmentOutputChannel())
+                .propertyFunction(POL_REQUEST_MODEL_SETTER, Message::getPayload)
+                .get();
+    }
+
+    private ContentEnricher generationCodeEnricher(final EnricherSpec enricherSpec) { //NOSONAR There is a Sonar rule which thinks this private method isn't used even though it is
+        return enricherSpec
+                .requestPayload(Message::getPayload)
+                .requestChannel(generationCodeEnrichmentInputChannel())
+                .replyChannel(generationCodeEnrichmentOutputChannel())
+                .propertyFunction(GENERATION_CODE_MODEL_SETTER, Message::getPayload)
+                .get();
+    }
+
+    private ContentEnricher deCalculationEnricher(final EnricherSpec enricherSpec) { //NOSONAR There is a Sonar rule which thinks this private method isn't used even though it is
+        return enricherSpec
+                .requestPayload(Message::getPayload)
+                .requestChannel(deCalculationEnrichmentInputChannel())
+                .replyChannel(deCalculationEnrichmentOutputChannel())
+                .propertyFunction(CALCULATED_DATA_ENRICHMENTS_MODEL_SETTER, Message::getPayload)
+                .get();
+    }
+
+    private ContentEnricher dataEnrichmentGatewayServiceCallEnricher(final EnricherSpec enricherSpec) { //NOSONAR There is a Sonar rule which thinks this private method isn't used even though it is
+
+        return enricherSpec
+                .requestPayload(Message::getPayload)
+                .requestChannel(dataEnrichmentServiceEnrichmentInputChannel())
+                .replyChannel(dataEnrichmentServiceEnrichmentOutputChannel())
+                .propertyFunction(DE_RESPONSE_MODEL_SETTER, Message::getPayload)
+                .get();
+    }
+
+    private ContentEnricher dataEnrichmentGatewayServiceResponseProcessorEnricher(final EnricherSpec enricherSpec) { //NOSONAR There is a Sonar rule which thinks this private method isn't used even though it is
+
+        return enricherSpec
+                .requestPayload(Message::getPayload)
+                .requestChannel(dataEnrichmentServiceResponseProcessorEnrichmentInputChannel())
+                .replyChannel(dataEnrichmentServiceResponseProcessorEnrichmentOutputChannel())
+                .propertyFunction(CALCULATED_DATA_ENRICHMENTS_MODEL_SETTER, Message::getPayload)
+                .get();
+    }
+
+    private ContentEnricher customerPricingRetrievalGatewayServiceCallEnricher(final EnricherSpec enricherSpec) { //NOSONAR There is a Sonar rule which thinks this private method isn't used even though it is
+
+        return enricherSpec
+                .requestPayload(Message::getPayload)
+                .requestChannel(customerPricingRetrievalServiceEnrichmentInputChannel())
+                .replyChannel(customerPricingRetrievalServiceEnrichmentOutputChannel())
+                .propertyFunction(CUSTOMER_PRICING_RENEWAL_FACTORS, Message::getPayload)
+                .get();
+    }
+
+    private ContentEnricher polarisQuoteEnricher(final EnricherSpec enricherSpec) { //NOSONAR There is a Sonar rule which thinks this private method isn't used even though it is
+        return enricherSpec
+                .requestPayload(Message::getPayload)
+                .requestChannel(polarisQuoteEnrichmentInputChannel())
+                .replyChannel(polarisQuoteEnrichmentOutputChannel())
+                .propertyFunction(POL_RESPONSE_MODEL_SETTER, Message::getPayload)
+                .get();
+    }
+
+    private ContentEnricher persistentRatingInputMapperEnricher(final EnricherSpec enricherSpec) { //NOSONAR There is a Sonar rule which thinks this private method isn't used even though it is
+        return enricherSpec
+                .requestPayload(Message::getPayload)
+                .requestChannel(persistentRatingInputMapperInputChannel())
+                .replyChannel(persistentRatingInputMapperOutputChannel())
+                .propertyFunction(PERSISTENT_FACTORS_MODEL_SETTER, Message::getPayload)
+                .get();
+    }
+
+    private ContentEnricher polarisOutputToQuoteResultEnricher(final EnricherSpec enricherSpec) { //NOSONAR There is a Sonar rule which thinks this private method isn't used even though it is
+        return enricherSpec
+                .requestPayload(Message::getPayload)
+                .requestChannel(polMessageToQuoteResultInputChannel())
+                .replyChannel(polMessageToQuoteResultOutputChannel())
+                .propertyFunction(QUOTE_RESULT_MODEL_SETTER, Message::getPayload)
+                .get();
+    }
+
+    private ContentEnricher outgoingPersistentDataSerialisationEnricher(final EnricherSpec enricherSpec) //NOSONAR There is a Sonar rule which thinks this private method isn't used even though it is
+    {
+        return enricherSpec
+                .requestPayload(Message::getPayload)
+                .requestChannel(outgoingPersistentDataEnrichmentInputChannel())
+                .replyChannel(outgoingPersistentDataEnrichmentOutputChannel())
+                .propertyFunction(QUOTE_RESULT_MODEL_SETTER, Message::getPayload)
+                .get();
+    }
+
+    private ContentEnricher storeQuoteEnricher(final EnricherSpec enricherSpec) { //NOSONAR There is a Sonar rule which thinks this private method isn't used even though it is
+        return enricherSpec
+                .requestPayload(Message::getPayload)
+                .requestChannel(storeQuoteEnrichmentInputChannel())
+                .replyChannel(storeQuoteEnrichmentOutputChannel())
+                .<HomeStoreQuoteResponse>propertyFunction(QUOTE_RESULT_MODEL_SETTER, m -> m.getPayload().getQuoteResult())
+                .get();
+    }
+}

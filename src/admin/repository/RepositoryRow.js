@@ -1,29 +1,32 @@
 import { FcDeleteRow, FcEditImage } from 'react-icons/fc';
 import ModalForm from '../../utils/modal/ModalForm';
 import ModalConfirmation from '../../utils/modal/ModalConfirmation';
-import ProgLangForm from './ProgLangForm';
+import RepositoryForm from './RepositoryForm';
 
-const ProgLangRow = ( { record, formId, handleSave, handleDelete } ) => {
+const RepositoryRow = ( { record, formId, handleSave, handleDelete } ) => {
     return (
         <tr>
-            <td title={record.desc}>
-                <span>{record.name}</span>
+            <td>
+                <span title={record.desc}>{record.name}</span>
+            </td>
+            <td>
+                {record.url}
             </td>
             <td>
                 <ModalForm 
-                    body={ <ProgLangForm record={record} />} 
+                    body={ <RepositoryForm record={record} />} 
                     formId={formId}
-                    title='Edit an existing Programming Language' 
+                    title='Edit an existing Repository' 
                     icon={ <FcEditImage 
                             size={25} 
                             role='button'
-                            title='Editing the programming language.' /> }
+                            title='Editing the repository.' /> }
                     handleSave={handleSave} className='me-1' />
                 <ModalConfirmation
                     icon={<FcDeleteRow 
                             size={25} 
                             role='button'
-                            title='Deleting the programming language.' />} 
+                            title='Deleting the repository.' />} 
                     message='Are you sure to delete the record?'
                     id={record.id}
                     handleOperation={handleDelete} />
@@ -32,4 +35,4 @@ const ProgLangRow = ( { record, formId, handleSave, handleDelete } ) => {
     )
 }
 
-export default ProgLangRow;
+export default RepositoryRow;

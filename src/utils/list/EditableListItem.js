@@ -25,7 +25,10 @@ const EditableListItem = ({ index, item, controlName, required }) => {
                             </Col>
                             { index !== 0 &&
                             <Col sm={1}>
-                                <span onClick={removeFromList} title='Removing the current row.'>
+                                <span 
+                                    onClick={removeFromList} 
+                                    title='Removing the current row.'
+                                    data-testid='t-editableListItem-remove' >
                                     <BsFileMinus size={25} role='button' />
                                 </span>
                             </Col>}

@@ -4,7 +4,7 @@ import { BsInfoSquare } from 'react-icons/bs';
 import { FaStarOfLife } from 'react-icons/fa';
 
 const ProgLangForm = ( { record } ) => {
-    const patternList = record && record.pattern ? JSON.parse(record.pattern).patternList : [];
+    const patternList = record && record.pattern ? JSON.parse(record.pattern).patternList : [''];
     
     return (
         <>

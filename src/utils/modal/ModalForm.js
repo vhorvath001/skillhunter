@@ -18,7 +18,7 @@ const ModalForm = ({ formId, title, body, icon, handleSave }) => {
 
     return (
         <>
-            <span onClick={() => setShow(true)} className='me-1'>
+            <span onClick={() => setShow(true)} className='me-1' data-testid='t-modal-show'>
                 {icon}
             </span>
             <Modal show={show} onHide={handleClose} size="lg">

@@ -1,12 +1,28 @@
 {
-  "prog-langs": [
+  "repositories": [
     {
       "id": "0",
-      "name": "Java",
-      "desc": "Java programming language",
-      "level": "3",
-      "pattern": "{\"patternList\":[\"33\",\"44\"]}"
+      "name": "LV Gitlab",
+      "desc": "e a e?",
+      "url": "notsure",
+      "token": "XXX"
     },
+    {
+      "id": "1",
+      "name": "Reaction Github",
+      "desc": "my open source proj",
+      "url": "http://github.com/reaction",
+      "token": "aassww"
+    },
+    {
+      "id": "2",
+      "name": "s23",
+      "desc": "s",
+      "url": "s",
+      "token": "s"
+    }
+  ],
+  "prog-langs": [
     {
       "id": "1",
       "name": "Python",
@@ -30,11 +46,11 @@
     },
     {
       "id": "4",
-      "name": "2",
+      "name": "22",
       "desc": "22334455",
       "sourceFiles": "1",
       "level": "1",
-      "pattern": "{\"patternList\":[]}"
+      "pattern": "{\"patternList\":[\"a\"]}"
     },
     {
       "id": "5",

@@ -1,0 +1,18 @@
+{
+	"id": "50584857d278dace9c4a022b862aa9654b8f4b5b",
+	"short_id": "50584857",
+	"created_at": "2017-11-23T12:26:20.000+00:00",
+	"parent_ids": ["b946a2d4b201dcaa89a9494555491255124c4e6b"],
+	"title": "StRo - Customer Pricing - Include retrieval of Customer Pricing Renewal Factors in the quote flow",
+	"message": "StRo - Customer Pricing - Include retrieval of Customer Pricing Renewal Factors in the quote flow\n",
+	"author_name": "lv32803",
+	"author_email": "steve.rogers@lv.com",
+	"authored_date": "2017-11-22T14:28:13.000+00:00",
+	"committer_name": "lv32803",
+	"committer_email": "steve.rogers@lv.com",
+	"committed_date": "2017-11-23T12:26:20.000+00:00",
+	"trailers": {
+		
+	},
+	"web_url": "https://gitlab-gi.group.net/cqs/quote-orchestration-service/-/commit/50584857d278dace9c4a022b862aa9654b8f4b5b"
+}

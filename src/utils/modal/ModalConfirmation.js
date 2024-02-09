@@ -19,7 +19,7 @@ const ModalConfirmation = ( { icon, message, id, handleOperation } ) => {
 
     return (
         <>
-            <span onClick={() => setShow(true)}>
+            <span onClick={() => setShow(true)} data-testid='t-modalConfirmation-show'>
                 {icon}
             </span>
             <Modal show={show} onHide={handleClose} size="lg">
