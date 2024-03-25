@@ -21,7 +21,7 @@ const ModalForm = ({ formId, title, body, icon, handleSave }) => {
             <span onClick={() => setShow(true)} className='me-1' data-testid='t-modal-show'>
                 {icon}
             </span>
-            <Modal show={show} onHide={handleClose} size="lg">
+            <Modal show={show} onHide={handleClose} size="xl">
                 <Form id={formId} onSubmit={(e) => handleSave(e, handleClose, setErrorMessage)}>
                     <Modal.Header closeButton>
                         <Modal.Title>{title}</Modal.Title>

@@ -6,7 +6,7 @@ import AdminList from '../../utils/list/AdminList';
 const ProgLangList = () => {
     const newProgLangFormId = 'newProgLangForm';
     const resourceName = '/prog-langs';
-    const maxItemsPerPage = 2;
+    const maxItemsPerPage = 10;
 
     const addToObjectToBeSaved = (formDataObj) => {
         let patterns = [];
