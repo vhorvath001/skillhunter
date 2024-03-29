@@ -13,13 +13,6 @@
       "desc": "my open source proj",
       "url": "http://github.com/reaction",
       "token": "aassww"
-    },
-    {
-      "id": "2",
-      "name": "s23",
-      "desc": "s",
-      "url": "s",
-      "token": "s"
     }
   ],
   "prog-langs": [
@@ -27,58 +20,37 @@
       "id": "1",
       "name": "Python",
       "desc": "",
+      "sourceFiles": "*.py",
       "level": "2",
-      "pattern": "{\"patternList\":[\"11\"]}"
+      "scope": "EVERYWHERE",
+      "patterns": "{\"patternList\":[\"11\"]}"
     },
     {
       "id": "2",
       "name": "C++",
+      "sourceFiles": "*.c",
       "desc": "1cplusplus",
-      "level": "",
-      "pattern": "{\"patternList\":[]}"
+      "level": "1",
+      "packageSeparator": "/",
+      "scope": "EVERYWHERE",
+      "patterns": "{\"patternList\":[]}"
     },
     {
       "id": "3",
       "name": "K++",
       "desc": "",
       "level": "",
-      "pattern": "{\"patternList\":[]}"
+      "patterns": "{\"patternList\":[]}"
     },
     {
       "id": "4",
-      "name": "22",
-      "desc": "22334455",
-      "sourceFiles": "1",
+      "name": "a",
+      "sourceFiles": "a",
+      "desc": "",
       "level": "1",
-      "pattern": "{\"patternList\":[\"a\"]}"
-    },
-    {
-      "id": "5",
-      "name": "z1",
-      "desc": "",
-      "level": "",
-      "pattern": "{\"patternList\":[]}"
-    },
-    {
-      "id": "6",
-      "name": "z2",
-      "desc": "",
-      "level": "",
-      "pattern": "{\"patternList\":[]}"
-    },
-    {
-      "id": "7",
-      "name": "z3",
-      "desc": "",
-      "level": "",
-      "pattern": "{\"patternList\":[]}"
-    },
-    {
-      "id": "8",
-      "name": "z4",
-      "desc": "",
-      "level": "",
-      "pattern": "{\"patternList\":[]}"
+      "packageSeparator": "",
+      "scope": "FIRST_OCCURRENCE",
+      "patterns": "{\"patternList\":[\"ab\",\"ss\"]}"
     }
   ]
 }

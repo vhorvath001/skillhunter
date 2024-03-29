@@ -42,7 +42,7 @@ test('Displaying the confirmation modal and set error message when clicking on C
 
 test('Displaying the confirmation modal and no error message when clicking on Confirm', async () => {
     const id = 647;
-    const handleOperation = (e, handleClose, setErrorMessage, passedId) => {
+    const handleOperation = (handleClose, setErrorMessage, passedId) => {
         expect(passedId).toBe(id);
         setErrorMessage('');
         handleClose();
