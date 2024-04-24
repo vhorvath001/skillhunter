@@ -1,6 +1,8 @@
-const express = require('express');
-const app = express();
-const PORT = process.env.PORT || 3500;
+import express, { Express } from 'express'
+// const express = require('express');
+
+const app: Express = express();
+const PORT: string = process.env.PORT || '3500';
 // const initDB = require('./config/initDB');
 
 // built-in middleware for JSON
