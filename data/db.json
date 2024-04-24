@@ -50,7 +50,7 @@
       "level": "1",
       "packageSeparator": "",
       "scope": "FIRST_OCCURRENCE",
-      "patterns": "{\"patternList\":[\"ab\",\"ss\"]}"
+      "patterns": "{\"patternList\":[\"ab\",\"ss\",\"xx\"]}"
     }
   ]
 }

@@ -2,6 +2,7 @@ import { ReactElement } from 'react';
 import Form from 'react-bootstrap/Form';
 import { BsInfoSquare } from 'react-icons/bs';
 import { FaStarOfLife } from 'react-icons/fa';
+import { RepositoryType } from '../../../context/RepositoryProvider';
 
 type PropsType = {
     record?: RepositoryType

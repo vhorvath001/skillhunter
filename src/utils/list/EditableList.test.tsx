@@ -2,22 +2,20 @@ import { render, screen } from '@testing-library/react';
 import EditableList from './EditableList';
 import userEvent from '@testing-library/user-event';
 
-test('when no list is passed (no existing data) then one EditableListItem with no value is displayed', () => {
-    const list = [];
-    const required = true;
-    render( <EditableList 
+test('when no list is passed (no existing data) then no EditableListItem is displayed', async () => {
+    const list: string[] = [];
+    const required: boolean = true;
+    await render( <EditableList 
                 list={list}
                 required={required} /> );
     
-    expect(screen.getByRole('textbox').getAttribute('name')).toBe('patternListItem_0');
-    expect(screen.getByRole('textbox').getAttribute('value')).toBe('');
-    expect(screen.getByRole('textbox').getAttribute('required')).not.toBeNull();
+    expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
 })
 
-test('when a list is passed then EditableListItem(s) with value is displayed', () => {
-    const list = ['a', 'b'];
-    const required = false;
-    render( <EditableList 
+test('when a list is passed then EditableListItem(s) with value is displayed', async () => {
+    const list: string[] = ['a', 'b'];
+    const required: boolean = false;
+    await render( <EditableList 
                 list={list}
                 required={required} /> );
     
@@ -26,9 +24,9 @@ test('when a list is passed then EditableListItem(s) with value is displayed', (
 })
 
 test('clicking on remove and add button', async () => {
-    const list = ['a', 'b'];
-    const required = false;
-    render( <EditableList 
+    const list: string[] = ['a', 'b'];
+    const required: boolean = false;
+    await render( <EditableList 
                 list={list}
                 required={required} /> );
     
@@ -39,7 +37,7 @@ test('clicking on remove and add button', async () => {
     verifyTextbox(1, 'patternListItem_2', '', required);
 })
 
-const verifyTextbox = (idx, id, value, required) => {
+const verifyTextbox = (idx: number, id: string, value: string, required: boolean) => {
     expect(screen.getAllByRole('textbox')[idx].getAttribute('name')).toBe(id);
     expect(screen.getAllByRole('textbox')[idx].getAttribute('value')).toBe(value);
     if (required) {

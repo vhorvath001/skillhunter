@@ -1,9 +1,9 @@
 describe('e2e testing of Administration / Repositories', () => {
-    const nameRepo = 'Gitlab';
-    const descRepo = 'Gitlab central repo';
-    const urlRepo = 'https://gitlab.acme.co.uk';
-    const tokenRepo = 'fdsSDF4g5gGg2g4';
-    const id = '0';
+    const nameRepo: string = 'Gitlab';
+    const descRepo: string = 'Gitlab central repo';
+    const urlRepo: string = 'https://gitlab.acme.co.uk';
+    const tokenRepo: string = 'fdsSDF4g5gGg2g4';
+    const id: string = '0';
 
     it('adding a new repository, editing it and removing it', () => {
         cy.intercept('GET', 'http://localhost:3500/repositories', (req) => {

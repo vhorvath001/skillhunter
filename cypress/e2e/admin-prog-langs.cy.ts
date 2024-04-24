@@ -1,10 +1,10 @@
 describe('e2e testing of Administration / Programming Languages', () => {
-    const nameProgLang = 'Rust';
-    const descProgLang = 'Rust programming langauge';
-    const sourceFilesProgLang = '*.rs';
-    const levelProgLang = '2';
-    const pattern0ProgLang = 'mod .*';
-    const pattern1ProgLang = 'use .*';
+    const nameProgLang: string = 'Rust';
+    const descProgLang: string = 'Rust programming langauge';
+    const sourceFilesProgLang: string = '*.rs';
+    const levelProgLang: string = '2';
+    const pattern0ProgLang: string = 'mod .*';
+    const pattern1ProgLang: string = 'use .*';
     const id = '0';
 
     it('adding a new programming language, editing it and removing it', () => {
@@ -19,8 +19,8 @@ describe('e2e testing of Administration / Programming Languages', () => {
             expect(body.name).to.eq(nameProgLang);
             expect(body.desc).to.eq(descProgLang);
             expect(body.level).to.eq(levelProgLang);
-            expect(JSON.parse(body.pattern).patternList[0]).to.eq(pattern0ProgLang);
-            expect(JSON.parse(body.pattern).patternList[1]).to.eq(pattern1ProgLang);
+            expect(JSON.parse(body.patterns).patternList[0]).to.eq(pattern0ProgLang);
+            expect(JSON.parse(body.patterns).patternList[1]).to.eq(pattern1ProgLang);
             // adding 'id' value to the response
             body.id = id;
             req.reply(body);
@@ -33,8 +33,8 @@ describe('e2e testing of Administration / Programming Languages', () => {
             expect(body.name).to.eq(nameProgLang + '1');
             expect(body.desc).to.eq(descProgLang + '1');
             expect(body.level).to.eq(levelProgLang + '1');
-            expect(JSON.parse(body.pattern).patternList[0]).to.eq(pattern0ProgLang + '1');
-            expect(JSON.parse(body.pattern).patternList[1]).to.eq(pattern1ProgLang + '1');
+            expect(JSON.parse(body.patterns).patternList[0]).to.eq(pattern0ProgLang + '1');
+            expect(JSON.parse(body.patterns).patternList[1]).to.eq(pattern1ProgLang + '1');
             // adding 'id' value to the response
             req.reply(body);
         }).as('editExistingProgLang');

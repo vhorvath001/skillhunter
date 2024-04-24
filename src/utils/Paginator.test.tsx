@@ -5,15 +5,23 @@ import userEvent from '@testing-library/user-event';
 
 test('test Paginator when currentPage=1 and maxPage=1', () => {
     render( <Paginator 
-        maxPage={1}
-        currentPage={1} /> );
+                maxPage={1}
+                currentPage={1}
+                list={[]}
+                maxItemsPerPage={1}
+                setShowedList={() => {}}
+                setCurrentPage={() => {}} /> );
     expect(screen.queryByTestId('t-paginator-first')).not.toBeInTheDocument();
 });
 
 test('test Paginator when currentPage=1 and maxPage=2', () => {
     render( <Paginator 
                 maxPage={2}
-                currentPage={1} /> );
+                currentPage={1}
+                list={[]}
+                maxItemsPerPage={1}
+                setShowedList={() => {}}
+                setCurrentPage={() => {}} /> );
     expect(screen.queryByTestId('t-paginator-first')).toBeInTheDocument();
     expect(screen.queryByTestId('t-paginator-prev')).not.toBeInTheDocument();
     expect(screen.queryByTestId('t-paginator-1')).not.toBeInTheDocument();
@@ -30,7 +38,11 @@ test('test Paginator when currentPage=1 and maxPage=2', () => {
 test('test Paginator when currentPage=2 and maxPage=2', () => {
     render( <Paginator 
                 maxPage={2}
-                currentPage={2} /> );
+                currentPage={2}
+                list={[]}
+                maxItemsPerPage={1}
+                setShowedList={() => {}}
+                setCurrentPage={() => {}} /> );
     expect(screen.queryByTestId('t-paginator-first')).toBeInTheDocument();
     expect(screen.queryByTestId('t-paginator-prev')).toBeInTheDocument();
     expect(screen.queryByTestId('t-paginator-1')).toBeInTheDocument();
@@ -47,7 +59,11 @@ test('test Paginator when currentPage=2 and maxPage=2', () => {
 test('test Paginator when currentPage=5 and maxPage=20', () => {
     render( <Paginator 
                 maxPage={20}
-                currentPage={5} /> );
+                currentPage={5}
+                list={[]}
+                maxItemsPerPage={1}
+                setShowedList={() => {}}
+                setCurrentPage={() => {}} /> );
     expect(screen.queryByTestId('t-paginator-first')).toBeInTheDocument();
     expect(screen.queryByTestId('t-paginator-prev')).toBeInTheDocument();
     expect(screen.queryByTestId('t-paginator-1')).toBeInTheDocument();
@@ -62,11 +78,11 @@ test('test Paginator when currentPage=5 and maxPage=20', () => {
 });
 
 test('test when setCurrentPage & setShowedList are set correctly when onClick is fired', async () => {
-    const list = Array(5*20).fill(-1).map((v,i)=>i);
-    let currentPage = -1;
-    let showedList = [];
-    const setCurrentPageMocked = (page) => currentPage = page;
-    const setShowedListMocked = (l) => showedList = l;
+    const list: number[] = Array(5*20).fill(-1).map((v,i)=>i);
+    let currentPage: number = -1;
+    let showedList: number[] = [];
+    const setCurrentPageMocked = (page: number) => currentPage = page;
+    const setShowedListMocked = (l: number[]) => showedList = l;
    
     render( <Paginator 
                 maxPage={20}
@@ -76,7 +92,7 @@ test('test when setCurrentPage & setShowedList are set correctly when onClick is
                 setCurrentPage={setCurrentPageMocked}
                 setShowedList={setShowedListMocked} /> );
     
-    await userEvent.click(screen.queryByTestId('t-paginator-next'));
+    await userEvent.click(screen.queryByTestId('t-paginator-next')!);
    
     expect(currentPage).toEqual(6);
     expect(showedList).toEqual(expect.arrayContaining([25,26,27,28,29]));

@@ -34,7 +34,7 @@ type ProgLangStateType = {
     list: ProgLangType[]
 }
 
-const handleError = (err: any, setErrorMessage: (errorMessage: string) => void): void => {
+export const handleError = (err: any, setErrorMessage: (errorMessage: string) => void): void => {
     if (err instanceof Error)
         setErrorMessage(err.message)
     if (typeof err === 'string')
@@ -42,13 +42,13 @@ const handleError = (err: any, setErrorMessage: (errorMessage: string) => void):
     console.error(err)
 }
 
-const handleDelete = async (dispatch: React.Dispatch<ProgLangAction>, handleClose: () => void, setErrorMessage: (errorMessage: string) => void, id: string) => {
+export const handleDelete = async (dispatch: React.Dispatch<ProgLangAction>, handleClose: () => void, setErrorMessage: (errorMessage: string) => void, id: string) => {
     try {
         await axios({
             method: 'DELETE',
-            url: client.defaults.baseURL + `/prog-langs/${id}` 
-        });
-        dispatch({ type: PROG_LANG_ACTION_TYPES.DELETE, id: id })
+            url: client.defaults.baseURL + `/prog-langs/${id}`
+        })
+           dispatch({ type: PROG_LANG_ACTION_TYPES.DELETE, id: id })
         handleClose();
     } catch(err) {
         handleError(err, setErrorMessage)
@@ -67,7 +67,7 @@ const handleSave = async (dispatch: React.Dispatch<ProgLangAction>, e: FormEvent
     }
     // adding the patterns in EditableList to patterns field
     let patterns: string[] = Object.entries(formDataObj)
-        .filter(([key, value]) => key.startsWith('patternListItem_'))
+        .filter(([key]) => key.startsWith('patternListItem_'))
         .map(([key, value]) => {
             delete formDataObj[key];
             return value.toString()

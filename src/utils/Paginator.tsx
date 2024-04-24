@@ -6,10 +6,10 @@ type PropsType = {
     maxItemsPerPage: number,
     maxPage: number, 
     currentPage:number, 
-    setShowedList:  React.Dispatch<React.SetStateAction<any[]>>, 
+    setShowedList:  (showedList: any[]) => void, 
     setCurrentPage: (currentPage: number) => void
-
 }
+
 const Paginator = ({ list, maxItemsPerPage, maxPage, currentPage, setShowedList, setCurrentPage }: PropsType): ReactElement => {
 
     const handlePaginationClick = (page: number) => {
