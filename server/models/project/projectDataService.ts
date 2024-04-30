@@ -1,4 +1,4 @@
-import logger from '../../config/initLogger'
+import logger from '../../init/initLogger'
 import { ExtractionModel } from '../extraction/extractionModel'
 import RepositoryModel from '../repository/repositoryModel'
 import { ProjectModel } from './projectModel'

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { start } from '../services/extractionService'
-import logger from '../config/initLogger'
+import logger from '../init/initLogger'
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
 

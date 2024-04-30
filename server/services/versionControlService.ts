@@ -1,6 +1,6 @@
 import { AxiosInstance, AxiosResponse } from 'axios'
 import { ProjectSchema, CommitSchema, CommitDiffSchema, RepositoryTreeSchema } from '../schema/gitlabSchema'
-import logger from '../config/initLogger'
+import logger from '../init/initLogger'
 
 type GitLabProjectType = {
     id: number,
@@ -98,6 +98,18 @@ const getGitLabFolders = async (gitLabApi: AxiosInstance, projectId: number, com
     return folders
 }
 
+const getGitLabBranches = async (gitLabApi: AxiosInstance, projectId: number) => {
+    logger.debug(`Getting GitLab branches of a project [projectId=${projectId}] ...`)
+
+    const branches: any[]  = await getAll(`/projects/${projectId}/repository/branches`, gitLabApi, { 
+        'sort': 'updated_desc'})
+
+    const result: string[] = branches.map(b => b.name)
+    logger.debug(result)
+
+    return result
+}
+
 const getAll = async (resource: string, client: AxiosInstance, queryParams: {} = {}): Promise<any[]> => {
     const allResult: any[] = []
     let page: number = 1
@@ -121,5 +133,5 @@ const getAll = async (resource: string, client: AxiosInstance, queryParams: {} =
     return allResult
 }
 
-export { getGitLabProjects, getGitLabCommits, getGitLabDiffList, getGitLabContentByCommitId, getGitLabFolders, 
+export { getGitLabProjects, getGitLabCommits, getGitLabDiffList, getGitLabContentByCommitId, getGitLabFolders, getGitLabBranches, 
          GitLabProjectType, GitLabCommitType, GitLabDiff }

@@ -1,5 +1,5 @@
 import saveExtraction from '../models/extraction/extractionDataService'
-import createGitLabApi from '../config/initGitLabApi'
+import createGitLabApi from '../init/initGitLabApi'
 import { getGitLabProjects, getGitLabCommits, getGitLabDiffList, getGitLabContentByCommitId } from './versionControlService'
 import ProgressLogModel from '../models/progressLog/progressLogModel'
 import saveProject from '../models/project/projectDataService'
@@ -10,7 +10,7 @@ import Sequelize from '@sequelize/core'
 import RepositoryModel from '../models/repository/repositoryModel'
 import ProgLangModel from '../models/progLang/progLangModel'
 import { start } from './extractionService'
-import logger from '../config/initLogger'
+import logger from '../init/initLogger'
 
 // jest.mock('../models/progressLog/progressLogDataService', () => jest.fn());
 jest.mock('../models/extraction/extractionDataService', () => jest.fn());

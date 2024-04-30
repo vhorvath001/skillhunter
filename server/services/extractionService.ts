@@ -4,10 +4,10 @@ import saveExtraction from '../models/extraction/extractionDataService'
 import { getGitLabProjects, getGitLabCommits, getGitLabDiffList, getGitLabContentByCommitId, GitLabDiff } from './versionControlService'
 import updateSkillTree from '../models/skill/skillDataService'
 import saveProject from '../models/project/projectDataService'
-import createGitLabApi from '../config/initGitLabApi'
+import createGitLabApi from '../init/initGitLabApi'
 import { GitLabProjectType } from './versionControlService'
 import { AxiosInstance } from 'axios'
-import logger from '../config/initLogger'
+import logger from '../init/initLogger'
 import TreeNode from '../schema/treeNode'
 
 const start = async (repoId: number, branches: {}, path: string, progLangs: number[]) => {

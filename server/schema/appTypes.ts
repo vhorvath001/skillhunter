@@ -17,3 +17,9 @@ export type RepositoryType = {
     url: string,
     token: string
 }
+
+export type ProjectsBranchesType = {
+    id: string,
+    name: string,
+    branches: string[]
+}

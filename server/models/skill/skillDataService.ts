@@ -1,4 +1,4 @@
-import logger from '../../config/initLogger'
+import logger from '../../init/initLogger'
 import TreeNode from '../../schema/treeNode'
 import { saveExtractionSkillFindingModel } from '../extractionSkillFinding/extractionSkillFindingDataService'
 import ProgLangModel from '../progLang/progLangModel'

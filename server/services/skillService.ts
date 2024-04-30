@@ -2,7 +2,7 @@ import ProgLangModel from '../models/progLang/progLangModel'
 import { GitLabDiff, getGitLabFolders } from './versionControlService'
 import isInPackageExclusionList from  '../config/packageExclusion'
 import { AxiosInstance } from 'axios'
-import logger from '../config/initLogger'
+import logger from '../init/initLogger'
 import TreeNode from '../schema/treeNode'
 const similarity = require('../utils/stringSimilarity')
 

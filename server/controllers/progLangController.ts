@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import logger from '../config/initLogger'
+import logger from '../init/initLogger'
 import ProgLangModel from '../models/progLang/progLangModel'
 import { ProgLangType } from '../schema/appTypes'
 
@@ -69,7 +69,7 @@ const editExistingProgLang = async (req: Request, resp: Response) => {
         if (!cnt || cnt[0] === 0) {
             resp.status(404).send({'message': `The programming language [${id}] cannot be found in database!`})
         } else {
-            resp.status(201).json(toUpdateProgLang)
+            resp.status(201).json(toProgLangType(toUpdateProgLangModel))
         }
     } catch(err) {
         logger.error(`Error occurred when executing 'editExistingProgLang': ${err}`)

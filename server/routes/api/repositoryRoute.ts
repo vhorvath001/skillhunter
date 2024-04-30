@@ -1,5 +1,5 @@
 import express from 'express'
-import { createNewRepository, deleteRepository, editExistingRepository, getAllRepositories, getRepositoryById } from '../../controllers/repositoryController'
+import { createNewRepository, deleteRepository, editExistingRepository, getAllRepositories, getBranchesPerProjects, getRepositoryById } from '../../controllers/repositoryController'
 const repositoryRouter = express.Router()
 
 repositoryRouter.route('/:id')
@@ -10,6 +10,9 @@ repositoryRouter.route('/:id')
 repositoryRouter.route('/')
     .post(createNewRepository)
     .get(getAllRepositories)
+
+repositoryRouter.route('/:id/:path/projects/branches')
+    .get(getBranchesPerProjects)
 
 export default repositoryRouter
     
