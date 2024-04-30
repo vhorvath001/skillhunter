@@ -4,12 +4,12 @@ import EditableListItem from './EditableListItem'
 import { ReactElement, useState } from 'react'
 
 type PropsType = {
-    list: string[],
+    list: string[] | undefined,
     required: boolean
 }
 
 const EditableList = ({ list, required }: PropsType): ReactElement => {
-    const [ items, setItems ] = useState<string[]>(list);
+    const [ items, setItems ] = useState<string[]>(list ?? []);
     const addToList = (): void => {
         setItems([...items, ''])
     }

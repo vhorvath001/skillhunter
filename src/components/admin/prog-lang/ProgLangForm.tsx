@@ -12,8 +12,6 @@ type PropsType = {
 }
 
 const ProgLangForm = ( { record }: PropsType ): ReactElement => {
-    const patternList: string[] = record?.patterns ? JSON.parse(record.patterns).patternList : [''];
-    
     return (
         <>
             <input type='hidden' name='id' value={record ? record.id : '-1'} />
@@ -81,7 +79,7 @@ const ProgLangForm = ( { record }: PropsType ): ReactElement => {
                         <Form.Check 
                             type='checkbox'
                             name='removingTLDPackages' 
-                            defaultChecked={record?.removingTLDPackages === 'on' ? true : false } />
+                            defaultChecked={record?.removingTLDPackages} />
                     </Form.Group>
                 </Col>
             </Row>
@@ -93,7 +91,7 @@ const ProgLangForm = ( { record }: PropsType ): ReactElement => {
                     <option value='FIRST_OCCURRENCE'>First Occurence</option>
                     <option value='EVERYWHERE'>Everywhere</option>
                 </Form.Select>
-                <EditableList list={patternList} required={true} />
+                <EditableList list={record?.patterns} required={true} />
             </Form.Group>
         </>        
     )

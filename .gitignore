@@ -25,3 +25,8 @@ node_modules
 
 /server/coverage
 server/package-lock.json
+server/skillhunter.log
+package-lock.json
+github_token.txt
+/_tmp
+_tmp/diff.txt

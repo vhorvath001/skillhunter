@@ -43,7 +43,7 @@ const Header = (): ReactElement => {
                                 </NavDropdown.Item>
                             </NavDropdown>
                         </Nav>
-                        <Nav.Link href='#home' >Skill Map</Nav.Link>
+                        <Nav.Link href='/extraction'>Exctraction</Nav.Link>
                     </Navbar.Collapse>
                 </Container>
             </Navbar>

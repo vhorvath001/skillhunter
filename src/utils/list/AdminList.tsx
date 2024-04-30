@@ -42,7 +42,7 @@ const AdminList = ({ list, isLoading, fetchError, maxItemsPerPage, handleDelete,
 
     return (
         <div className='admin-container'>
-            <div className='adminTitle text-center mb-5 fs-3'>{title}</div>
+            <div className='page-title text-center mb-5'>{title}</div>
             <main>
                 { isLoading && 
                     <p>List is loading...</p> 
@@ -68,7 +68,7 @@ const AdminList = ({ list, isLoading, fetchError, maxItemsPerPage, handleDelete,
                                         formId={newFormId}
                                         title={newFormTitleAdd} 
                                         icon={ <Button 
-                                                variant='outline-primary' 
+                                                variant='primary' 
                                                 title={addButtonTooltip}>
                                                     Create
                                                     <FcAddRow 

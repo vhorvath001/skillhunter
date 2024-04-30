@@ -7,6 +7,8 @@ import Dashboard from './components/Dashboard';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { ProgLangProvider } from './context/ProgLangProvider';
 import { RepositoryProvider } from './context/RepositoryProvider';
+import Extraction from './components/extraction/Extraction';
+import { ExtractionProvider } from './context/ExtractionProvider';
 
 function App() {
     return (
@@ -20,6 +22,9 @@ function App() {
                     <Route path='repositories'>
                         <Route index element={<RepositoryProvider><RepositoryList /></RepositoryProvider>} />
                     </Route>
+                </Route>
+                <Route path='extraction'>
+                    <Route index element={ <ExtractionProvider><Extraction /></ExtractionProvider> } />
                 </Route>
                 <Route path="*" element={<Missing />} />
             </Route>

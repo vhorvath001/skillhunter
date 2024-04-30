@@ -20,3 +20,10 @@ header, footer {
     flex-basis: auto;
 }
 
+.page-title {
+    font-size: 1.5em;
+}
+
+.extraction-container {
+    padding: 2%;
+}

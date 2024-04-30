@@ -2,6 +2,7 @@ import { FormEvent, ReactElement, createContext, useEffect, useReducer } from 'r
 import useAxiosFetch from '../hooks/useAxiosFetch'
 import axios, { AxiosResponse } from 'axios'
 import { client } from '../api/client'
+import { ChildrenType, handleError } from './ContextFunctions'
 
 export const REPOSITORY_ACTION_TYPES = {
     NEW: 'NEW',
@@ -18,8 +19,6 @@ export type RepositoryType = {
     token: string
 }
 
-type ChildrenType = { children?: ReactElement | ReactElement[] }
-
 export type RepositoryAction = {
     type: string,
     payload?: RepositoryType | RepositoryType[]
@@ -28,14 +27,6 @@ export type RepositoryAction = {
 
 type RepositoryStateType = {
     list: RepositoryType[]
-}
-
-const handleError = (err: any, setErrorMessage: (errorMessage: string) => void): void => {
-    if (err instanceof Error)
-        setErrorMessage(err.message)
-    if (typeof err === 'string')
-        setErrorMessage(err)
-    console.error(err)
 }
 
 const handleDelete = async (dispatch: React.Dispatch<RepositoryAction>, handleClose: () => void, setErrorMessage: (errorMessage: string) => void, id: string) => {
@@ -124,8 +115,8 @@ const sortList = (l: RepositoryType[]) => {
 }
 
 const useRepositoryContext = () => {
-    const { data, isLoading, fetchError } = useAxiosFetch('/repositories');
-    const [state, dispatch] = useReducer(reducer, { list: data })
+    const { data, isLoading, fetchError } = useAxiosFetch('/repositories')
+    const [ state, dispatch ] = useReducer(reducer, { list: data })
 
     useEffect(() => {
         dispatch({ type: REPOSITORY_ACTION_TYPES.POPULATE, payload: data})

@@ -2,6 +2,7 @@ import { FormEvent, ReactElement, createContext, useEffect, useReducer } from 'r
 import useAxiosFetch from '../hooks/useAxiosFetch'
 import axios, { AxiosResponse } from 'axios'
 import { client } from '../api/client'
+import { ChildrenType, handleError } from './ContextFunctions'
 
 export const PROG_LANG_ACTION_TYPES = {
     NEW: 'NEW',
@@ -11,18 +12,16 @@ export const PROG_LANG_ACTION_TYPES = {
 }
 
 export type ProgLangType = {
-    id: string,
+    id?: string,
     name: string,
     desc?: string,
     sourceFiles: string,
     level: number,
     packageSeparator?: string,
-    removingTLDPackages: string,
-    patterns: string,
-    scope: 'FIRST_OCCURRENCE' | 'EVERYWHERE'
+    removingTLDPackages: boolean,
+    patterns: string[],
+    scope: string
 }
-
-type ChildrenType = { children?: ReactElement | ReactElement[] }
 
 export type ProgLangAction = {
     type: string,
@@ -32,14 +31,6 @@ export type ProgLangAction = {
 
 type ProgLangStateType = {
     list: ProgLangType[]
-}
-
-export const handleError = (err: any, setErrorMessage: (errorMessage: string) => void): void => {
-    if (err instanceof Error)
-        setErrorMessage(err.message)
-    if (typeof err === 'string')
-        setErrorMessage(err)
-    console.error(err)
 }
 
 export const handleDelete = async (dispatch: React.Dispatch<ProgLangAction>, handleClose: () => void, setErrorMessage: (errorMessage: string) => void, id: string) => {
@@ -58,27 +49,18 @@ export const handleDelete = async (dispatch: React.Dispatch<ProgLangAction>, han
 const handleSave = async (dispatch: React.Dispatch<ProgLangAction>, e: FormEvent<HTMLFormElement>, handleClose: () => void, setErrorMessage: (errorMessage: string) => void) => {
     e.preventDefault();
 
-    const formData: FormData = new FormData(e.currentTarget);
-    let formDataObj = Object.fromEntries(formData.entries());
+    const formData: FormData = new FormData(e.currentTarget)
+    const progLang: ProgLangType = toProgLangType(formData)
     let verb: string = 'PUT';
-    if (formDataObj.id == '-1') {
+    if (formData.get('id') === '-1') {
         verb = 'POST';
-        formDataObj.id = '';
     }
-    // adding the patterns in EditableList to patterns field
-    let patterns: string[] = Object.entries(formDataObj)
-        .filter(([key]) => key.startsWith('patternListItem_'))
-        .map(([key, value]) => {
-            delete formDataObj[key];
-            return value.toString()
-        })
-    formDataObj.patterns = JSON.stringify({'patternList': patterns})
 
     try {
         const resp: AxiosResponse = await axios({
             method: verb, 
-            url: client.defaults.baseURL + '/prog-langs' + (verb == 'PUT' ? `/${formDataObj.id}` : ''), 
-            data: formDataObj 
+            url: client.defaults.baseURL + '/prog-langs' + (verb == 'PUT' ? `/${formData.get('id')}` : ''), 
+            data: progLang
         }); 
         dispatch({ 
             type: verb === 'POST' ? PROG_LANG_ACTION_TYPES.NEW : PROG_LANG_ACTION_TYPES.EDIT, 
@@ -88,6 +70,27 @@ const handleSave = async (dispatch: React.Dispatch<ProgLangAction>, e: FormEvent
     } catch (err) {
         handleError(err, setErrorMessage)
     }
+}
+
+const toProgLangType = (formData: FormData): ProgLangType => {
+    let patterns: string[] = []
+    for (const pair of formData.entries()) {
+        if (pair[0].startsWith('patternListItem_')) patterns.push(pair[1].toString())
+    }
+    const progLang: ProgLangType = {
+        id: undefined,
+        name: formData.get('name')!.toString(),
+        desc: formData.get('desc')?.toString(),
+        sourceFiles: formData.get('sourceFiles')!.toString(),
+        level: Number(formData.get('level')!.toString()),
+        packageSeparator: formData.get('packageSeparator')?.toString(),
+        removingTLDPackages: formData.get('removingTLDPackages')?.toString() === 'on',
+        patterns: patterns,
+        scope: formData.get('scope')!.toString()
+    }
+    if (formData.get('id') && formData.get('id') !== '-1')
+        progLang.id = formData.get('id')!.toString()
+    return progLang
 }
 
 const initState: UseProgLangContextType = { 
@@ -136,7 +139,7 @@ const sortList = (l: ProgLangType[]) => {
 }
 
 const useProgLangContext = () => {
-    const { data, isLoading, fetchError } = useAxiosFetch('/prog-langs');
+    const { data, isLoading, fetchError } = useAxiosFetch('/prog-langs')
     const [state, dispatch] = useReducer(reducer, { list: data })
 
     useEffect(() => {
