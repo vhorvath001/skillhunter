@@ -2,10 +2,7 @@ import { FormEvent, useState } from 'react'
 import { handleStartExtraction } from './ExtractionProvider'
 
 test('testing handleStartExtraction', () => {
-    const mockedFormEvent = { 
-        target: { querySelectorAll: jest.fn() }, 
-        preventDefault: jest.fn() 
-    }
+    // const mockedFormEvent = { currentTarget: jest.fn(), } as FormEvent<HTMLFormElement>
     const mockedHandleClose = jest.fn()
     const [ show2ndPage, setShow2ndPage ] = useState<boolean>(false)
     const mockedSetErrorMessage = jest.fn()

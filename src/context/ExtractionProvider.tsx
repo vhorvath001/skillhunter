@@ -69,7 +69,8 @@ const initState: UseExtractionContextType = {
     projectBranchesData: [],
     progLangOptions: [],
     selectedProgLangs: [], 
-    setSelectedProgLangs: () => {}
+    setSelectedProgLangs: () => {},
+    setRepoId: () => {}, 
 }
 
 const useExtractionContext = () => {
@@ -81,12 +82,12 @@ const useExtractionContext = () => {
     const [ pathTextfield, setPathTextfield ] = useState<string>('')
     const [ projectBranchesData, setProjectBranchesData ] = useState<ProjectsBranchesType[]>([])
     const [ isLoading, setIsLoading ] = useState<boolean>(false)
-    const [ selectedProgLangs, setSelectedProgLangs ] = useState<string[]>([]);
+    const [ selectedProgLangs, setSelectedProgLangs ] = useState<string[]>([])
+    const [ repoId, setRepoId ] = useState<number>(-1)
 
     const fetchProjectsBranches = async () => {
-        // const response: AxiosResponse = await client.get(`/repositories/${repoId}/${path}/projects/branches`)
         setIsLoading(true)
-        client.get('/branches')
+        client.get(`/repositories/${repoId}/${pathTextfield}/projects/branches`)
             .then(resp => {
                 setProjectBranchesData(resp.data)
                 setIsLoading(false)
@@ -119,7 +120,7 @@ const useExtractionContext = () => {
             .then(resp => {
                 const progLangs = resp.data as ProgLangType[]
                 setProgLangOptions(
-                    progLangs.map(r => { return {key: r.id, value: r.name} })
+                    progLangs.map(r => { return { key: r.id!, value: r.name } })
                 )
                 setIsLoading(false)
             })
@@ -141,7 +142,9 @@ const useExtractionContext = () => {
         }
     }, [ show2ndPage ])
 
-    return { handleStartExtraction, show2ndPage, setShow2ndPage, show, setShow, repositoryOptions, errorMessage, setErrorMessage, isLoading, pathTextfield, setPathTextfield, projectBranchesData, progLangOptions, selectedProgLangs, setSelectedProgLangs }
+    return { handleStartExtraction, show2ndPage, setShow2ndPage, show, setShow, repositoryOptions, errorMessage, setErrorMessage, isLoading, 
+             pathTextfield, setPathTextfield, projectBranchesData, progLangOptions, selectedProgLangs, setSelectedProgLangs,
+             setRepoId }
 }
 
 export type UseExtractionContextType = ReturnType<typeof useExtractionContext>
