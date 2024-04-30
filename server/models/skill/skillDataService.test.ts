@@ -25,7 +25,7 @@ beforeAll(async () => {
 
     progLangModel = await ProgLangModel.build({
         id: progLangId,
-        name: '-', sourceFiles: '-', patterns: '-', scopePattern: '-', removingTLDPackages: '-'
+        name: '-', sourceFiles: '-', patterns: '-', scopePattern: '-', removingTLDPackages: false
     })
 })
 

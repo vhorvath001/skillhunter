@@ -15,7 +15,7 @@ incoming body values:
 */
 const extract = async (req: Request, resp: Response) => {
     // checking the mandatory elements
-    logger.info(`A new request has arrived to start a repository extraction: ${req}`)
+    logger.info(`Request has arrived to start a repository extraction.`)
 
     if (!req?.body?.repoId || typeof req.body.repoId !== 'number')
         return resp.status(422).json({ 'message': 'Repository ID is not provided or invalid.' })  // Unprocessable Entity

@@ -1,4 +1,3 @@
-import { FindOptions, Identifier } from '@sequelize/core';
 import RepositoryModel from '../models/repository/repositoryModel'
 import createGitLabApi from './initGitLabApi'
 import axios, { AxiosInstance } from 'axios';

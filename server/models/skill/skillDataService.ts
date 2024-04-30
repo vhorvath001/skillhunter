@@ -19,7 +19,7 @@ const updateSkillTree = async (parent: SkillModel | undefined, skillNodes: TreeN
         if (!skillModel) {
             const progLang: ProgLangModel = ProgLangModel.build({
                 id: skillNode.progLangId!,
-                name: '-', sourceFiles: '-', patterns: '-', scopePattern: '-', removingTLDPackages: '-'
+                name: '-', sourceFiles: '-', patterns: '-', scopePattern: '-', removingTLDPackages: false
             })
             skillModel = await SkillModel.create({
                 name: skillNode.name!,

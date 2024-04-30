@@ -45,7 +45,7 @@ describe('testing populateSkillsFromContent', () => {
             sourceFiles: '*.py', 
             patterns: '{"patternList":["from ([a-zA-Z0-9\.]+) import .*"]}',
             scopePattern: 'FIRST_OCCURRENCE', 
-            removingTLDPackages: 'on'
+            removingTLDPackages: true
         })
         const javaProgLangModel = ProgLangModel.build({
             id: javaProgLangModelId,
@@ -55,7 +55,7 @@ describe('testing populateSkillsFromContent', () => {
             packageSeparator: '.',
             patterns: '{"patternList":["import ([a-zA-Z0-9\.]+);"]}', 
             scopePattern: 'FIRST_OCCURRENCE', 
-            removingTLDPackages: 'on'
+            removingTLDPackages: true
         })
 
         const mockedGetGitLabFolders: jest.Mock = getGitLabFolders as jest.Mock
@@ -107,7 +107,7 @@ describe('testing populateSkillsFromContent', () => {
             sourceFiles: '*.py', 
             patterns: '{"patternList":["from ([a-zA-Z0-9\.]+) import .*"]}',
             scopePattern: 'FIRST_OCCURRENCE', 
-            removingTLDPackages: 'on'
+            removingTLDPackages: true
         })
         const javaProgLangModel = ProgLangModel.build({
             id: javaProgLangModelId,
@@ -117,7 +117,7 @@ describe('testing populateSkillsFromContent', () => {
             packageSeparator: '.',
             patterns: '{"patternList":["import ([a-zA-Z0-9\.]+);"]}', 
             scopePattern: 'FIRST_OCCURRENCE', 
-            removingTLDPackages: 'on'
+            removingTLDPackages: true
         })
 
         const mockedGetGitLabFolders: jest.Mock = getGitLabFolders as jest.Mock
@@ -169,7 +169,7 @@ describe('testing populateSkillsFromContent', () => {
             sourceFiles: '*.py', 
             patterns: '{"patternList":["from ([a-zA-Z0-9\.]+) import .*"]}',
             scopePattern: 'FIRST_OCCURRENCE', 
-            removingTLDPackages: 'on'
+            removingTLDPackages: true
         })
         const javaProgLangModel = ProgLangModel.build({
             id: javaProgLangModelId,
@@ -179,7 +179,7 @@ describe('testing populateSkillsFromContent', () => {
             packageSeparator: '.',
             patterns: '{"patternList":["import ([a-zA-Z0-9\.]+);"]}', 
             scopePattern: 'EVERYWHERE', 
-            removingTLDPackages: 'on'
+            removingTLDPackages: true
         })
 
         const mockedGetGitLabFolders: jest.Mock = getGitLabFolders as jest.Mock
@@ -237,7 +237,7 @@ describe('testing populateSkillsFromContent', () => {
             sourceFiles: '*.py', 
             patterns: '{"patternList":["from ([a-zA-Z0-9\.]+) import .*"]}',
             scopePattern: 'FIRST_OCCURRENCE', 
-            removingTLDPackages: 'on'
+            removingTLDPackages: true
         })
         const javaProgLangModel = ProgLangModel.build({
             id: javaProgLangModelId,
@@ -247,7 +247,7 @@ describe('testing populateSkillsFromContent', () => {
             packageSeparator: '.',
             patterns: '{"patternList":["import ([a-zA-Z0-9\.]+);"]}', 
             scopePattern: 'FIRST_OCCURRENCE', 
-            removingTLDPackages: 'on'
+            removingTLDPackages: true
         })
 
         const mockedGetGitLabFolders: jest.Mock = getGitLabFolders as jest.Mock
@@ -301,7 +301,7 @@ describe('testing populateSkillsFromContent', () => {
             sourceFiles: '*.py', 
             patterns: '{"patternList":["from ([a-zA-Z0-9\.]+) import .*"]}',
             scopePattern: 'FIRST_OCCURRENCE', 
-            removingTLDPackages: 'on'
+            removingTLDPackages: true
         })
         const javaProgLangModel = ProgLangModel.build({
             id: javaProgLangModelId,
@@ -311,7 +311,7 @@ describe('testing populateSkillsFromContent', () => {
             packageSeparator: '.',
             patterns: '{"patternList":["import ([a-zA-Z0-9\.]+);"]}', 
             scopePattern: 'FIRST_OCCURRENCE', 
-            removingTLDPackages: 'on'
+            removingTLDPackages: true
         })
 
         const mockedGetGitLabFolders: jest.Mock = getGitLabFolders as jest.Mock

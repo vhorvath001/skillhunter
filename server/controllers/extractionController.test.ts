@@ -6,10 +6,6 @@ jest.mock('../services/extractionService', () => { return {
     start: jest.fn()
 }});
 
-// jest.mock('../services/extractionService')
-
-// const mockStart = start as jest.MockedFunction<typeof start>
-
 afterEach(() => {
     jest.clearAllMocks();
 });

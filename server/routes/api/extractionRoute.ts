@@ -1,9 +1,9 @@
 import express from 'express'
 import extract from '../../controllers/extractionController'
 
-const router = express.Router()
+const extractionRouter = express.Router()
 
-router.route('/')
+extractionRouter.route('/')
     .post(extract)
 
-export default router
+export default extractionRouter

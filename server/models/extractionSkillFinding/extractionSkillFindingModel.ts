@@ -12,7 +12,7 @@ export default class ExtractionSkillFindingModel extends Model<InferAttributes<E
     @AutoIncrement
     declare id: CreationOptional<number>
 
-    @Attribute(DataTypes.DECIMAL)
+    @Attribute(DataTypes.DOUBLE)
     @NotNull
     declare score: number
 

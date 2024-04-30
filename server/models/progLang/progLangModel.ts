@@ -34,9 +34,8 @@ export default class ProgLangModel extends Model<InferAttributes<ProgLangModel>,
     @Attribute(DataTypes.STRING)
     declare packageSeparator: CreationOptional<string>
 
-    @Attribute(DataTypes.STRING)
-    @NotNull
-    declare removingTLDPackages: string
+    @Attribute(DataTypes.BOOLEAN)
+    declare removingTLDPackages: boolean
 
     // @BelongsToMany(() => ExtractionModel, { through: 'ExtractionProgLangModel' })
     // declare extractions: ExtractionModel[]

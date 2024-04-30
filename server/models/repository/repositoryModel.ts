@@ -14,13 +14,14 @@ export default class RepositoryModel extends Model<InferAttributes<RepositoryMod
     declare name: string
 
     @Attribute(DataTypes.STRING)
-    declare desc: string
+    declare desc: CreationOptional<string>
 
     @Attribute(DataTypes.STRING)
     @NotNull
     declare host: string
 
     @Attribute(DataTypes.STRING)
+    @NotNull
     declare token: string
 
 }
