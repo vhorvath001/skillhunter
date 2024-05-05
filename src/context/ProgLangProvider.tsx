@@ -39,7 +39,7 @@ export const handleDelete = async (dispatch: React.Dispatch<ProgLangAction>, han
             method: 'DELETE',
             url: client.defaults.baseURL + `/prog-langs/${id}`
         })
-           dispatch({ type: PROG_LANG_ACTION_TYPES.DELETE, id: id })
+        dispatch({ type: PROG_LANG_ACTION_TYPES.DELETE, id: id })
         handleClose();
     } catch(err) {
         handleError(err, setErrorMessage)

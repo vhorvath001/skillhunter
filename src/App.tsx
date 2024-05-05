@@ -9,6 +9,8 @@ import { ProgLangProvider } from './context/ProgLangProvider';
 import { RepositoryProvider } from './context/RepositoryProvider';
 import Extraction from './components/extraction/Extraction';
 import { ExtractionProvider } from './context/ExtractionProvider';
+import { SkillTreeProvider } from './context/SkillTreeProvider';
+import SkillTree from './components/skillTree/SkillTree';
 
 function App() {
     return (
@@ -21,6 +23,9 @@ function App() {
                     </Route>
                     <Route path='repositories'>
                         <Route index element={<RepositoryProvider><RepositoryList /></RepositoryProvider>} />
+                    </Route>
+                    <Route path='skill-tree'>
+                        <Route index element={<SkillTreeProvider><SkillTree /></SkillTreeProvider>} />
                     </Route>
                 </Route>
                 <Route path='extraction'>

@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 
 export type ChildrenType = { children?: ReactElement | ReactElement[] }
 
-const handleError = (err: any, setErrorMessage: (errorMessage: string) => void): void => {
+export const handleError = (err: any, setErrorMessage: (errorMessage: string) => void): void => {
     if (err instanceof Error)
         setErrorMessage(err.message)
     if (typeof err === 'string')
@@ -10,4 +10,7 @@ const handleError = (err: any, setErrorMessage: (errorMessage: string) => void):
     console.error(err)
 }
 
-export { handleError }
+export type OptionType = {
+    key: string,
+    value: string
+}

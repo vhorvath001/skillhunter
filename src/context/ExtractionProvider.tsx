@@ -1,16 +1,11 @@
 import { FormEvent, ReactElement, createContext, useEffect, useState } from 'react'
-import { ChildrenType, handleError } from './ContextFunctions'
+import { ChildrenType, OptionType, handleError } from './ContextFunctions'
 import { RepositoryType } from './RepositoryProvider'
 import { client } from '../api/client'
 import { ProgLangType } from './ProgLangProvider'
 
 export type ExtractionAction = {
     type: string
-}
-
-export type OptionType = {
-    key: string,
-    value: string
 }
 
 export type ProjectsBranchesType = {
@@ -44,7 +39,6 @@ export const handleStartExtraction = async (e: FormEvent<HTMLFormElement>, handl
             branches: branches
         })
             .then(resp => {
-                console.log(resp)
                 handleClose()
                 setShow2ndPage(false)        
             })

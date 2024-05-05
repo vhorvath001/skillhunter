@@ -1,6 +1,6 @@
 import { ChangeEvent, useState } from 'react'
 import { Form } from 'react-bootstrap'
-import { OptionType } from '../../context/ExtractionProvider';
+import { OptionType } from '../../context/ContextFunctions'
 
 type PropsType = {
     options: OptionType[]
