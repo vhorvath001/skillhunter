@@ -18,7 +18,10 @@ export class ExtractionModel extends Model<InferAttributes<ExtractionModel>, Inf
     @Attribute(DataTypes.STRING)
     declare path: CreationOptional<string>
 
-    @BelongsTo(() => RepositoryModel, 'repository_id')
+    @Attribute(DataTypes.STRING)
+    declare status: string
+
+    @BelongsTo(() => RepositoryModel, 'repositoryref')
     declare repositoryRef: RepositoryModel
 
     @BelongsToMany(() => ProgLangModel, { through: 'ExtractionProgLangModel' })
@@ -28,8 +31,8 @@ export class ExtractionModel extends Model<InferAttributes<ExtractionModel>, Inf
 @Table({ tableName: 'extraction_proglang' })
 export class ExtractionProgLangModel extends Model<InferAttributes<ExtractionProgLangModel>> {
 
-    declare extractionId: number
-    declare progLangId: number
+    declare extractionRef: number
+    declare progLangRef: number
 
 }
 

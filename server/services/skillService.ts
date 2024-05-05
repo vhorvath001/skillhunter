@@ -19,7 +19,7 @@ const findProgLangByPath = async (progLangIds: number[], filePath: string): Prom
                 progLangModel = progLang
         }
     }
-    logger.debug(`The found prog lanf is [${progLangModel}].`)
+    logger.debug(`The found prog lang is [${progLangModel}].`)
     return progLangModel
 }
 

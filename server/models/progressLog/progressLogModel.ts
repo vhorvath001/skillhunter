@@ -18,7 +18,7 @@ export default class ProgressLogModel extends Model<InferAttributes<ProgressLogM
     @NotNull
     declare logText: string
 
-    @BelongsTo(() => ExtractionModel, 'extraction_id')
+    @BelongsTo(() => ExtractionModel, 'extractionref')
     declare extractionRef: ExtractionModel
 
 }

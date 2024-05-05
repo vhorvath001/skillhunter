@@ -1,5 +1,6 @@
 export default class TreeNode {
 
+    private _id?: string
     private _name: string | null
     private _parent: TreeNode | null
     private _score: number | null
@@ -36,8 +37,16 @@ export default class TreeNode {
         return this._children;
     }
 
+    set children(_children: TreeNode[]) {
+        this._children = _children;
+    }
+
     get name(): string | null {
         return this._name
+    }
+
+    set name(_name: string) {
+        this._name = _name
     }
 
     get progLangId(): number | null {
@@ -46,5 +55,13 @@ export default class TreeNode {
 
     get score(): number | null {
         return this._score
+    }
+
+    get id(): string | undefined {
+        return this._id
+    }
+
+    set id(_id: string) {
+        this._id = _id
     }
 }

@@ -14,10 +14,14 @@ export class SkillModel extends Model<InferAttributes<SkillModel>, InferCreation
     @NotNull
     declare name: string
 
-    @BelongsTo(() => SkillModel, 'parent_id')
-    declare parentRef?: SkillModel
+    @Attribute(DataTypes.BOOLEAN)
+    @NotNull
+    declare enabled: boolean
+
+    @BelongsTo(() => SkillModel, 'parentref')
+    declare parentRef?: CreationOptional<SkillModel | null>
     
-    @BelongsTo(() => ProgLangModel, 'proglang_id')
+    @BelongsTo(() => ProgLangModel, 'progLangref')
     declare progLangRef: ProgLangModel
 
 }

@@ -5,6 +5,7 @@ import logger from './init/initLogger'
 import progLangRouter from './routes/api/progLangRoute'
 import cors from 'cors'
 import repositoryRouter from './routes/api/repositoryRoute'
+import skillRouter from './routes/api/skillRoute'
 
 const app: Express = express()
 const PORT: string = process.env.PORT || '3500'
@@ -18,6 +19,7 @@ app.use(express.json())
 app.use('/extraction', extractionRouter)
 app.use('/prog-langs', progLangRouter)
 app.use('/repositories', repositoryRouter)
+app.use('/skills', skillRouter)
 
 app.listen(PORT, async () => {
     await initDB()

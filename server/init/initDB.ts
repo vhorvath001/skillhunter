@@ -11,7 +11,7 @@ import sequelize from './initSequelize'
 const initDB = async (): Promise<void> => {
     logger.info('Initialising the database...')
     sequelize.addModels([ ExtractionModel, ExtractionProgLangModel, ExtractionSkillFindingModel, ProgLangModel, ProgressLogModel, ProjectModel, RepositoryModel, SkillModel ])
-    await sequelize.sync({ alter: true })
+    // await sequelize.sync({ alter: true })
     logger.info('Synchronization was successful!')
 }
 

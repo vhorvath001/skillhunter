@@ -26,12 +26,13 @@ const extract = async (req: Request, resp: Response) => {
     if (!req?.body?.branches) 
         return resp.status(422).json({ 'message': 'The project - branch assignments are not provided.' });
 
-    start(Number(req.body.repoId), 
+    const errorMessage: string | null = await start(Number(req.body.repoId), 
           req.body.branches as Object, 
           req.body.path as string, 
           req.body.progLangs as number[])
 
-    resp.sendStatus(201);
+    if (errorMessage) resp.status(500).send({'message': `Error occurred when trying to start an extraction! - ${errorMessage}`})
+    else resp.sendStatus(201);
 }
 
 export default extract

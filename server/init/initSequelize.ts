@@ -5,7 +5,8 @@ const sequelize: Sequelize = new Sequelize({
     dialect: "sqlite",
     storage: 'skillhunter-db.sqlite',
     define: {
-        freezeTableName: true
+        freezeTableName: true,
+        timestamps: false
     },
     logQueryParameters: true
 })

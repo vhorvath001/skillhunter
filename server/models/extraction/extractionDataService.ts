@@ -11,32 +11,30 @@ const saveExtraction = async (repoId: number , branches: Object, path: string, p
     const extraction = await ExtractionModel.create({
         repositoryRef: repository,
         branches: JSON.stringify(branches),
-        path: path
+        path: path,
+        status: 'IN PROCESS'
     }, {
         include: RepositoryModel
     });
 
     for (const progLang of progLangs) {
         await ExtractionProgLangModel.create({
-            extractionId: extraction.id,
-            progLangId: progLang
+            extractionRef: extraction.id,
+            progLangRef: progLang
         });
     }
     return extraction.id;
 }
 
-// function getMethods(obj) {
-//     var result = [];
-//     for (var id in obj) {
-//       try {
-//         if (typeof(obj[id]) == "function") {
-//           result.push(id + ": " + obj[id].toString());
-//         }
-//       } catch (err) {
-//         result.push(id + ": inaccessible");
-//       }
-//     }
-//     return result;
-//   }
+const updateStatus = async(extractionId: number, status: string) => {
+    await ExtractionModel.update(
+        { status: status },
+        {
+            where: {
+                id: extractionId
+            }
+        }
+    )
+}
 
-export default saveExtraction
+export { saveExtraction, updateStatus }

@@ -2,6 +2,8 @@ import { Request, Response } from 'express'
 import logger from '../init/initLogger'
 import ProgLangModel from '../models/progLang/progLangModel'
 import { ProgLangType } from '../schema/appTypes'
+import { getAllProgLangsOrderByName } from '../models/progLang/progLangDataService'
+import { getErrorMessage, logError } from './commonFunctions'
 
 const getProgLangById = async (req: Request, resp: Response) => {
     logger.info(`Request has arrived to get a programming language - id: ${req.params.id}`)
@@ -16,8 +18,8 @@ const getProgLangById = async (req: Request, resp: Response) => {
             resp.status(200).json(toProgLangType(progLangModel))
         }
     } catch(err) {
-        logger.error(`Error occurred when executing 'getProgLangById': ${err}`)
-        resp.status(500).send({'message': `Error occurred when trying the get a programming language! - ${getErrorMessage(err)}`})
+        logError(err, `Error occurred when executing 'getProgLangById'.`)
+        resp.status(500).send({'message': `Error occurred when trying to get a programming language! - ${getErrorMessage(err)}`})
     }
 }
 
@@ -25,16 +27,14 @@ const getAllProgLangs = async (req: Request, resp: Response) => {
     logger.info(`Request has arrived to get all the programming languages.`)
 
     try {
-        const progLangModels: ProgLangModel[] = await ProgLangModel.findAll({
-            order: ['name']
-        })
+        const progLangModels: ProgLangModel[] = await getAllProgLangsOrderByName()
 
         resp.status(200).json(
             progLangModels.map(m => toProgLangType(m))
         )
     } catch(err) {
-        logger.error(`Error occurred when executing 'getAllProgLangs': ${err}`)
-        resp.status(500).send({'message': `Error occurred when trying the get all the programming languages! - ${getErrorMessage(err)}`})
+        logError(err, `Error occurred when executing 'getAllProgLangs'.`)
+        resp.status(500).send({'message': `Error occurred when trying to get all the programming languages! - ${getErrorMessage(err)}`})
     }
 }
 
@@ -49,8 +49,8 @@ const createNewProgLang = async (req: Request, resp: Response) => {
 
         resp.status(201).json(toProgLangType(newProgLangModel))
     } catch(err) {
-        logger.error(`Error occurred when executing 'createNewProgLang': ${err}`)
-        resp.status(500).send({'message': `Error occurred when trying the save a new programming languages! - ${getErrorMessage(err)}`})
+        logError(err, `Error occurred when executing 'createNewProgLang'.`)
+        resp.status(500).send({'message': `Error occurred when trying to save a new programming languages! - ${getErrorMessage(err)}`})
     }
 }
 
@@ -72,8 +72,8 @@ const editExistingProgLang = async (req: Request, resp: Response) => {
             resp.status(201).json(toProgLangType(toUpdateProgLangModel))
         }
     } catch(err) {
-        logger.error(`Error occurred when executing 'editExistingProgLang': ${err}`)
-        resp.status(500).send({'message': `Error occurred when trying the edit an existing programming languages! - ${getErrorMessage(err)}`})
+        logError(err, `Error occurred when executing 'editExistingProgLang'.`)
+        resp.status(500).send({'message': `Error occurred when trying to edit an existing programming languages! - ${getErrorMessage(err)}`})
     }
 }
 
@@ -91,8 +91,8 @@ const deleteProgLang = async (req: Request, resp: Response) => {
             resp.sendStatus(200)
         }
     } catch(err) {
-        logger.error(`Error occurred when executing 'deleteProgLang': ${err}`)
-        resp.status(500).send({'message': `Error occurred when trying the get a programming language! - ${getErrorMessage(err)}`})
+        logError(err, `Error occurred when executing 'deleteProgLang'.`)
+        resp.status(500).send({'message': `Error occurred when trying to get a programming language! - ${getErrorMessage(err)}`})
     }
 }
 
@@ -126,8 +126,4 @@ const toProgLangModel = (progLang: ProgLangType): ProgLangModel => {
     return newProgLangModel
 }
 
-const getErrorMessage = (err: unknown) => {
-    if (err instanceof Error) return err.message
-    else return String(err)
-}
 export { getProgLangById, getAllProgLangs, createNewProgLang, editExistingProgLang, deleteProgLang }

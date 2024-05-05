@@ -14,7 +14,7 @@ export class ProjectModel extends Model<InferAttributes<ProjectModel>, InferCrea
     @NotNull
     declare name: string
 
-    @BelongsTo(() => ExtractionModel, 'extraction_id')
+    @BelongsTo(() => ExtractionModel, 'extractionref')
     declare extractionRef: ExtractionModel
 
 }

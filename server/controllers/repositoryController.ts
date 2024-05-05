@@ -7,6 +7,7 @@ import config from '../config/skillHunter.config'
 import { AxiosInstance } from 'axios'
 import createGitlabAPI from '../init/initGitLabApi'
 import { getGitLabBranches, getGitLabProjects, GitLabProjectType } from '../services/versionControlService'
+import { getErrorMessage, logError } from './commonFunctions'
 
 const getRepositoryById = async (req: Request, resp: Response) => {
     logger.info(`Request has arrived to get a repository - id: ${req.params.id}`)
@@ -21,8 +22,8 @@ const getRepositoryById = async (req: Request, resp: Response) => {
             resp.status(200).json(toRepositoryType(repositoryModel))
         }
     } catch(err) {
-        logger.error(`Error occurred when executing 'getRepositoryById': ${err}`)
-        resp.status(500).send({'message': `Error occurred when trying the get a repository! - ${getErrorMessage(err)}`})
+        logError(err, `Error occurred when executing 'getRepositoryById'.`)
+        resp.status(500).send({'message': `Error occurred when trying to get a repository! - ${getErrorMessage(err)}`})
     }
 }
 
@@ -38,8 +39,8 @@ const getAllRepositories = async (req: Request, resp: Response) => {
             repositoryModels.map(m => toRepositoryType(m))
         )
     } catch(err) {
-        logger.error(`Error occurred when executing 'getAllRepositories': ${err}`)
-        resp.status(500).send({'message': `Error occurred when trying the get all the repositories! - ${getErrorMessage(err)}`})
+        logError(err, `Error occurred when executing 'getAllRepositories'.`)
+        resp.status(500).send({'message': `Error occurred when trying to get all the repositories! - ${getErrorMessage(err)}`})
     }
 }
 
@@ -54,8 +55,8 @@ const createNewRepository = async (req: Request, resp: Response) => {
 
         resp.status(201).json(toRepositoryType(newRepositoryModel))
     } catch(err) {
-        logger.error(`Error occurred when executing 'createNewRepository': ${err}`)
-        resp.status(500).send({'message': `Error occurred when trying the save a new repository! - ${getErrorMessage(err)}`})
+        logError(err, `Error occurred when executing 'createNewRepository'.`)
+        resp.status(500).send({'message': `Error occurred when trying to save a new repository! - ${getErrorMessage(err)}`})
     }
 }
 
@@ -79,8 +80,8 @@ const editExistingRepository = async (req: Request, resp: Response) => {
             resp.status(201).json(toRepositoryType(toUpdateRepositoryModel))
         }
     } catch(err) {
-        logger.error(`Error occurred when executing 'editExistingRepository': ${err}`)
-        resp.status(500).send({'message': `Error occurred when trying the edit an existing repository! - ${getErrorMessage(err)}`})
+        logError(err, `Error occurred when executing 'editExistingRepository'.`)
+        resp.status(500).send({'message': `Error occurred when trying to edit an existing repository! - ${getErrorMessage(err)}`})
     }
 }
 
@@ -98,8 +99,8 @@ const deleteRepository = async (req: Request, resp: Response) => {
             resp.sendStatus(200)
         }
     } catch(err) {
-        logger.error(`Error occurred when executing 'deleteRepository': ${err}`)
-        resp.status(500).send({'message': `Error occurred when trying the get a repository! - ${getErrorMessage(err)}`})
+        logError(err, `Error occurred when executing 'deleteRepository'.`)
+        resp.status(500).send({'message': `Error occurred when trying to delete a repository! - ${getErrorMessage(err)}`})
     }
 }
 
@@ -128,8 +129,8 @@ const getBranchesPerProjects = async (req: Request, resp: Response) => {
 
         resp.status(200).json(projectsBranches)
     } catch(err) {
-        logger.error(`Error occurred when executing 'getBranchesPerProjects': ${err}`)
-        resp.status(500).send({'message': `Error occurred when trying the get branches of projects! - ${getErrorMessage(err)}`})
+        logError(err, `Error occurred when executing 'getBranchesPerProjects'.`)
+        resp.status(500).send({'message': `Error occurred when trying to get branches of projects! - ${getErrorMessage(err)}`})
     }
 }
 
@@ -157,8 +158,4 @@ const toRepositoryModel = (repository: RepositoryType, prevToken: string): Repos
     return repositoryModel
 }
 
-const getErrorMessage = (err: unknown) => {
-    if (err instanceof Error) return err.message
-    else return String(err)
-}
 export { getRepositoryById, getAllRepositories, createNewRepository, editExistingRepository, deleteRepository, getBranchesPerProjects }

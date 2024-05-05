@@ -16,13 +16,13 @@ export default class ExtractionSkillFindingModel extends Model<InferAttributes<E
     @NotNull
     declare score: number
 
-    @BelongsTo(() => ExtractionModel, 'extraction_id')
+    @BelongsTo(() => ExtractionModel, 'extractionref')
     declare extractionRef: ExtractionModel
 
-    @BelongsTo(() => SkillModel, 'skill_id')
+    @BelongsTo(() => SkillModel, 'skillref')
     declare skillRef: SkillModel
 
-    @BelongsTo(() => ProjectModel, 'project_id')
+    @BelongsTo(() => ProjectModel, 'projectref')
     declare projectRef: ProjectModel
 
 }

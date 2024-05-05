@@ -23,3 +23,10 @@ export type ProjectsBranchesType = {
     name: string,
     branches: string[]
 }
+
+export type SkillTreeNodeType = {
+    id: number,
+    name: string,
+    enabled: boolean,
+    children: SkillTreeNodeType[]
+}

@@ -1,10 +1,13 @@
+import { Op } from '@sequelize/core'
 import logger from '../../init/initLogger'
 import TreeNode from '../../schema/treeNode'
 import { saveExtractionSkillFindingModel } from '../extractionSkillFinding/extractionSkillFindingDataService'
 import ProgLangModel from '../progLang/progLangModel'
 import { SkillModel } from './skillModel'
+import { Sequelize } from 'sequelize'
+import sequelize from '../../init/initSequelize'
 
-const updateSkillTree = async (parent: SkillModel | undefined, skillNodes: TreeNode[], projectId: number, extractionId: number): Promise<void> => {
+const updateSkillTree = async (parent: SkillModel | undefined, skillNodes: TreeNode[], projectId: number, extractionId: number, skillEnabled: boolean): Promise<void> => {
     logger.debug(`Updating the skill tree [parent = ${parent?.id} : ${parent?.name}, projectId = ${projectId}, extractionId = ${extractionId}, skillNodes = ${skillNodes.map(s => s.name).toString()}] to DB...`)
 
     const skillModels: SkillModel[] = await SkillModel.findAll({
@@ -23,6 +26,7 @@ const updateSkillTree = async (parent: SkillModel | undefined, skillNodes: TreeN
             })
             skillModel = await SkillModel.create({
                 name: skillNode.name!,
+                enabled: skillEnabled,
                 parentRef: parent,
                 progLangRef: progLang
             }, {
@@ -33,8 +37,38 @@ const updateSkillTree = async (parent: SkillModel | undefined, skillNodes: TreeN
         saveExtractionSkillFindingModel(skillNode.score ?? 0, extractionId, skillModel.id, projectId)
 
         if (skillNode.children && skillNode.children.length > 0)
-            await updateSkillTree(skillModel, skillNode.children ?? [], projectId, extractionId)
+            await updateSkillTree(skillModel, skillNode.children ?? [], projectId, extractionId, skillEnabled)
     }
 }
 
-export default updateSkillTree
+const getAllSkillsByProgLangAndParent = async (progLangId: number, parentId: number | null): Promise<SkillModel[]> => {
+    return await SkillModel.findAll({
+        where: {
+            progLangRef: progLangId,
+            parentRef:  parentId
+        }
+    })
+}
+
+const changeSkillsStatus = async (ids: number[], status: string): Promise<void> => {
+    await SkillModel.update(
+        { enabled: status === 'ENABLE' ? true : false },
+        {
+            where: {
+                id: ids
+            }
+        }
+    )
+}
+
+const deleteSkills =  async (ids: number[]): Promise<void> => {
+    await SkillModel.destroy(
+        {
+            where: {
+                id: ids
+            }
+        }
+    )
+}
+
+export { updateSkillTree, getAllSkillsByProgLangAndParent, changeSkillsStatus, deleteSkills }

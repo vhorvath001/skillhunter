@@ -1,6 +1,6 @@
 import Sequelize from '@sequelize/core';
 import RepositoryModel from '../repository/repositoryModel';
-import saveExtraction from './extractionDataService'
+import { saveExtraction } from './extractionDataService'
 import { ExtractionModel, ExtractionProgLangModel } from './extractionModel'
 
 test('checking if all the extraction data is saved correctly', async () => { 

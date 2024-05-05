@@ -1,6 +1,6 @@
 import Sequelize from '@sequelize/core'
 import ProgLangModel from '../progLang/progLangModel'
-import updateSkillTree from './skillDataService'
+import { updateSkillTree } from './skillDataService'
 import { SkillModel } from './skillModel'
 import { ExtractionModel } from '../extraction/extractionModel'
 import RepositoryModel from '../repository/repositoryModel'
@@ -23,7 +23,7 @@ beforeAll(async () => {
     sequelize.addModels([ ProgLangModel, ExtractionModel , RepositoryModel, SkillModel ])
     await sequelize.sync()
 
-    progLangModel = await ProgLangModel.build({
+    progLangModel = ProgLangModel.build({
         id: progLangId,
         name: '-', sourceFiles: '-', patterns: '-', scopePattern: '-', removingTLDPackages: false
     })
@@ -39,7 +39,7 @@ test('testing to update the skill tree - no skill in the database yet', async ()
     const skillTree: TreeNode[] = buildSkillTree(progLangId)
 
     const springframeworkModel: SkillModel = SkillModel.build({
-        id:35, name: 'springframework', progLangRef: progLangModel
+        id:35, name: 'springframework', progLangRef: progLangModel, enabled: true
     })
 
     const spySkillModelFindAll = jest
@@ -50,23 +50,24 @@ test('testing to update the skill tree - no skill in the database yet', async ()
     const spySkillModelCreate = jest
         .spyOn(SkillModel, 'create')
         .mockReturnValueOnce(SkillModel.build({
-            id:34, name: 'projectlombok', progLangRef: progLangModel
+            id:34, name: 'projectlombok', progLangRef: progLangModel, enabled: true
         })) // returning the saved 'projectlombok' skill
         .mockReturnValueOnce(springframeworkModel) // returning the saved 'springframework' skill
         .mockReturnValueOnce(SkillModel.build({
-            id:36, name: 'boot', progLangRef: progLangModel
+            id:36, name: 'boot', progLangRef: progLangModel, enabled: true
         })) // returning the saved 'boot' skill
         .mockReturnValueOnce(SkillModel.build({
-            id:37, name: 'security', progLangRef: progLangModel
+            id:37, name: 'security', progLangRef: progLangModel, enabled: true
         })) // returning the saved 'security' skill
 
-    await updateSkillTree(undefined, skillTree, projectId, extractionId,)
+    await updateSkillTree(undefined, skillTree, projectId, extractionId, true)
 
     expect(spySkillModelCreate).toHaveBeenCalledTimes(4)
     expect(saveExtractionSkillFindingModel).toHaveBeenCalledTimes(4)
     // expectation at 'projectlombok'
     expect(spySkillModelCreate).toHaveBeenNthCalledWith(1, {
         name: 'projectlombok',
+        enabled: true,
         parentRef: undefined,
         progLangRef: progLangModel
     }, expect.anything())
@@ -74,6 +75,7 @@ test('testing to update the skill tree - no skill in the database yet', async ()
     // expectation at 'springframework'
     expect(spySkillModelCreate).toHaveBeenNthCalledWith(2, {
         name: 'springframework',
+        enabled: true,
         parentRef: undefined,
         progLangRef: progLangModel
     }, expect.anything())
@@ -81,6 +83,7 @@ test('testing to update the skill tree - no skill in the database yet', async ()
     // expectation at 'boot'
     expect(spySkillModelCreate).toHaveBeenNthCalledWith(3, {
         name: 'boot',
+        enabled: true,
         parentRef: springframeworkModel,
         progLangRef: progLangModel
     }, expect.anything())
@@ -88,6 +91,7 @@ test('testing to update the skill tree - no skill in the database yet', async ()
     // expectation at 'security'
     expect(spySkillModelCreate).toHaveBeenNthCalledWith(4, {
         name: 'security',
+        enabled: true,
         parentRef: springframeworkModel,
         progLangRef: progLangModel
     }, expect.anything())
@@ -98,7 +102,7 @@ test('testing to update the skill tree - there is one matching skill in the data
     const skillTree: TreeNode[] = buildSkillTree(progLangId)
 
     const springframeworkModel: SkillModel = await SkillModel.create({
-        id: 35, name: 'springframework', progLangRef: progLangModel
+        id: 35, name: 'springframework', progLangRef: progLangModel, enabled: true
     }, {
         include: ProgLangModel
     })
@@ -111,22 +115,23 @@ test('testing to update the skill tree - there is one matching skill in the data
     const spySkillModelCreate = jest
         .spyOn(SkillModel, 'create')
         .mockReturnValueOnce(SkillModel.build({
-            id:34, name: 'projectlombok', progLangRef: progLangModel
+            id:34, name: 'projectlombok', progLangRef: progLangModel, enabled: true
         })) // returning the saved 'projectlombok' skill
         .mockReturnValueOnce(SkillModel.build({
-            id:36, name: 'boot', progLangRef: progLangModel
+            id:36, name: 'boot', progLangRef: progLangModel, enabled: true
         })) // returning the saved 'boot' skill
         .mockReturnValueOnce(SkillModel.build({
-            id:37, name: 'security', progLangRef: progLangModel
+            id:37, name: 'security', progLangRef: progLangModel, enabled: true
         })) // returning the saved 'security' skill
 
-    await updateSkillTree(undefined, skillTree, projectId, extractionId)
+    await updateSkillTree(undefined, skillTree, projectId, extractionId, true)
 
     expect(spySkillModelCreate).toHaveBeenCalledTimes(3)
     expect(saveExtractionSkillFindingModel).toHaveBeenCalledTimes(4)
     // expectation at 'projectlombok'
     expect(spySkillModelCreate).toHaveBeenNthCalledWith(1, {
         name: 'projectlombok',
+        enabled: true,
         parentRef: undefined,
         progLangRef: progLangModel
     }, expect.anything())
@@ -136,6 +141,7 @@ test('testing to update the skill tree - there is one matching skill in the data
     // expectation at 'boot'
     expect(spySkillModelCreate).toHaveBeenNthCalledWith(2, {
         name: 'boot',
+        enabled: true,
         parentRef: springframeworkModel,
         progLangRef: progLangModel
     }, expect.anything())
@@ -143,6 +149,7 @@ test('testing to update the skill tree - there is one matching skill in the data
     // expectation at 'security'
     expect(spySkillModelCreate).toHaveBeenNthCalledWith(3, {
         name: 'security',
+        enabled: true, 
         parentRef: springframeworkModel,
         progLangRef: progLangModel
     }, expect.anything())

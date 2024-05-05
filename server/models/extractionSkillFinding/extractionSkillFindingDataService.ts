@@ -15,7 +15,7 @@ const saveExtractionSkillFindingModel = async (score: number, extractionId: numb
 
     const skill: SkillModel = SkillModel.build({
         id: skillId,
-        name: '-', progLangRef: ProgLangModel.build()
+        name: '-', progLangRef: ProgLangModel.build(), enabled: true
     })
 
     const project: ProjectModel = ProjectModel.build({
