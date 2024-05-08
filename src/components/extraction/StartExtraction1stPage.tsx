@@ -2,8 +2,8 @@ import { ChangeEvent, ReactElement } from 'react';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form'
 import Row from 'react-bootstrap/Row'
-import MultiSelectDropdown from './MultiSelectDropdown';
-import useExtraction from '../../hooks/useExtraction';
+import MultiSelectDropdown from './MultiSelectDropdown'
+import useExtraction from '../../hooks/useExtraction'
 
 const StartExtraction1stPage = (): ReactElement => {
     const { repositoryOptions, setPathTextfield, progLangOptions, setSelectedProgLangs, pathTextfield, selectedProgLangs, setRepoId } = useExtraction()
