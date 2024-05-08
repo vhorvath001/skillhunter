@@ -1,4 +1,4 @@
-import extract from './extractionController'
+import { extract } from './extractionController'
 import { start } from '../services/extractionService'
 
 // https://stackoverflow.com/a/69579630/1269572

@@ -120,7 +120,7 @@ const getBranchesPerProjects = async (req: Request, resp: Response) => {
         for(const p of projects) {
             const branches: string[] = await getGitLabBranches(gitLabApi, p.id)
             projectsBranches.push({
-                id: p.id.toString(),
+                id: p.id,
                 name: p.name,
                 branches: branches
             } as ProjectsBranchesType)
@@ -136,7 +136,7 @@ const getBranchesPerProjects = async (req: Request, resp: Response) => {
 
 const toRepositoryType = (repositoryModel: RepositoryModel): RepositoryType => {
     return {
-        id: repositoryModel.id.toString(),
+        id: repositoryModel.id,
         name: repositoryModel.name,
         desc: repositoryModel.desc,
         url: repositoryModel.host,
@@ -158,4 +158,4 @@ const toRepositoryModel = (repository: RepositoryType, prevToken: string): Repos
     return repositoryModel
 }
 
-export { getRepositoryById, getAllRepositories, createNewRepository, editExistingRepository, deleteRepository, getBranchesPerProjects }
+export { getRepositoryById, getAllRepositories, createNewRepository, editExistingRepository, deleteRepository, getBranchesPerProjects, toRepositoryType }

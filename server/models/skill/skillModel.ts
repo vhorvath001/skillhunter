@@ -1,27 +1,34 @@
-import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model } from '@sequelize/core'
 import ProgLangModel from '../progLang/progLangModel'
-import { Table, Attribute, PrimaryKey, AutoIncrement, NotNull, BelongsTo } from '@sequelize/core/decorators-legacy'
+import { Table, Model, Column, DataType,  PrimaryKey, ForeignKey, AutoIncrement, AllowNull, BelongsTo } from 'sequelize-typescript'
 
 @Table({ tableName: 'skill' })
-export class SkillModel extends Model<InferAttributes<SkillModel>, InferCreationAttributes<SkillModel>> {
+export class SkillModel extends Model {
 
-    @Attribute(DataTypes.INTEGER)
-    @PrimaryKey
     @AutoIncrement
-    declare id: CreationOptional<number>
+    @PrimaryKey
+    @Column(DataType.INTEGER)
+    declare id: number
 
-    @Attribute(DataTypes.STRING)
-    @NotNull
+    @AllowNull(false)
+    @Column(DataType.STRING)
     declare name: string
 
-    @Attribute(DataTypes.BOOLEAN)
-    @NotNull
+    @AllowNull(false)
+    @Column(DataType.BOOLEAN)
     declare enabled: boolean
 
-    @BelongsTo(() => SkillModel, 'parentref')
-    declare parentRef?: CreationOptional<SkillModel | null>
+    @ForeignKey(() => SkillModel)
+    @Column({ field: 'parent_id' })
+    declare parentId: number
+
+    @ForeignKey(() => ProgLangModel)
+    @Column({ field: 'proglang_id' })
+    declare progLangId: number
+
+    @BelongsTo(() => SkillModel, 'parent_id')
+    declare parentRef?: SkillModel | null
     
-    @BelongsTo(() => ProgLangModel, 'progLangref')
+    @BelongsTo(() => ProgLangModel, 'proglang_id')
     declare progLangRef: ProgLangModel
 
 }

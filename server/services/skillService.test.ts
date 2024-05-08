@@ -2,7 +2,7 @@ import axios from 'axios'
 import { calculateCumulatedScore, populateSkillsFromContent } from './skillService'
 import { GitLabDiff, getGitLabFolders } from './versionControlService'
 import ProgLangModel from '../models/progLang/progLangModel'
-import Sequelize from '@sequelize/core'
+import { Sequelize } from 'sequelize-typescript'
 import TreeNode from '../schema/treeNode'
 
 jest.mock('axios')

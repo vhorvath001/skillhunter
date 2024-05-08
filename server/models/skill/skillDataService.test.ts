@@ -1,4 +1,4 @@
-import Sequelize from '@sequelize/core'
+import { Sequelize } from 'sequelize-typescript'
 import ProgLangModel from '../progLang/progLangModel'
 import { updateSkillTree } from './skillDataService'
 import { SkillModel } from './skillModel'

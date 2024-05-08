@@ -1,4 +1,4 @@
-import { Sequelize } from '@sequelize/core'
+import { Sequelize } from 'sequelize-typescript'
 
 // const sequelize: Sequelize = new Sequelize('sqlite::memory:', {
 const sequelize: Sequelize = new Sequelize({    

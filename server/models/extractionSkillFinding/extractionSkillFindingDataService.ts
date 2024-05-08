@@ -10,7 +10,7 @@ const saveExtractionSkillFindingModel = async (score: number, extractionId: numb
     logger.debug(`Saving an extraction skill finding [score = ${score}, extractionId = ${extractionId}, skillId = ${skillId}, projectId = ${projectId}] to DB...`)
     const extraction: ExtractionModel = ExtractionModel.build({
         id: extractionId,
-        branches: '-', repositoryRef: RepositoryModel.build()
+        branches: '-', repositoryRef: RepositoryModel.build(), status: '-'
     })
 
     const skill: SkillModel = SkillModel.build({

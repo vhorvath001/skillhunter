@@ -1,28 +1,39 @@
-import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model } from '@sequelize/core'
 import { ExtractionModel } from '../extraction/extractionModel'
 import { SkillModel } from '../skill/skillModel'
 import { ProjectModel } from '../project/projectModel'
-import { Table, Attribute, PrimaryKey, AutoIncrement, NotNull, BelongsTo } from '@sequelize/core/decorators-legacy'
+import { Table, Model, Column, DataType,  PrimaryKey, ForeignKey, AutoIncrement, AllowNull, BelongsTo} from 'sequelize-typescript'
 
 @Table({ tableName: 'extraction_skill_finding' })
-export default class ExtractionSkillFindingModel extends Model<InferAttributes<ExtractionSkillFindingModel>, InferCreationAttributes<ExtractionSkillFindingModel>> {
+export default class ExtractionSkillFindingModel extends Model {
 
-    @Attribute(DataTypes.INTEGER)
-    @PrimaryKey
     @AutoIncrement
-    declare id: CreationOptional<number>
+    @PrimaryKey
+    @Column(DataType.INTEGER)
+    declare id: number
 
-    @Attribute(DataTypes.DOUBLE)
-    @NotNull
+    @AllowNull(false)
+    @Column(DataType.DOUBLE)
     declare score: number
 
-    @BelongsTo(() => ExtractionModel, 'extractionref')
+    @ForeignKey(() => ExtractionModel)
+    @Column({ field: 'extraction_id' })
+    declare extractionId: number
+
+    @ForeignKey(() => SkillModel)
+    @Column({ field: 'skill_id' })
+    declare skillId: number
+
+    @ForeignKey(() => ProjectModel)
+    @Column({ field: 'project_id' })
+    declare projectId: number
+
+    @BelongsTo(() => ExtractionModel, 'extraction_id')
     declare extractionRef: ExtractionModel
 
-    @BelongsTo(() => SkillModel, 'skillref')
+    @BelongsTo(() => SkillModel, 'skill_id')
     declare skillRef: SkillModel
 
-    @BelongsTo(() => ProjectModel, 'projectref')
+    @BelongsTo(() => ProjectModel, 'project_id')
     declare projectRef: ProjectModel
 
 }

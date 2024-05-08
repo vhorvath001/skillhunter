@@ -98,7 +98,7 @@ const deleteProgLang = async (req: Request, resp: Response) => {
 
 const toProgLangType = (progLangModel: ProgLangModel): ProgLangType => {
     return {
-        id: progLangModel.id.toString(),
+        id: progLangModel.id,
         name: progLangModel.name,
         desc: progLangModel.desc,
         sourceFiles: progLangModel.sourceFiles,
@@ -126,4 +126,4 @@ const toProgLangModel = (progLang: ProgLangType): ProgLangModel => {
     return newProgLangModel
 }
 
-export { getProgLangById, getAllProgLangs, createNewProgLang, editExistingProgLang, deleteProgLang }
+export { getProgLangById, getAllProgLangs, createNewProgLang, editExistingProgLang, deleteProgLang, toProgLangType }

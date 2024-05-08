@@ -7,7 +7,7 @@ const saveProject = async (name: string, extractionId: number) => {
     logger.debug(`Saving a project [name = ${name}, extractionId = ${extractionId}] to DB...`)
     const extraction: ExtractionModel = ExtractionModel.build({
         id: extractionId,
-        branches: '-', repositoryRef: RepositoryModel.build()
+        branches: '-', repositoryRef: RepositoryModel.build(), status: '-'
     })
 
     const projectModel = await ProjectModel.create({

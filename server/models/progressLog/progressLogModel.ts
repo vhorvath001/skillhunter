@@ -1,24 +1,27 @@
-import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model } from '@sequelize/core'
 import { ExtractionModel } from '../extraction/extractionModel'
-import { Default, Table, Attribute, PrimaryKey, AutoIncrement, NotNull, BelongsTo } from '@sequelize/core/decorators-legacy'
+import { Table, Model, Column, DataType,  PrimaryKey, ForeignKey, AutoIncrement, Default, AllowNull, BelongsTo, } from 'sequelize-typescript'
 
 @Table({ tableName: 'progress_log'})
-export default class ProgressLogModel extends Model<InferAttributes<ProgressLogModel>, InferCreationAttributes<ProgressLogModel>> {
+export default class ProgressLogModel extends Model {
 
-    @Attribute(DataTypes.INTEGER)
-    @PrimaryKey
     @AutoIncrement
-    declare id: CreationOptional<number>
+    @PrimaryKey
+    @Column(DataType.INTEGER)
+    declare id: number
 
-    @Attribute(DataTypes.DATE)
-    @Default(DataTypes.NOW)
-    declare timestamp: CreationOptional<Date>
+    @Default(DataType.NOW)
+    @Column(DataType.DATE)
+    declare timestamp: Date
 
-    @Attribute(DataTypes.STRING)
-    @NotNull
+    @AllowNull(false)
+    @Column(DataType.STRING)
     declare logText: string
 
-    @BelongsTo(() => ExtractionModel, 'extractionref')
+    @ForeignKey(() => ExtractionModel)
+    @Column({ field: 'extraction_id' })
+    declare extractionId: number
+
+    @BelongsTo(() => ExtractionModel, 'extraction_id')
     declare extractionRef: ExtractionModel
 
 }

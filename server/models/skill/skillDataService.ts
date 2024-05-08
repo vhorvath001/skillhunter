@@ -1,11 +1,8 @@
-import { Op } from '@sequelize/core'
 import logger from '../../init/initLogger'
 import TreeNode from '../../schema/treeNode'
 import { saveExtractionSkillFindingModel } from '../extractionSkillFinding/extractionSkillFindingDataService'
 import ProgLangModel from '../progLang/progLangModel'
 import { SkillModel } from './skillModel'
-import { Sequelize } from 'sequelize'
-import sequelize from '../../init/initSequelize'
 
 const updateSkillTree = async (parent: SkillModel | undefined, skillNodes: TreeNode[], projectId: number, extractionId: number, skillEnabled: boolean): Promise<void> => {
     logger.debug(`Updating the skill tree [parent = ${parent?.id} : ${parent?.name}, projectId = ${projectId}, extractionId = ${extractionId}, skillNodes = ${skillNodes.map(s => s.name).toString()}] to DB...`)
@@ -44,8 +41,8 @@ const updateSkillTree = async (parent: SkillModel | undefined, skillNodes: TreeN
 const getAllSkillsByProgLangAndParent = async (progLangId: number, parentId: number | null): Promise<SkillModel[]> => {
     return await SkillModel.findAll({
         where: {
-            progLangRef: progLangId,
-            parentRef:  parentId
+            progLangId: progLangId,
+            parentId:  parentId
         }
     })
 }

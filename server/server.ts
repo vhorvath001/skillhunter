@@ -16,7 +16,7 @@ app.use(cors())
 app.use(express.json())
 
 // routes
-app.use('/extraction', extractionRouter)
+app.use('/extractions', extractionRouter)
 app.use('/prog-langs', progLangRouter)
 app.use('/repositories', repositoryRouter)
 app.use('/skills', skillRouter)

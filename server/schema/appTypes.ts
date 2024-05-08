@@ -1,5 +1,5 @@
 export type ProgLangType = {
-    id?: string,
+    id?: number,
     name: string,
     desc?: string,
     sourceFiles: string,
@@ -11,7 +11,7 @@ export type ProgLangType = {
 }
 
 export type RepositoryType = {
-    id: string,
+    id: number,
     name: string,
     desc?: string,
     url: string,
@@ -19,7 +19,7 @@ export type RepositoryType = {
 }
 
 export type ProjectsBranchesType = {
-    id: string,
+    id: number,
     name: string,
     branches: string[]
 }
@@ -29,4 +29,14 @@ export type SkillTreeNodeType = {
     name: string,
     enabled: boolean,
     children: SkillTreeNodeType[]
+}
+
+export type ExtractionType = {
+    id: number,
+    startDate: Date,
+    branches: string[],
+    path: string,
+    status: string,
+    repository: RepositoryType,
+    progLangs: ProgLangType[]
 }

@@ -1,40 +1,39 @@
-import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model } from '@sequelize/core'
-import { Table, Attribute, PrimaryKey, AutoIncrement, NotNull, BelongsToMany } from '@sequelize/core/decorators-legacy'
+import { Table, Model, Column, DataType,  PrimaryKey, AutoIncrement, AllowNull } from 'sequelize-typescript'
 
 @Table({ tableName: 'proglang' })
-export default class ProgLangModel extends Model<InferAttributes<ProgLangModel>, InferCreationAttributes<ProgLangModel>> {
+export default class ProgLangModel extends Model {
 
-    @Attribute(DataTypes.INTEGER)
-    @PrimaryKey
     @AutoIncrement
-    declare id: CreationOptional<number>
+    @PrimaryKey
+    @Column(DataType.INTEGER)
+    declare id: number
 
-    @Attribute(DataTypes.STRING)
-    @NotNull
+    @AllowNull(false)
+    @Column(DataType.STRING)
     declare name: string
 
-    @Attribute(DataTypes.STRING)
-    declare desc: CreationOptional<string>
+    @Column(DataType.STRING)
+    declare desc: string
 
-    @Attribute(DataTypes.STRING)
-    @NotNull
+    @AllowNull(false)
+    @Column(DataType.STRING)
     declare sourceFiles: string
 
-    @Attribute(DataTypes.INTEGER)
-    declare level: CreationOptional<number>
+    @Column(DataType.INTEGER)
+    declare level: number
 
-    @Attribute(DataTypes.STRING)
-    @NotNull
+    @AllowNull(false)
+    @Column(DataType.STRING)
     declare patterns: string
 
-    @Attribute(DataTypes.STRING)
-    @NotNull
+    @AllowNull(false)
+    @Column(DataType.STRING)
     declare scopePattern: string
 
-    @Attribute(DataTypes.STRING)
-    declare packageSeparator: CreationOptional<string>
+    @Column(DataType.STRING)
+    declare packageSeparator: string
 
-    @Attribute(DataTypes.BOOLEAN)
+    @Column(DataType.BOOLEAN)
     declare removingTLDPackages: boolean
 
     // @BelongsToMany(() => ExtractionModel, { through: 'ExtractionProgLangModel' })

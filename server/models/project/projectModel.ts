@@ -1,20 +1,23 @@
-import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model } from '@sequelize/core'
 import { ExtractionModel } from '../extraction/extractionModel'
-import { Table, Attribute, PrimaryKey, AutoIncrement, NotNull, BelongsTo } from '@sequelize/core/decorators-legacy'
+import { Table, Model, Column, DataType,  PrimaryKey, ForeignKey, AutoIncrement, AllowNull, BelongsTo } from 'sequelize-typescript'
 
 @Table({ tableName: 'project' })
-export class ProjectModel extends Model<InferAttributes<ProjectModel>, InferCreationAttributes<ProjectModel>> {
+export class ProjectModel extends Model {
 
-    @Attribute(DataTypes.INTEGER)
-    @PrimaryKey
     @AutoIncrement
-    declare id: CreationOptional<number>
+    @PrimaryKey
+    @Column(DataType.INTEGER)
+    declare id: number
 
-    @Attribute(DataTypes.STRING)
-    @NotNull
+    @AllowNull(false)
+    @Column(DataType.STRING)
     declare name: string
 
-    @BelongsTo(() => ExtractionModel, 'extractionref')
+    @ForeignKey(() => ExtractionModel)
+    @Column({ field: 'extraction_id' })
+    declare extractionId: number
+
+    @BelongsTo(() => ExtractionModel, 'extraction_id')
     declare extractionRef: ExtractionModel
 
 }

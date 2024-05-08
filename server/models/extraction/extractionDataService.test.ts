@@ -1,4 +1,4 @@
-import Sequelize from '@sequelize/core';
+import { Sequelize } from 'sequelize-typescript'
 import RepositoryModel from '../repository/repositoryModel';
 import { saveExtraction } from './extractionDataService'
 import { ExtractionModel, ExtractionProgLangModel } from './extractionModel'

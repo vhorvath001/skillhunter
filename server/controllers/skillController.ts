@@ -7,7 +7,7 @@ import { SkillTreeNodeType } from '../schema/appTypes'
 import { parse } from 'querystring'
 
 export const getSkillTree = async (req: Request, resp: Response) => {
-    logger.info(`Request has arrived to get a repository - id: ${req.params.progLangId}`)
+    logger.info(`Request has arrived to get the skill tree - prog land id: ${req.params.progLangId}`)
 
     try {
         const progLangId: string = req.params.progLangId

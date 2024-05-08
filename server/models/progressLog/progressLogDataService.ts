@@ -9,7 +9,7 @@ const log = async (text: string, extractionId: number) => {
 
     const extraction: ExtractionModel = ExtractionModel.build({
         id: extractionId,
-        branches: '-', repositoryRef: RepositoryModel.build()
+        branches: '-', repositoryRef: RepositoryModel.build(), status: '-'
     })
 
     await ProgressLogModel.create({

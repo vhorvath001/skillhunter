@@ -1,27 +1,26 @@
-import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model } from '@sequelize/core'
-import { Table, Attribute, PrimaryKey, AutoIncrement, NotNull } from '@sequelize/core/decorators-legacy'
+import { Table, Model, Column, DataType,  PrimaryKey, AutoIncrement, AllowNull } from 'sequelize-typescript'
 
 @Table({ tableName: 'repository' })
-export default class RepositoryModel extends Model<InferAttributes<RepositoryModel>, InferCreationAttributes<RepositoryModel>> {
+export default class RepositoryModel extends Model {
     
-    @Attribute(DataTypes.INTEGER)
-    @PrimaryKey
     @AutoIncrement
-    declare id: CreationOptional<number>
+    @PrimaryKey
+    @Column(DataType.INTEGER)
+    declare id: number
 
-    @Attribute(DataTypes.STRING)
-    @NotNull
+    @AllowNull(false)
+    @Column(DataType.STRING)
     declare name: string
 
-    @Attribute(DataTypes.STRING)
-    declare desc: CreationOptional<string>
+    @Column(DataType.STRING)
+    declare desc: string
 
-    @Attribute(DataTypes.STRING)
-    @NotNull
+    @AllowNull(false)
+    @Column(DataType.STRING)
     declare host: string
 
-    @Attribute(DataTypes.STRING)
-    @NotNull
+    @AllowNull(false)
+    @Column(DataType.STRING)
     declare token: string
 
 }

@@ -1,5 +1,6 @@
-import logger from '../../init/initLogger';
-import RepositoryModel from '../repository/repositoryModel';
+import { Op } from 'sequelize'
+import logger from '../../init/initLogger'
+import RepositoryModel from '../repository/repositoryModel'
 import { ExtractionModel, ExtractionProgLangModel } from './extractionModel'
 
 const saveExtraction = async (repoId: number , branches: Object, path: string, progLangs: number[]) => {
@@ -12,7 +13,7 @@ const saveExtraction = async (repoId: number , branches: Object, path: string, p
         repositoryRef: repository,
         branches: JSON.stringify(branches),
         path: path,
-        status: 'IN PROCESS'
+        status: 'IN PROGRESS'
     }, {
         include: RepositoryModel
     });
@@ -37,4 +38,17 @@ const updateStatus = async(extractionId: number, status: string) => {
     )
 }
 
-export { saveExtraction, updateStatus }
+    const getExtractionModels = async (repoId: number, status: string, filterFrom: Date, filterTo: Date): Promise<ExtractionModel[]> => {
+        return await ExtractionModel.findAll({
+            where: { 
+                repositoryRef: repoId,
+                status: status,
+                startDate: {
+                    [Op.between]: [filterFrom, filterTo]
+                }
+            }
+        })
+        return []
+    }
+
+export { saveExtraction, updateStatus, getExtractionModels }
