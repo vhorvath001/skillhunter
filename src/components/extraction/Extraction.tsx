@@ -7,14 +7,14 @@ import ExtractionCards from './ExtractionCards'
 import Loading from '../../utils/Loading'
 
 const Extraction = (): ReactElement => {
-    const { setShow, areExtractionsLoading  } = useExtraction()
+    const { setShowStartExtraction, areExtractionsLoading  } = useExtraction()
 
     return (
         <div className='extraction-container'>
             <div className='page-title text-center mb-5'>Extraction</div>
             
             <div>
-                <span onClick={() => setShow(true)} className='me-1' data-testid='t-modal-show'>
+                <span onClick={() => setShowStartExtraction(true)} className='me-1' data-testid='t-modal-show'>
                     <Button variant='primary'>Start new extraction</Button>
                 </span>
                 <StartExtractionModal />
@@ -25,7 +25,7 @@ const Extraction = (): ReactElement => {
             <ExtractionFilter />
 
             <div className='loadingParent container-fluid'>
-                {areExtractionsLoading && <Loading />}
+                {areExtractionsLoading && <Loading message='Loading the Extraction cards.' />}
                 {!areExtractionsLoading && <ExtractionCards />}
             </div>
         </div>

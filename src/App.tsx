@@ -11,6 +11,8 @@ import Extraction from './components/extraction/Extraction';
 import { ExtractionProvider } from './context/ExtractionProvider';
 import { SkillTreeProvider } from './context/SkillTreeProvider';
 import SkillTree from './components/skillTree/SkillTree';
+import { DeveloperProvider } from './context/DeveloperProvider';
+import DeveloperList from './components/admin/developer/DeveloperList';
 
 function App() {
     return (
@@ -26,6 +28,9 @@ function App() {
                     </Route>
                     <Route path='skill-tree'>
                         <Route index element={<SkillTreeProvider><SkillTree /></SkillTreeProvider>} />
+                    </Route>
+                    <Route path='developers'>
+                        <Route index element={<DeveloperProvider><DeveloperList /></DeveloperProvider>} />
                     </Route>
                 </Route>
                 <Route path='extraction'>

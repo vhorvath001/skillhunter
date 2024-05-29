@@ -1,5 +1,5 @@
 import { ChangeEvent, useState } from 'react'
-import { Form } from 'react-bootstrap'
+import Form from 'react-bootstrap/Form'
 import { OptionType } from '../../context/ContextFunctions'
 
 type PropsType = {
@@ -19,12 +19,14 @@ const MultiSelectDropdown = ({ options, selectedOptions, setSelectedOptions }: P
         const optionKey: string = event.target.value
         const isChecked: boolean = event.target.checked
 
+        console.log(`optionKey: ${optionKey},   isChecked: ${isChecked}`)
+
         if (isChecked) {
             setSelectedOptions([...selectedOptions, optionKey]);
         } else {
             setSelectedOptions(selectedOptions.filter((key) => key !== optionKey));
         }
-    };
+    }
 
     return (
         <div className={`dropdown ${isOpen ? 'show' : ''}`}>
@@ -33,7 +35,7 @@ const MultiSelectDropdown = ({ options, selectedOptions, setSelectedOptions }: P
                 type="button"
                 id="multiSelectDropdown"
                 onClick={toggleDropdown} >
-                [{options.filter(o => selectedOptions.includes(o.key)).map(o => o.value).join(', ')}]&nbsp;&nbsp;
+                [{options.filter(o => selectedOptions.includes(String(o.key))).map(o => o.value).join(', ')}]&nbsp;&nbsp;
             </button>
             <div className={`dropdown-menu ${isOpen ? 'show' : ''}`} aria-labelledby="multiSelectDropdown">
                 {options.map((option) => (
@@ -43,9 +45,9 @@ const MultiSelectDropdown = ({ options, selectedOptions, setSelectedOptions }: P
                         type="checkbox"
                         id={`option_${option.key}`}
                         label={option.value}
-                        checked={selectedOptions.includes(option.key)}
                         onChange={handleOptionChange}
-                        value={option.key} />
+                        value={option.key} 
+                        />
                 ))}
             </div>
         </div>

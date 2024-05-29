@@ -1,33 +1,36 @@
 import { FcDeleteRow, FcEditImage } from 'react-icons/fc'
-import ModalForm from '../../../utils/modal/ModalForm';
-import ModalConfirmation from '../../../utils/modal/ModalConfirmation';
-import ProgLangForm from './ProgLangForm';
-import { ProgLangAction, ProgLangType } from '../../../context/ProgLangProvider';
-import { ReactElement } from 'react';
+import ModalForm from '../../../utils/modal/ModalForm'
+import ModalConfirmation from '../../../utils/modal/ModalConfirmation'
+import { ReactElement } from 'react'
+import { DeveloperAction, DeveloperType } from '../../../context/DeveloperProvider'
+import DeveloperForm from './DeveloperForm'
 
 type PropsType = {
-    record: ProgLangType, 
+    record: DeveloperType, 
     formId: string, 
     handleSave: any, 
     handleDelete: any,
-    dispatch: React.Dispatch<ProgLangAction>
+    dispatch: React.Dispatch<DeveloperAction>
 }
 
-const ProgLangRow = ({ record, formId, handleSave, handleDelete, dispatch }: PropsType): ReactElement => {
+const DeveloperRow = ({ record, formId, handleSave, handleDelete, dispatch }: PropsType): ReactElement => {
     return (
         <tr>
-            <td title={record.desc}>
+            <td>
                 <span>{record.name}</span>
+            </td>
+            <td>
+                <span>{record.email}</span>
             </td>
             <td className='adminIconsCell'>
                 <ModalForm 
-                    body={ <ProgLangForm record={record} />} 
+                    body={ <DeveloperForm record={record} />} 
                     formId={formId}
-                    title='Edit an existing Programming Language' 
+                    title='Edit an existing Developer' 
                     icon={ <FcEditImage 
                             size={25} 
                             role='button'
-                            title='Editing the programming language.' /> }
+                            title='Editing the developer.' /> }
                     handleSave={handleSave}
                     dispatch={dispatch}
                     // className='me-1'
@@ -36,7 +39,7 @@ const ProgLangRow = ({ record, formId, handleSave, handleDelete, dispatch }: Pro
                     icon={<FcDeleteRow 
                             size={25} 
                             role='button'
-                            title='Deleting the programming language.' />} 
+                            title='Deleting the developer.' />} 
                     message='Are you sure to delete the record?'
                     id={record.id!}
                     handleOperation={handleDelete}
@@ -46,4 +49,4 @@ const ProgLangRow = ({ record, formId, handleSave, handleDelete, dispatch }: Pro
     )
 }
 
-export default ProgLangRow;
+export default DeveloperRow

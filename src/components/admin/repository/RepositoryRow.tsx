@@ -22,7 +22,7 @@ const RepositoryRow = ( { record, formId, handleSave, handleDelete, dispatch }: 
             <td>
                 {record.url}
             </td>
-            <td>
+            <td className='adminIconsCell'>
                 <ModalForm 
                     body={ <RepositoryForm record={record} />} 
                     formId={formId}

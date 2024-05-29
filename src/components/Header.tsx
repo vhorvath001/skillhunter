@@ -41,14 +41,20 @@ const Header = (): ReactElement => {
                                     to='/admin/repositories'>
                                     Repositories
                                 </NavDropdown.Item>
+                                <NavDropdown.Divider />
                                 <NavDropdown.Item 
                                     as={Link} 
                                     to='/admin/skill-tree'>
                                     Skill Tree
                                 </NavDropdown.Item>
+                                <NavDropdown.Item
+                                    as={Link}
+                                    to='/admin/developers'>
+                                    Developers
+                                </NavDropdown.Item>
                             </NavDropdown>
                         </Nav>
-                        <Nav.Link href='/extraction'>Exctraction</Nav.Link>
+                        <Nav.Link href='/extraction'>Extraction</Nav.Link>
                     </Navbar.Collapse>
                 </Container>
             </Navbar>

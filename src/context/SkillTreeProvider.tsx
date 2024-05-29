@@ -43,31 +43,45 @@ const loadTree = async (progLangId: number, dispatch: React.Dispatch<SkillTreeAc
     })
 }
 
-const handleStatusChange = (operation: string, treeData: SkillTreeNodeType[], dispatch: React.Dispatch<SkillTreeAction>): void => {
+const handleStatusChange = (operation: string, treeData: SkillTreeNodeType[], dispatch: React.Dispatch<SkillTreeAction>, setTreeOperationErrorMessage: (treeErrorMessage: string) => void): void => {
     const ids: number[] = collectIds(treeData, operation, [])
 
     client.post('/skills/status', {
         ids: ids,
         status: operation
     })
-    dispatch({
-        type: SKILL_TREE_ACTION_TYPE.STATUS_CHANGE,
-        payload: treeData,
-        ids: ids,
-        status: operation
+    .then(() => {
+        dispatch({
+            type: SKILL_TREE_ACTION_TYPE.STATUS_CHANGE,
+            payload: treeData,
+            ids: ids,
+            status: operation
+        })    
+    })
+    .catch(err => {
+        handleError(err, setTreeOperationErrorMessage)
     })
 }
 
-const handleDelete = (treeData: SkillTreeNodeType[], dispatch: React.Dispatch<SkillTreeAction>): void => {
+const handleDelete = (dispatch: React.Dispatch<SkillTreeAction>, 
+                      handleClose: () => void,
+                      setTreeOperationErrorMessage: (treeErrorMessage: string) => void,
+                      treeData: SkillTreeNodeType[]): void => {
     const ids: number[] = collectIds(treeData, '-', [])
 
     client.delete('/skills', {
         data: {ids: ids}
     })
-    dispatch({
-        type: SKILL_TREE_ACTION_TYPE.DELETE,
-        payload: treeData,
-        ids: ids
+    .then(() => {
+        dispatch({
+            type: SKILL_TREE_ACTION_TYPE.DELETE,
+            payload: treeData,
+            ids: ids
+        })
+        handleClose()
+    })
+    .catch(err => {
+        handleError(err, setTreeOperationErrorMessage)
     })
 }
 
@@ -121,7 +135,9 @@ const initState: UseSkillTreeContextType = {
     treeIsLoading: false, 
     treeErrorMessage: '',
     handleStatusChange: () => {},
-    handleDelete: () => {}
+    handleDelete: () => {},
+    treeOperationErrorMessage: '', 
+    setTreeOperationErrorMessage: () => {}
 }
 
 const SkillTreeContext = createContext<UseSkillTreeContextType>(initState)
@@ -157,6 +173,7 @@ const useSkillTreeContext = () => {
     const [ treeIsLoading, setTreeIsLoading ] = useState<boolean>(false)
     const [ treeErrorMessage, setTreeErrorMessage ] = useState<string>('')
     const [ state, dispatch ] = useReducer(reducer, { skillTree: [] })
+    const [ treeOperationErrorMessage, setTreeOperationErrorMessage ] = useState<string>('')
 
     useEffect(() => {
         setProgLangs(
@@ -171,7 +188,8 @@ const useSkillTreeContext = () => {
             loadTree(selectedProgLang, dispatch, setTreeIsLoading, setTreeErrorMessage)
     }, [ selectedProgLang ])
 
-    return { dispatch, state, progLangs, setSelectedProgLang, isLoading, fetchError, treeIsLoading, treeErrorMessage, handleStatusChange, handleDelete }
+    return { dispatch, state, progLangs, setSelectedProgLang, isLoading, fetchError, treeIsLoading, treeErrorMessage, 
+             handleStatusChange, handleDelete, treeOperationErrorMessage, setTreeOperationErrorMessage }
 }
 
 export type UseSkillTreeContextType = ReturnType<typeof useSkillTreeContext>

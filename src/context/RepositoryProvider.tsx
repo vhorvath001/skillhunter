@@ -8,7 +8,8 @@ export const REPOSITORY_ACTION_TYPES = {
     NEW: 'NEW',
     EDIT: 'EDIT',
     DELETE: 'DELETE',
-    POPULATE: 'POPULATE'
+    POPULATE: 'POPULATE',
+    FILTER: 'FILTER'
 }
 
 export type RepositoryType = {
@@ -26,7 +27,8 @@ export type RepositoryAction = {
 }
 
 type RepositoryStateType = {
-    list: RepositoryType[]
+    list: RepositoryType[],
+    originalList: RepositoryType[],
 }
 
 const handleDelete = async (dispatch: React.Dispatch<RepositoryAction>, handleClose: () => void, setErrorMessage: (errorMessage: string) => void, id: string) => {
@@ -69,13 +71,30 @@ const handleSave = async (dispatch: React.Dispatch<RepositoryAction>, e: FormEve
     }
 }
 
+const handleFilter = (dispatch: React.Dispatch<RepositoryAction>, e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    const formData: FormData = new FormData(e.currentTarget)
+
+    dispatch({
+        type: REPOSITORY_ACTION_TYPES.FILTER,
+        payload: {
+            name: formData.get('list_filter_name')?.toString() ?? '',
+            url: formData.get('list_filter_url')?.toString() ?? '',
+            token: '-',
+            id: '-1'
+        }
+    })
+}
+
 const initState: UseRepositoryContextType = { 
     dispatch: () => {}, 
     state: {} as RepositoryStateType, 
     isLoading: false, 
     fetchError: '', 
     handleDelete: handleDelete, 
-    handleSave: handleSave 
+    handleSave: handleSave,
+    handleFilter: handleFilter
 }
 
 const RepositoryContext = createContext<UseRepositoryContextType>(initState);
@@ -85,19 +104,30 @@ const reducer = (state: RepositoryStateType, action: RepositoryAction): Reposito
         case REPOSITORY_ACTION_TYPES.DELETE: {
             const removableId = action.id!
             const filteredList = state.list.filter((i) => i.id !== removableId)
-            return {...state, list: filteredList}
+            const filteredOriginalList = state.originalList.filter((i) => i.id !== removableId)
+            return {...state, list: filteredList, originalList: filteredOriginalList}
         }
         case REPOSITORY_ACTION_TYPES.NEW: {
             const updatedList = sortList([...state.list, action.payload! as RepositoryType])
-            return {...state, list: updatedList}
+            const updatedOriginalList = sortList([...state.originalList, action.payload! as RepositoryType])
+            return {...state, list: updatedList, originalList: updatedOriginalList}
         }
         case REPOSITORY_ACTION_TYPES.EDIT: {
             const repository: RepositoryType = action.payload! as RepositoryType 
             const updatedList = sortList(state.list.map((i) => i.id == repository.id ? repository : i));
-            return {...state, list: updatedList}
+            const updatedOriginalList = sortList(state.originalList.map((i) => i.id == repository.id ? repository : i));
+            return {...state, list: updatedList, originalList: updatedOriginalList}
         }
         case REPOSITORY_ACTION_TYPES.POPULATE: {
-            return {...state, list: sortList(action.payload! as RepositoryType[])}
+            return {...state, list: sortList(action.payload! as RepositoryType[]), originalList: sortList(action.payload! as RepositoryType[])}
+        }
+        case REPOSITORY_ACTION_TYPES.FILTER: {
+            const filters: RepositoryType = action.payload! as RepositoryType 
+            const filteredList = sortList(state.originalList.filter(d => 
+                (filters.name ? d.name.toLowerCase().includes(filters.name.toLowerCase()) : true) && 
+                (filters.url ? d.url.toLowerCase().includes(filters.url.toLowerCase()) : true)
+            ))
+            return {...state, list: filteredList}
         }
         default:
             throw new Error('Unidentified reducer action type!')
@@ -116,13 +146,13 @@ const sortList = (l: RepositoryType[]) => {
 
 const useRepositoryContext = () => {
     const { data, isLoading, fetchError } = useAxiosFetch('/repositories')
-    const [ state, dispatch ] = useReducer(reducer, { list: data })
+    const [ state, dispatch ] = useReducer(reducer, { list: data, originalList: data })
 
     useEffect(() => {
         dispatch({ type: REPOSITORY_ACTION_TYPES.POPULATE, payload: data})
     }, [data])
 
-    return { dispatch, state, isLoading, fetchError, handleDelete, handleSave }
+    return { dispatch, state, isLoading, fetchError, handleDelete, handleSave, handleFilter }
 }
 
 export type UseRepositoryContextType = ReturnType<typeof useRepositoryContext>

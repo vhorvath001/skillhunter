@@ -5,7 +5,7 @@ import Alert from 'react-bootstrap/Alert';
 import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
-import Form from 'react-bootstrap/Form';
+import Form from 'react-bootstrap/Form'
 
 type PropsType = {
     formId: string, 
@@ -30,7 +30,7 @@ const ModalForm = ({ formId, title, body, icon, handleSave, dispatch }: PropsTyp
             <span onClick={() => setShow(true)} className='me-1' data-testid='t-modal-show'>
                 {icon}
             </span>
-            <Modal show={show} onHide={handleClose} size="xl">
+            <Modal show={show} onHide={handleClose} dialogClassName="modal-80w">
                 <Form id={formId} onSubmit={(e: FormEvent<HTMLFormElement>) => handleSave(dispatch, e, handleClose, setErrorMessage)}>
                     <Modal.Header closeButton>
                         <Modal.Title>{title}</Modal.Title>

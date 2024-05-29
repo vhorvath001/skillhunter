@@ -8,6 +8,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import AlertMessage from '../AlertMessage';
+import Loading from '../Loading';
 
 type PropsType = {
     list: any[], 
@@ -43,9 +44,9 @@ const AdminList = ({ list, isLoading, fetchError, maxItemsPerPage, handleDelete,
     return (
         <div className='admin-container'>
             <div className='page-title text-center mb-5'>{title}</div>
-            <main>
+            <main className='loadingParent container-fluid'>
                 { isLoading && 
-                    <p>List is loading...</p> 
+                    <Loading message='Loading the list.' />
                 }
                 { !isLoading && fetchError && 
                     <AlertMessage errorMessage={fetchError} />

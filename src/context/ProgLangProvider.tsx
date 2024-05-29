@@ -8,7 +8,13 @@ export const PROG_LANG_ACTION_TYPES = {
     NEW: 'NEW',
     EDIT: 'EDIT',
     DELETE: 'DELETE',
-    POPULATE: 'POPULATE'
+    POPULATE: 'POPULATE',
+    FILTER: 'FILTER'
+}
+
+export type PackageRemovalPatternType = {
+    type: string,
+    value: string
 }
 
 export type ProgLangType = {
@@ -20,17 +26,21 @@ export type ProgLangType = {
     packageSeparator?: string,
     removingTLDPackages: boolean,
     patterns: string[],
+    packageRemovalPatterns: PackageRemovalPatternType[],
+    ignoringLinesPatterns: string[],
     scope: string
 }
 
 export type ProgLangAction = {
     type: string,
     payload?: ProgLangType | ProgLangType[]
-    id?: string
+    id?: string,
+    filter?: string
 }
 
 type ProgLangStateType = {
-    list: ProgLangType[]
+    list: ProgLangType[],
+    originalList: ProgLangType[],
 }
 
 export const handleDelete = async (dispatch: React.Dispatch<ProgLangAction>, handleClose: () => void, setErrorMessage: (errorMessage: string) => void, id: string) => {
@@ -72,10 +82,35 @@ const handleSave = async (dispatch: React.Dispatch<ProgLangAction>, e: FormEvent
     }
 }
 
+const handleFilter = (dispatch: React.Dispatch<ProgLangAction>, e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    const formData: FormData = new FormData(e.currentTarget)
+
+    dispatch({
+        type: PROG_LANG_ACTION_TYPES.FILTER,
+        filter: formData.get('list_filter_name')?.toString() ?? ''
+    })
+}
+
 const toProgLangType = (formData: FormData): ProgLangType => {
     let patterns: string[] = []
+    let packageRemovalPatterns: PackageRemovalPatternType[] = []
+    let ignoringLinesPatterns: string[] = []
     for (const pair of formData.entries()) {
-        if (pair[0].startsWith('patternListItem_')) patterns.push(pair[1].toString())
+        if (pair[0].startsWith('patternListItem_'))
+            patterns.push(pair[1].toString())
+        if (pair[0].startsWith('ignoringLinesPatternListItem_'))
+            ignoringLinesPatterns.push(pair[1].toString())
+        if (pair[0].startsWith('packageRemovalPatternListItem_')) {
+            const index = getIndex(pair[0])
+            if (!packageRemovalPatterns[index])
+                packageRemovalPatterns[index] = {type: '', value: ''}
+            if (pair[0].startsWith('packageRemovalPatternListItem_value_'))
+                packageRemovalPatterns[index].value = pair[1].toString()
+            else
+                packageRemovalPatterns[index].type = pair[1].toString()
+        }
     }
     const progLang: ProgLangType = {
         id: undefined,
@@ -86,11 +121,20 @@ const toProgLangType = (formData: FormData): ProgLangType => {
         packageSeparator: formData.get('packageSeparator')?.toString(),
         removingTLDPackages: formData.get('removingTLDPackages')?.toString() === 'on',
         patterns: patterns,
+        packageRemovalPatterns: packageRemovalPatterns.filter(p => p),
+        ignoringLinesPatterns: ignoringLinesPatterns,
         scope: formData.get('scope')!.toString()
     }
     if (formData.get('id') && formData.get('id') !== '-1')
         progLang.id = formData.get('id')!.toString()
     return progLang
+}
+
+const getIndex = (name: string): number => {
+    if (name.startsWith('packageRemovalPatternListItem_value_'))
+        return Number(name.replace('packageRemovalPatternListItem_value_', ''))
+    else
+        return Number(name.replace('packageRemovalPatternListItem_type_', ''))
 }
 
 const initState: UseProgLangContextType = { 
@@ -99,7 +143,8 @@ const initState: UseProgLangContextType = {
     isLoading: false, 
     fetchError: '', 
     handleDelete: handleDelete, 
-    handleSave: handleSave 
+    handleSave: handleSave,
+    handleFilter: handleFilter
 }
 
 const ProgLangContext = createContext<UseProgLangContextType>(initState);
@@ -109,19 +154,29 @@ const reducer = (state: ProgLangStateType, action: ProgLangAction): ProgLangStat
         case PROG_LANG_ACTION_TYPES.DELETE: {
             const removableId = action.id!
             const filteredList = state.list.filter((i) => i.id !== removableId)
-            return {...state, list: filteredList}
+            const filteredOriginalList = state.originalList.filter((i) => i.id !== removableId)
+            return {...state, list: filteredList, originalList: filteredOriginalList}
         }
         case PROG_LANG_ACTION_TYPES.NEW: {
             const updatedList = sortList([...state.list, action.payload! as ProgLangType])
-            return {...state, list: updatedList}
+            const updatedOriginalList = sortList([...state.originalList, action.payload! as ProgLangType])
+            return {...state, list: updatedList, originalList: updatedOriginalList}
         }
         case PROG_LANG_ACTION_TYPES.EDIT: {
             const progLang: ProgLangType = action.payload! as ProgLangType 
-            const updatedList = sortList(state.list.map((i) => i.id == progLang.id ? progLang : i));
-            return {...state, list: updatedList}
+            const updatedList = sortList(state.list.map((i) => i.id == progLang.id ? progLang : i))
+            const updatedOriginalList = sortList(state.originalList.map((i) => i.id == progLang.id ? progLang : i))
+            return {...state, list: updatedList, originalList: updatedOriginalList}
         }
         case PROG_LANG_ACTION_TYPES.POPULATE: {
-            return {...state, list: sortList(action.payload! as ProgLangType[])}
+            return {...state, list: sortList(action.payload! as ProgLangType[]), originalList: sortList(action.payload! as ProgLangType[])}
+        }
+        case PROG_LANG_ACTION_TYPES.FILTER: {
+            const filterName: string = action.filter!
+            const filteredList = sortList(state.originalList.filter(d => 
+                (filterName ? d.name.toLowerCase().includes(filterName.toLowerCase()) : true)
+            ))
+            return {...state, list: filteredList}
         }
         default:
             throw new Error('Unidentified reducer action type!')
@@ -140,13 +195,13 @@ const sortList = (l: ProgLangType[]) => {
 
 const useProgLangContext = () => {
     const { data, isLoading, fetchError } = useAxiosFetch('/prog-langs')
-    const [state, dispatch] = useReducer(reducer, { list: data })
+    const [ state, dispatch ] = useReducer(reducer, { list: data, originalList: data })
 
     useEffect(() => {
         dispatch({ type: PROG_LANG_ACTION_TYPES.POPULATE, payload: data})
     }, [data])
 
-    return { dispatch, state, isLoading, fetchError, handleDelete, handleSave }
+    return { dispatch, state, isLoading, fetchError, handleDelete, handleSave, handleFilter }
 }
 
 export type UseProgLangContextType = ReturnType<typeof useProgLangContext>

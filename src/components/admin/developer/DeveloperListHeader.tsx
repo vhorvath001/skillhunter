@@ -1,18 +1,19 @@
 import { ReactElement } from 'react'
 import FilterForAdminList from '../../../utils/list/FilterForAdminList'
-import useProgLang from '../../../hooks/useProgLang'
+import useDeveloper from '../../../hooks/useDeveloper'
 
-const ProgLangListHeader = (): ReactElement => {
-    const { handleFilter, dispatch } = useProgLang()
+const DeveloperListHeader = (): ReactElement => {
+    const { handleFilter, dispatch } = useDeveloper()
 
     return (
         <thead>
             <tr>
-                <th className='col-11 text-center'>Name</th>
+                <th className='col-5 text-center'>Name</th>
+                <th className='col-6 text-center'>Email</th>
                 <th className='col-1'></th>
             </tr>
             <FilterForAdminList 
-                cols={['name']} 
+                cols={['name', 'email']} 
                 handleFilter={handleFilter}
                 formId='developer_list_filter_form'
                 dispatch={dispatch} />
@@ -20,4 +21,4 @@ const ProgLangListHeader = (): ReactElement => {
     )
 }
 
-export default ProgLangListHeader;
+export default DeveloperListHeader

@@ -9,21 +9,21 @@ import Row from 'react-bootstrap/Row';
 type PropsType = {
     icon: ReactElement,
     message: string, 
-    id: string, 
-    handleOperation: (dispatch: React.Dispatch<any>, handleClose: () => void, setErrorMessage: (errorMessage: string) => void, id: string) => void,
+    id: any, 
+    handleOperation: (dispatch: React.Dispatch<any>, handleClose: () => void, setErrorMessage: (errorMessage: string) => void, id: any) => void,
     dispatch: React.Dispatch<any>
 }
 
 const ModalConfirmation = ({ icon, message, id, handleOperation, dispatch }: PropsType ): ReactElement => {
 
-    const [show, setShow] = useState<boolean>(false);
-    const [errorMessage, setErrorMessage] = useState<string>('');
+    const [show, setShow] = useState<boolean>(false)
+    const [errorMessage, setErrorMessage] = useState<string>('')
 
     const handleClose = (): void => {
-        setShow(false);
-        setErrorMessage('');
+        setShow(false)
+        setErrorMessage('')
     }
-    const confirm = () => handleOperation(dispatch, handleClose, setErrorMessage, id);
+    const confirm = () => handleOperation(dispatch, handleClose, setErrorMessage, id)
 
     return (
         <>

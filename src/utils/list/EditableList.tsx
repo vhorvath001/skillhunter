@@ -5,10 +5,13 @@ import { ReactElement, useState } from 'react'
 
 type PropsType = {
     list: string[] | undefined,
-    required: boolean
+    originalList?: any[] | undefined,
+    required: boolean,
+    inputName: string,
+    beforeTextField?: (originalRecord: any, index: number) => JSX.Element
 }
 
-const EditableList = ({ list, required }: PropsType): ReactElement => {
+const EditableList = ({ list, required, inputName, beforeTextField, originalList }: PropsType): ReactElement => {
     const [ items, setItems ] = useState<string[]>(list ?? []);
     const addToList = (): void => {
         setItems([...items, ''])
@@ -22,8 +25,10 @@ const EditableList = ({ list, required }: PropsType): ReactElement => {
                         index={index} 
                         item={i} 
                         key={index} 
-                        controlName={`patternListItem_${index}`} 
-                        required={required} />
+                        controlName={`${inputName}${index}`} 
+                        required={required} 
+                        beforeTextField={beforeTextField}
+                        originalRecord={originalList ? originalList[index] : null} />
                 ))}
             </ListGroup>
             <span 

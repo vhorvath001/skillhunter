@@ -10,10 +10,12 @@ type PropsType = {
     index: number,
     item: string, 
     controlName: string, 
-    required: boolean
+    required: boolean,
+    beforeTextField?: (originalRecord: any, index: number) => JSX.Element,
+    originalRecord: any
 }
 
-const EditableListItem = ({ index, item, controlName, required }: PropsType) => {
+const EditableListItem = ({ index, item, controlName, required, beforeTextField, originalRecord }: PropsType) => {
     const [show, setShow] = useState<boolean>(true);
     const removeFromList = (): void => setShow(false);
 
@@ -21,16 +23,19 @@ const EditableListItem = ({ index, item, controlName, required }: PropsType) => 
         <>
             {show &&
                 <ListGroup.Item >
-                    <Container>
+                    <Container fluid>
                         <Row>
                             <Col sm={11}>
-                                <Form.Control
-                                    type='text'
-                                    name={controlName}
-                                    defaultValue={item} 
-                                    required={required ? true : false} />
+                                <div className='d-lg-inline'>
+                                    {beforeTextField && beforeTextField(originalRecord, index)}
+                                    <Form.Control
+                                        type='text'
+                                        name={controlName}
+                                        defaultValue={item} 
+                                        required={required ? true : false}  />
+                                </div>
                             </Col>
-                            { index !== 0 &&
+                            { ((required && index !== 0) || !required) &&
                             <Col sm={1}>
                                 <span 
                                     onClick={removeFromList} 

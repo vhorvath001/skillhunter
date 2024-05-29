@@ -2,16 +2,16 @@ import { ReactElement } from 'react'
 import Row from 'react-bootstrap/Row'
 import useExtraction from '../../hooks/useExtraction'
 import ExtractionCard from './ExtractionCard'
-import { Container } from 'react-bootstrap'
+import Container from 'react-bootstrap/Container'
 
 
 const ExtractionCards = (): ReactElement => {
-    const { extractions } = useExtraction()
+    const { state } = useExtraction()
 
     return (
         <Container fluid>
             <Row>
-                {extractions.map((e) => (
+                {state.list.map((e) => (
                     <ExtractionCard extraction={e} key={e.id} />
                 ))}
             </Row>

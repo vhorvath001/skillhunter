@@ -1,4 +1,4 @@
-import { Form } from 'react-bootstrap'
+import Form from 'react-bootstrap/Form'
 import FloatingLabel from 'react-bootstrap/FloatingLabel'
 import useSkillTree from '../../hooks/useSkillTree'
 import { ChangeEvent } from 'react'
@@ -7,9 +7,11 @@ import Loading from '../../utils/Loading'
 import AlertMessage from '../../utils/AlertMessage'
 import Button from 'react-bootstrap/Button'
 import { SkillTreeNodeType } from '../../context/SkillTreeProvider'
+import ModalConfirmation from '../../utils/modal/ModalConfirmation'
 
 const SkillTree = () => {
-    const { dispatch, state, progLangs, setSelectedProgLang, isLoading, treeIsLoading, fetchError, treeErrorMessage, handleStatusChange, handleDelete} = useSkillTree()
+    const { dispatch, state, progLangs, setSelectedProgLang, isLoading, treeIsLoading, fetchError, treeErrorMessage, 
+            handleStatusChange, handleDelete, treeOperationErrorMessage, setTreeOperationErrorMessage } = useSkillTree()
 
     const handleChange = (e: ChangeEvent<HTMLSelectElement>): void => {
         setSelectedProgLang(Number(e.currentTarget.value))
@@ -33,7 +35,7 @@ const SkillTree = () => {
             <div className='page-title text-center'>Skill Tree</div>
 
             <div className='loadingParent container'>
-                { isLoading && <Loading /> }
+                { isLoading && <Loading message='Loading the programming languages.' /> }
                 { !isLoading && fetchError && 
                     <div className='mt-3 w-50 ml-0 mr-0 mx-auto text-center'>
                         <AlertMessage errorMessage={fetchError} />
@@ -53,7 +55,7 @@ const SkillTree = () => {
                     </div>
                 }
 
-                { treeIsLoading && <Loading />}
+                { treeIsLoading && <Loading message='Loading the Skill Tree.' />}
                 { !treeIsLoading && treeErrorMessage && 
                     <div className='mt-3 w-50 ml-0 mr-0 mx-auto text-center'>
                         <AlertMessage errorMessage={treeErrorMessage} />
@@ -63,12 +65,30 @@ const SkillTree = () => {
                     <div className='mt-3 w-50 ml-0 mr-0 mx-auto '>
                         {state.skillTree.length > 0 &&
                             <>
-                            <Button className='m-3' size='sm' variant='outline-secondary' onClick={() => changeAllSelected(true)}>Select all</Button>
-                            <Button className='m-3' size='sm' variant='outline-secondary' onClick={() => changeAllSelected(false)}>Unselect all</Button>
-                            <Tree treeNodes={state.skillTree} />
-                            <Button className='mx-2 mt-3 mb-4' variant='primary' onClick={ () => handleStatusChange('ENABLE', state.skillTree, dispatch) }>Enable</Button>
-                            <Button className='mx-2 mt-3 mb-4' variant='secondary' onClick={ () => handleStatusChange('DISABLE', state.skillTree, dispatch) }>Disable</Button>
-                            <Button className='mx-2 mt-3 mb-4' variant='danger' onClick={() => handleDelete(state.skillTree, dispatch)}>Delete</Button>
+                                <Button className='m-3' size='sm' variant='outline-secondary' onClick={() => changeAllSelected(true)}>Select all</Button>
+                                <Button className='m-3' size='sm' variant='outline-secondary' onClick={() => changeAllSelected(false)}>Unselect all</Button>
+
+                                <Tree treeNodes={state.skillTree} />
+                                {treeOperationErrorMessage && 
+                                    <div className='mt-3 w-90 ml-0 mr-0 mx-auto text-center'>
+                                        <AlertMessage errorMessage={treeOperationErrorMessage} />
+                                    </div>
+                                }
+
+                                <Button className='mx-2 mt-3 mb-4' variant='primary' onClick={ () => handleStatusChange('ENABLE', state.skillTree, dispatch, setTreeOperationErrorMessage) }>Enable</Button>
+                                <Button className='mx-2 mt-3 mb-4' variant='secondary' onClick={ () => handleStatusChange('DISABLE', state.skillTree, dispatch, setTreeOperationErrorMessage) }>Disable</Button>
+
+
+
+                                {/* <Button className='mx-2 mt-3 mb-4' variant='danger' onClick={() => handleDelete(state.skillTree, dispatch, setTreeOperationErrorMessage)}>Delete</Button> */}
+
+
+                                <ModalConfirmation
+                                    icon={<Button className='mx-2 mt-3 mb-4' variant='danger'>Delete</Button>} 
+                                    message='Are you sure to delete the skill(s)?'
+                                    id={state.skillTree}
+                                    handleOperation={handleDelete}
+                                    dispatch={dispatch} />
                             </>
                         }
                     </div>

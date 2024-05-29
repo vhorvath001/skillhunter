@@ -95,3 +95,37 @@ footer {
     color: rgb(148, 148, 148);
     margin-right: 6px;   
 }
+
+.extractionDetailsPBList {
+    max-height: 40vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.extractionDetailsProgressLogsList {
+    max-height: 70vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.extractionDetailsValue {
+    font-weight: normal;
+}
+
+.extractionDetailsLabel {
+    font-weight: bold;
+}
+
+.modal-90w {
+    width: 90%;
+    max-width: none !important;
+}
+
+.modal-80w {
+    width: 90%;
+    max-width: none !important;
+}
+
+.adminIconsCell {
+    min-width: 80px
+}

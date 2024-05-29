@@ -5,10 +5,10 @@ import { ProjectsBranchesType } from '../../context/ExtractionProvider';
 import useExtraction from '../../hooks/useExtraction';
 
 type PropsType = {
-    projectBranchesData: ProjectsBranchesType[],
+    projectsBranchesData: ProjectsBranchesType[],
 }
 
-const StartExtractionForm = ({ projectBranchesData }: PropsType): ReactElement => {
+const StartExtractionForm = ({ projectsBranchesData }: PropsType): ReactElement => {
     const {show2ndPage } = useExtraction()
 
     return (
@@ -17,7 +17,7 @@ const StartExtractionForm = ({ projectBranchesData }: PropsType): ReactElement =
                 <StartExtraction1stPage />
             </span>
             { show2ndPage &&
-                <StartExtraction2ndPage projectBranchesData={projectBranchesData} />
+                <StartExtraction2ndPage projectsBranchesData={projectsBranchesData} />
             }
         </>
     )
