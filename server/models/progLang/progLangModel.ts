@@ -1,4 +1,4 @@
-import { Table, Model, Column, DataType,  PrimaryKey, AutoIncrement, AllowNull } from 'sequelize-typescript'
+import { Table, Model, Column, DataType,  PrimaryKey, AutoIncrement, AllowNull, Unique } from 'sequelize-typescript'
 
 @Table({ tableName: 'proglang' })
 export default class ProgLangModel extends Model {
@@ -8,6 +8,7 @@ export default class ProgLangModel extends Model {
     @Column(DataType.INTEGER)
     declare id: number
 
+    @Unique
     @AllowNull(false)
     @Column(DataType.STRING)
     declare name: string
@@ -26,9 +27,17 @@ export default class ProgLangModel extends Model {
     @Column(DataType.STRING)
     declare patterns: string
 
+    @AllowNull(true)
+    @Column(DataType.STRING)
+    declare packageRemovalPatterns: string
+
     @AllowNull(false)
     @Column(DataType.STRING)
     declare scopePattern: string
+
+    @AllowNull(true)
+    @Column(DataType.STRING)
+    declare ignoringLinesPatterns: string
 
     @Column(DataType.STRING)
     declare packageSeparator: string
@@ -36,7 +45,4 @@ export default class ProgLangModel extends Model {
     @Column(DataType.BOOLEAN)
     declare removingTLDPackages: boolean
 
-    // @BelongsToMany(() => ExtractionModel, { through: 'ExtractionProgLangModel' })
-    // declare extractions: ExtractionModel[]
-    
 }

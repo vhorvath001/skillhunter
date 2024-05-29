@@ -2,12 +2,14 @@ import { Request, Response } from 'express'
 import { start } from '../services/extractionService'
 import logger from '../init/initLogger'
 import { parseISO } from 'date-fns'
-import { getExtractionModels } from '../models/extraction/extractionDataService'
+import { deleteExtractionById, getExtractionModels } from '../models/extraction/extractionDataService'
 import { ExtractionModel } from '../models/extraction/extractionModel'
-import { ExtractionType, ProgLangType } from '../schema/appTypes'
+import { ExtractionType, ProgLangType, ProgressLogType, SelectedProjectBranchesType } from '../schema/appTypes'
 import { toProgLangType } from './progLangController'
 import { toRepositoryType } from './repositoryController'
 import { getErrorMessage, logError } from './commonFunctions'
+import ProgressLogModel from '../models/progressLog/progressLogModel'
+import { getProgressLogsByExtractionId } from '../models/progressLog/progressLogDataService'
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
 
@@ -24,22 +26,26 @@ export const extract = async (req: Request, resp: Response): Promise<void> => {
     // checking the mandatory elements
     logger.info(`Request has arrived to start a repository extraction.`)
 
-    if (!req?.body?.repoId || typeof req.body.repoId !== 'number')
-        resp.status(422).json({ 'message': 'Repository ID is not provided or invalid.' })  // Unprocessable Entity
+    let errorMessage: string | null = null
+    if (!req?.body?.repoId || isNaN(Number(req.body.repoId)))
+        errorMessage = 'Repository ID is not provided or invalid.'
     else if (!req?.body?.path) 
-        resp.status(422).json({ 'message': 'Path is not provided.' });
+        errorMessage = 'Path is not provided.'
     else if (!req?.body?.progLangs) 
-        resp.status(422).json({ 'message': 'Programming langague array is not provided.' });
-    else if (!req?.body?.branches) 
-        resp.status(422).json({ 'message': 'The project - branch assignments are not provided.' });
-    else {
-        const errorMessage: string | null = await start(Number(req.body.repoId), 
-            req.body.branches as Object, 
-            req.body.path as string, 
-            req.body.progLangs as number[])
+        errorMessage = 'Programming langague array is not provided.'
+    else if (!req?.body?.projectsBranches) 
+        errorMessage = 'The project - branch assignments are not provided.'
+    
+    if (errorMessage) {
+        logger.error(`Invalid query parameter! - ${errorMessage}`)
+        resp.status(422).json({ 'message': errorMessage })  // Unprocessable Entity
+    } else {
+        start(Number(req.body.repoId), 
+              req.body.projectsBranches as SelectedProjectBranchesType[], 
+              req.body.path as string, 
+              req.body.progLangs as number[])
 
-        if (errorMessage) resp.status(500).send({'message': `Error occurred when trying to start an extraction! - ${errorMessage}`})
-        else resp.sendStatus(201)
+        resp.sendStatus(201)
     }
 }
 
@@ -47,46 +53,53 @@ export const getExtractions = async (req: Request, resp: Response): Promise<void
     logger.info(`Request has arrived to get extractions. - ${JSON.stringify(req.query)}`)
 
     try {
-        const repoId: number = Number(req.query.repoId as string)
+        const repoId: number | null = Number(req.query.repoId as string) === -1 ? null : Number(req.query.repoId as string)
         const dateTo: string = req.query.dateTo as string
         const dateFrom: string = req.query.dateFrom as string
-        const status: string = req.query.status as string
+        const status: string | null = req.query.status as string === '-1' ? null : req.query.status as string
 
         const extractionModels: ExtractionModel[] = await getExtractionModels(repoId, status, parseISO(dateFrom), parseISO(dateTo))
         const extractions: ExtractionType[] = extractionModels.map(m => toExtractionType(m))
-
-        // const extractions: ExtractionType[] = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17].map(i => { return {
-        //     id: i,
-        //     startDate: new Date(),
-        //     branches: ['release/1.'+i, 'release/2.'+i],
-        //     path: 'path'+i,
-        //     status: i % 3 === 0 ? 'COMPLETED' : i % 3 === 1 ? 'FAILED' : 'IN PROGRESS',
-        //     repository: {
-        //         id: i,
-        //         name: 'repo'+i,
-        //         desc: 'desc'+i,
-        //         url: 'url'+i,
-        //         token: 'repositoryModel.token'+i
-        //     },
-        //     progLangs: [{
-        //         id: 1,
-        //         name: 'Java',
-        //         sourceFiles: '*.java',
-        //         level: 2,
-        //         removingTLDPackages: true,
-        //         patterns: ['import .*;'],
-        //         scope: 'EVERYWHERE'
-        //     }]
-        // }})
 
         resp.status(200).json(extractions)
     } catch(err) {
         logError(err, `Error occurred when executing 'getBranchesPerProjects'.`)
         resp.status(500).send({'message': `Error occurred when trying to get branches of projects! - ${getErrorMessage(err)}`})
     }
+}
 
+export const deleteExtraction = async (req: Request, resp: Response): Promise<void> => {
+    logger.info(`Request has arrived to delete an extraction. - ${req.params.id}`)
 
-}    
+    try {
+        const extractionId: number  = Number(req.params.id as string)
+
+        const successful: boolean = await deleteExtractionById(extractionId)
+        if (successful)
+            resp.sendStatus(200)
+        else 
+            resp.status(404).send({'message': `The extraction [${extractionId}] cannot be found in database!`})
+    } catch(err) {
+        logError(err, `Error occurred when executing 'deleteExtraction'.`)
+        resp.status(500).send({'message': `Error occurred when trying to delete an extraction! - ${getErrorMessage(err)}`})
+    }
+}
+
+export const getProgressLogs = async (req: Request, resp: Response): Promise<void> => {
+    logger.info(`Request has arrived to get the progress logs of extraction  - ${JSON.stringify(req.params)}.`)
+
+    try {
+        const extractionId: number = Number(req.params.id as string)
+
+        const progressLogModels: ProgressLogModel[] = await getProgressLogsByExtractionId(extractionId)
+        const progressLogs: ProgressLogType[] = progressLogModels.map(pl => toProgressLogType(pl))
+
+        resp.status(200).json(progressLogs)
+    } catch(err) {
+        logError(err, `Error occurred when executing 'getProgressLogs'.`)
+        resp.status(500).send({'message': `Error occurred when trying to get the progress logs of extraction! - ${getErrorMessage(err)}`})
+    }
+}
 
 const toExtractionType = (model: ExtractionModel): ExtractionType => {
     const progLangs: ProgLangType[] | undefined = model.progLangs?.map(m => toProgLangType(m))
@@ -94,11 +107,19 @@ const toExtractionType = (model: ExtractionModel): ExtractionType => {
     return {
         id: model.id,
         startDate: model.startDate,
-        branches: JSON.parse(model.branches),
+        projectsBranches: JSON.parse(model.projectsBranches),
         path: model.path,
         status: model.status,
+        progressProjects: model.progressProjects,
+        progressCommits: model.progressCommits,
         repository: toRepositoryType(model.repositoryRef),
         progLangs: progLangs ?? []
     }
 }
 
+const toProgressLogType = (model: ProgressLogModel): ProgressLogType => {
+    return {
+        timestamp: model.timestamp,
+        logText: model.logText
+    }
+}

@@ -1,4 +1,4 @@
-import { Table, Model, Column, DataType,  PrimaryKey, AutoIncrement, AllowNull } from 'sequelize-typescript'
+import { Table, Model, Column, DataType,  PrimaryKey, AutoIncrement, AllowNull, Unique } from 'sequelize-typescript'
 
 @Table({ tableName: 'repository' })
 export default class RepositoryModel extends Model {
@@ -8,6 +8,7 @@ export default class RepositoryModel extends Model {
     @Column(DataType.INTEGER)
     declare id: number
 
+    @Unique
     @AllowNull(false)
     @Column(DataType.STRING)
     declare name: string

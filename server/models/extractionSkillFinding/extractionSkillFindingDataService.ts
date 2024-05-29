@@ -1,36 +1,36 @@
-import logger from '../../init/initLogger';
-import { ExtractionModel } from '../extraction/extractionModel';
-import ProgLangModel from '../progLang/progLangModel';
-import { ProjectModel } from '../project/projectModel';
-import RepositoryModel from '../repository/repositoryModel';
-import { SkillModel } from '../skill/skillModel';
+import logger from '../../init/initLogger'
+import { ScoreType } from '../../schema/treeNode'
 import ExtractionSkillFindingModel from './extractionSkillFindingModel'
 
-const saveExtractionSkillFindingModel = async (score: number, extractionId: number, skillId: number, projectId: number) => {
-    logger.debug(`Saving an extraction skill finding [score = ${score}, extractionId = ${extractionId}, skillId = ${skillId}, projectId = ${projectId}] to DB...`)
-    const extraction: ExtractionModel = ExtractionModel.build({
-        id: extractionId,
-        branches: '-', repositoryRef: RepositoryModel.build(), status: '-'
-    })
+const saveExtractionSkillFindingModel = async (score: ScoreType[], extractionId: number, skillId: number, projectId: number) => {
+    logger.debug(`Saving an extraction skill finding [score = ${JSON.stringify(score)}, extractionId = ${extractionId}, skillId = ${skillId}, projectId = ${projectId}] to DB...`)
 
-    const skill: SkillModel = SkillModel.build({
-        id: skillId,
-        name: '-', progLangRef: ProgLangModel.build(), enabled: true
-    })
+    for (const s of score) {
+        const mList: ExtractionSkillFindingModel[] = await ExtractionSkillFindingModel.findAll({
+            where: { 
+                extractionId: extractionId,
+                skillId: skillId,
+                projectId: projectId,
+                developerId: s.developerId
+            }
+        })
 
-    const project: ProjectModel = ProjectModel.build({
-        id: projectId,
-        name: '-', extractionRef: ExtractionModel.build()
-    })
-
-    await ExtractionSkillFindingModel.create({
-        score: score, 
-        extractionRef: extraction, 
-        skillRef: skill, 
-        projectRef: project
-    }, {
-        include: [ExtractionModel, SkillModel, ProjectModel]
-    });
+        if (mList.length === 0) {
+            await ExtractionSkillFindingModel.create({
+                score: score, 
+                extractionId: extractionId, 
+                skillId: skillId, 
+                projectId: projectId,
+                developerId: s.developerId
+            })
+        } else if (mList.length === 1) {
+            const m = mList[0]
+            m.score += s.score
+            await m.save()
+        } else {
+            throw new Error(`Multiple ExtractionSkillFinding records found but only 1 or zero can occur!`)
+        }    
+    }
 }
 
 export { saveExtractionSkillFindingModel }

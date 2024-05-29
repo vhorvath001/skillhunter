@@ -1,7 +1,7 @@
 import * as winston from 'winston'
 
 const logger: winston.Logger = winston.createLogger({
-    level: 'debug',
+    level: 'info',
     format: winston.format.combine(
         //winston.format.colorize({ all: true }),
         winston.format.timestamp({
@@ -13,11 +13,11 @@ const logger: winston.Logger = winston.createLogger({
     transports: [
         new winston.transports.Console({
             // level: process.env.LOG_LEVEL || 'debug',
-            level: 'debug',
+            level: 'info',
             format: winston.format.combine(winston.format.colorize())
         }),
         new winston.transports.File({ 
-            level: 'debug',
+            level: 'info',
             filename: 'skillhunter.log' 
         })
     ]

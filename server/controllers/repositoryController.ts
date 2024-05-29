@@ -4,10 +4,9 @@ import RepositoryModel from '../models/repository/repositoryModel'
 import { ProjectsBranchesType, RepositoryType } from '../schema/appTypes'
 import crypto from 'crypto-js'
 import config from '../config/skillHunter.config'
-import { AxiosInstance } from 'axios'
-import createGitlabAPI from '../init/initGitLabApi'
 import { getGitLabBranches, getGitLabProjects, GitLabProjectType } from '../services/versionControlService'
 import { getErrorMessage, logError } from './commonFunctions'
+import GitlabAPI from '../init/gitlabAPI'
 
 const getRepositoryById = async (req: Request, resp: Response) => {
     logger.info(`Request has arrived to get a repository - id: ${req.params.id}`)
@@ -75,7 +74,7 @@ const editExistingRepository = async (req: Request, resp: Response) => {
         } else {
             const toUpdateRepositoryModel: RepositoryModel = toRepositoryModel(toUpdateRepository, existingRepositoryModel.token)
             const cnt = await RepositoryModel.update(toUpdateRepositoryModel.toJSON(), { where: { id: Number(id) } })
-            logger.info(`${cnt} row(s) was/were updated.`)
+            logger.info(`${cnt[0]} row(s) was/were updated.`)
 
             resp.status(201).json(toRepositoryType(toUpdateRepositoryModel))
         }
@@ -95,7 +94,7 @@ const deleteRepository = async (req: Request, resp: Response) => {
         if (!repositoryModel) {
             resp.status(404).send({'message': `The repository [${id}] cannot be found in database!`})
         } else {
-            repositoryModel.destroy()
+            await repositoryModel.destroy()
             resp.sendStatus(200)
         }
     } catch(err) {
@@ -111,21 +110,21 @@ const getBranchesPerProjects = async (req: Request, resp: Response) => {
         const repoId: string = req.params.id
         const path: string = req.params.path
 
-        const gitLabApi: AxiosInstance = await createGitlabAPI(Number(repoId))
+        const gitlabAPI: GitlabAPI = await GitlabAPI.createGitlapAPI(Number(repoId))
 
-        const projects: GitLabProjectType[] = await getGitLabProjects(gitLabApi, path)
+        const projects: GitLabProjectType[] = await getGitLabProjects(gitlabAPI, path)
         logger.debug(`The following projects were found: ${projects.map(p => p.name).join(', ')}`)
 
         let projectsBranches: ProjectsBranchesType[] = []
         for(const p of projects) {
-            const branches: string[] = await getGitLabBranches(gitLabApi, p.id)
+            const branches: string[] = await getGitLabBranches(gitlabAPI, p.id)
             projectsBranches.push({
                 id: p.id,
                 name: p.name,
                 branches: branches
             } as ProjectsBranchesType)
         }
-        logger.debug(`Branches of projects: ${projectsBranches}`)
+        logger.debug(`Branches of projects: ${JSON.stringify(projectsBranches)}`)
 
         resp.status(200).json(projectsBranches)
     } catch(err) {

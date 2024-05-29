@@ -1,3 +1,4 @@
+import { DeveloperModel } from '../models/developer/developerModel'
 import { ExtractionModel, ExtractionProgLangModel } from '../models/extraction/extractionModel'
 import ExtractionSkillFindingModel from '../models/extractionSkillFinding/extractionSkillFindingModel'
 import ProgLangModel from '../models/progLang/progLangModel'
@@ -10,7 +11,7 @@ import sequelize from './initSequelize'
 
 const initDB = async (): Promise<void> => {
     logger.info('Initialising the database...')
-    sequelize.addModels([ ExtractionModel, ExtractionProgLangModel, ExtractionSkillFindingModel, ProgLangModel, ProgressLogModel, ProjectModel, RepositoryModel, SkillModel ])
+    sequelize.addModels([ DeveloperModel, ExtractionModel, ExtractionProgLangModel, ExtractionSkillFindingModel, ProgLangModel, ProgressLogModel, ProjectModel, RepositoryModel, SkillModel ])
     // await sequelize.sync({ alter: true })
     logger.info('Synchronization was successful!')
 }

@@ -21,7 +21,10 @@ export default class ProgressLogModel extends Model {
     @Column({ field: 'extraction_id' })
     declare extractionId: number
 
-    @BelongsTo(() => ExtractionModel, 'extraction_id')
+    @BelongsTo(() => ExtractionModel, {
+        foreignKey: 'extraction_id',
+        onDelete: 'cascade'
+    })
     declare extractionRef: ExtractionModel
 
 }

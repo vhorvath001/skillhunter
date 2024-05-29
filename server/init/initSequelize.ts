@@ -1,4 +1,5 @@
 import { Sequelize } from 'sequelize-typescript'
+import logger from './initLogger'
 
 // const sequelize: Sequelize = new Sequelize('sqlite::memory:', {
 const sequelize: Sequelize = new Sequelize({    
@@ -8,6 +9,8 @@ const sequelize: Sequelize = new Sequelize({
         freezeTableName: true,
         timestamps: false
     },
+    logging: msg => logger.debug(msg),
+    // logging: false,
     logQueryParameters: true
 })
 

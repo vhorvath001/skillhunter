@@ -4,7 +4,6 @@ import logger from '../init/initLogger'
 import { getErrorMessage, logError } from './commonFunctions'
 import { SkillModel } from '../models/skill/skillModel'
 import { SkillTreeNodeType } from '../schema/appTypes'
-import { parse } from 'querystring'
 
 export const getSkillTree = async (req: Request, resp: Response) => {
     logger.info(`Request has arrived to get the skill tree - prog land id: ${req.params.progLangId}`)
@@ -22,14 +21,15 @@ export const getSkillTree = async (req: Request, resp: Response) => {
 }
 
 export const handleStatusChange = async (req: Request, resp: Response) => {
-    logger.info(`Request has arrived to disable skills.`)
-    logger.info(JSON.stringify(req.body))
+    logger.info(`Request has arrived to disable skills. - ${JSON.stringify(req.body)}`)
 
     try {
         const ids: number[] = req.body.ids as number[]
         const status: string = req.body.status
 
         await changeSkillsStatus(ids, status)
+        
+        resp.sendStatus(200)
     } catch(err) {
         logError(err, `Error occurred when executing 'handleStatusChange'.`)
         resp.status(500).send({'message': `Error occurred when trying to disable skills! - ${getErrorMessage(err)}`})
@@ -37,15 +37,17 @@ export const handleStatusChange = async (req: Request, resp: Response) => {
 }
 
 export const handleDelete = async (req: Request, resp: Response) => {
-    logger.info(`Request has arrived to delete skills.`)
-    logger.info(JSON.stringify(req.body.ids))
+    logger.info(`Request has arrived to delete skills. - ${JSON.stringify(req.body.ids)}`)
 
     try {
         const ids: number[] = req.body.ids as number[]
 
         await deleteSkills(ids)
+
+        resp.sendStatus(200)
     } catch(err) {
         logError(err, `Error occurred when executing 'handleDelete'.`)
+        
         resp.status(500).send({'message': `Error occurred when trying to delete skills! - ${getErrorMessage(err)}`})
     }
 }

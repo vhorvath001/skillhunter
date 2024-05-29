@@ -1,6 +1,6 @@
-import { AxiosInstance, AxiosResponse } from 'axios'
 import { ProjectSchema, CommitSchema, CommitDiffSchema, RepositoryTreeSchema } from '../schema/gitlabSchema'
 import logger from '../init/initLogger'
+import GitlabAPI from '../init/gitlabAPI'
 
 type GitLabProjectType = {
     id: number,
@@ -23,32 +23,31 @@ type GitLabDiff = {
     path: string
 }
 
-const getGitLabProjects = async (gitLabApi: AxiosInstance, path: string): Promise<GitLabProjectType[]> => {
+const getGitLabProjects = async (gitlabAPI: GitlabAPI, path: string): Promise<GitLabProjectType[]> => {
     logger.debug(`Getting GitLab projects [path=${path}] ...`)
 
-    const projects: ProjectSchema[] = await getAll('projects', gitLabApi)
+    const projects: ProjectSchema[] = await getAll('projects', gitlabAPI, { 'order_by' : 'name', 'sort': 'asc' })
 
     // TODO path_with_namespace can be null
     const gitLabProjects: GitLabProjectType[] = projects
-            .filter(p => (p.path_with_namespace.startsWith('/') ? p.path_with_namespace : '/'+p.path_with_namespace).startsWith(path))
-            .map(p => { return {
-                id: p.id,
-                name: p.name,
-                description: p.description,
-                path_with_namespace: p.path_with_namespace,
-                created_at: p.created_at,
-                http_url_to_repo: p.http_url_to_repo,
-                last_activity_at: p.last_activity_at
-            }})
-    logger.debug(gitLabProjects)
+        .filter(p => (p.path_with_namespace.startsWith('/') ? p.path_with_namespace : '/'+p.path_with_namespace).startsWith(path))
+        .map(p => { return {
+            id: p.id,
+            name: p.name,
+            description: p.description,
+            path_with_namespace: p.path_with_namespace,
+            created_at: p.created_at,
+            http_url_to_repo: p.http_url_to_repo,
+            last_activity_at: p.last_activity_at
+        }})
 
     return gitLabProjects
 }
 
-const getGitLabCommits = async (gitLabApi: AxiosInstance, projectId: number, branch: string): Promise<GitLabCommitType[]> => {
+const getGitLabCommits = async (gitlabAPI: GitlabAPI, projectId: number, branch: string): Promise<GitLabCommitType[]> => {
     logger.debug(`Getting GitLab commits [projectId=${projectId}, branch=${branch}] ...`)
 
-    const commits: CommitSchema[] = await getAll(`/projects/${projectId}/repository/commits`, gitLabApi, { 'ref_name': branch } )
+    const commits: CommitSchema[] = await getAll(`/projects/${projectId}/repository/commits`, gitlabAPI, { 'ref_name': branch } )
 
     const gitLabCommits: GitLabCommitType[] = commits
         .map(c => { return {
@@ -56,76 +55,73 @@ const getGitLabCommits = async (gitLabApi: AxiosInstance, projectId: number, bra
             committer_name: c.committer_name,
             committer_email: c.committer_email
         }})
-    logger.debug(gitLabCommits)
 
     return gitLabCommits
 }
 
-const getGitLabDiffList = async (gitLabApi: AxiosInstance, projectId: number, commitId: string): Promise<GitLabDiff[]> => {
+const getGitLabDiffList = async (gitlabAPI: GitlabAPI, projectId: number, commitId: string): Promise<GitLabDiff[]> => {
     logger.debug(`Getting GitLab diffs [projectId=${projectId}, commitId=${commitId}] ...`)
 
-    const diff: CommitDiffSchema[] = await getAll(`/projects/${projectId}/repository/commits/${commitId}/diff`, gitLabApi)
+    const diff: CommitDiffSchema[] = await getAll(`/projects/${projectId}/repository/commits/${commitId}/diff`, gitlabAPI)
 
-    const gitLabDiffs: GitLabDiff[] = diff.map(d => { return {
-        diff: d.diff,
-        path: d.new_path
-    }})
-    logger.debug(gitLabDiffs)
+    const gitLabDiffs: GitLabDiff[] = diff
+        .filter(d => !d.deleted_file)
+        .filter(d => !d.renamed_file)
+        .map(d => { return {
+            diff: d.diff,
+            path: d.new_path
+        }})
 
     return gitLabDiffs
 }
 
-const getGitLabContentByCommitId = async (gitLabApi: AxiosInstance, projectId: number, filePath: string, commitId: string): Promise<string> => {
+const getGitLabContentByCommitId = async (gitlabAPI: GitlabAPI, projectId: number, filePath: string, commitId: string): Promise<string> => {
     logger.debug(`Getting GitLab content [projectId=${projectId}, commitId=${commitId}, filePath=${filePath}] ...`)
 
-    const content = await gitLabApi.get(`/projects/${projectId}/repository/files/${filePath}/raw`, { params: { 'ref': commitId }})
-    logger.debug(content.toString())
+    const encodedFilePath: string = encodeURIComponent(filePath)
 
-    return content.toString()
+    const content = await gitlabAPI.call(`/projects/${projectId}/repository/files/${encodedFilePath}/raw`, { 'ref': commitId }, 'text/plain') as string
+
+    return content
 }
 
-const getGitLabFolders = async (gitLabApi: AxiosInstance, projectId: number, commitId: string): Promise<string[]> => {
+const getGitLabFolders = async (gitlabAPI: GitlabAPI, projectId: number, commitId: string): Promise<string[]> => {
     logger.debug(`Getting GitLab folders [projectId=${projectId}, commitId=${commitId}] ...`)
 
-    const repositoryTree: RepositoryTreeSchema[]  = await getAll(`/projects/${projectId}/repository/tree`, gitLabApi, { 
+    const repositoryTree: RepositoryTreeSchema[]  = await getAll(`/projects/${projectId}/repository/tree`, gitlabAPI, { 
         'ref': commitId,
         'path': '/',
         'recursive': true})
 
     const folders: string[] = repositoryTree.map(f => f.path)
-    logger.debug(folders)
 
     return folders
 }
 
-const getGitLabBranches = async (gitLabApi: AxiosInstance, projectId: number) => {
+const getGitLabBranches = async (gitlabAPI: GitlabAPI, projectId: number) => {
     logger.debug(`Getting GitLab branches of a project [projectId=${projectId}] ...`)
 
-    const branches: any[]  = await getAll(`/projects/${projectId}/repository/branches`, gitLabApi, { 
+    const branches: any[]  = await getAll(`/projects/${projectId}/repository/branches`, gitlabAPI, { 
         'sort': 'updated_desc'})
 
     const result: string[] = branches.map(b => b.name)
-    logger.debug(result)
 
     return result
 }
 
-const getAll = async (resource: string, client: AxiosInstance, queryParams: {} = {}): Promise<any[]> => {
+const getAll = async (resource: string, gitLabApi: GitlabAPI, queryParams: {} = {}): Promise<any[]> => {
     const allResult: any[] = []
     let page: number = 1
     const perPage = 100
     let result: any[] = [...Array(100).keys()]
 
     while (result.length === perPage) {
-        const response: AxiosResponse = await client.get(resource, {
-            params: {
-                'page': page++,
-                'per_page': perPage,
-                queryParams
-            }
-        })
-        if (response && response.data.length > 0) {
-            result = response.data
+        result = await gitLabApi.call(resource, {
+            'page': String(page++),
+            'per_page': String(perPage),
+            ...queryParams
+        }) as any[]
+        if (result && result.length > 0) {
             allResult.push(...result)
         } else
             result = []

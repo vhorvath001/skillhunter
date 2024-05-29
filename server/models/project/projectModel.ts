@@ -1,5 +1,5 @@
 import { ExtractionModel } from '../extraction/extractionModel'
-import { Table, Model, Column, DataType,  PrimaryKey, ForeignKey, AutoIncrement, AllowNull, BelongsTo } from 'sequelize-typescript'
+import { Table, Model, Column, DataType,  PrimaryKey, ForeignKey, AutoIncrement, AllowNull, BelongsTo, Unique } from 'sequelize-typescript'
 
 @Table({ tableName: 'project' })
 export class ProjectModel extends Model {
@@ -17,7 +17,10 @@ export class ProjectModel extends Model {
     @Column({ field: 'extraction_id' })
     declare extractionId: number
 
-    @BelongsTo(() => ExtractionModel, 'extraction_id')
+    @BelongsTo(() => ExtractionModel, {
+        foreignKey: 'extraction_id',
+        onDelete: 'cascade'
+    })
     declare extractionRef: ExtractionModel
 
 }

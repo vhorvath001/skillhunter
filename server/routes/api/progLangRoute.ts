@@ -1,9 +1,9 @@
 import express from 'express'
-import { createNewProgLang, deleteProgLang, editExistingProgLang, getAllProgLangs, getProgLangById } from '../../controllers/progLangController'
+import { createNewProgLang, deleteProgLang, editExistingProgLang, getAllProgLangs, getProgLang } from '../../controllers/progLangController'
 const progLangRouter = express.Router()
 
 progLangRouter.route('/:id')
-    .get(getProgLangById)
+    .get(getProgLang)
     .put(editExistingProgLang)
     .delete(deleteProgLang)
 

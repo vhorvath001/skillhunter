@@ -1,13 +1,18 @@
+export type ScoreType = {
+    score: number,
+    developerId: number
+}
+
 export default class TreeNode {
 
     private _id?: string
     private _name: string | null
     private _parent: TreeNode | null
-    private _score: number | null
+    private _score: ScoreType[]
     private _progLangId: number | null
     private _children: TreeNode[]
 
-    constructor(_name: string | null, _parent: TreeNode | null, _score: number | null, _progLangId: number | null) {
+    constructor(_name: string | null, _parent: TreeNode | null, _score: ScoreType[], _progLangId: number | null) {
         this._name = _name;
         this._score = _score;
         this._children = [];
@@ -29,8 +34,15 @@ export default class TreeNode {
         return this._children?.find(e => e._name === packageName);
     }
 
-    addScore(_score: number): void {
-        this._score = (this._score ?? 0) + _score;
+    addScore(_score: number, _developerId: number): void {
+        const found: ScoreType[] = this._score.filter(s => s.developerId === _developerId)
+        if (found.length > 0)
+            found[0].score = found[0].score + _score
+        else
+            this._score.push({
+                score: _score,
+                developerId: _developerId
+            })
     }
 
     get children(): TreeNode[] {
@@ -53,7 +65,7 @@ export default class TreeNode {
         return this._progLangId
     }
 
-    get score(): number | null {
+    get score(): ScoreType[] {
         return this._score
     }
 

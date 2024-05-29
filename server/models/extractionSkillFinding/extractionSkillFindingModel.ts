@@ -1,9 +1,17 @@
 import { ExtractionModel } from '../extraction/extractionModel'
 import { SkillModel } from '../skill/skillModel'
 import { ProjectModel } from '../project/projectModel'
-import { Table, Model, Column, DataType,  PrimaryKey, ForeignKey, AutoIncrement, AllowNull, BelongsTo} from 'sequelize-typescript'
+import { Table, Model, Column, DataType,  PrimaryKey, ForeignKey, AutoIncrement, AllowNull, BelongsTo } from 'sequelize-typescript'
+import { DeveloperModel } from '../developer/developerModel'
 
-@Table({ tableName: 'extraction_skill_finding' })
+@Table({ 
+    tableName: 'extraction_skill_finding',
+    indexes: [{
+        name: 'unique-extraction-skill-project-developer',
+        unique: true,
+        fields: ['extraction_id', 'skill_id', 'project_id', 'developer_id']
+    }]
+})
 export default class ExtractionSkillFindingModel extends Model {
 
     @AutoIncrement
@@ -27,13 +35,32 @@ export default class ExtractionSkillFindingModel extends Model {
     @Column({ field: 'project_id' })
     declare projectId: number
 
-    @BelongsTo(() => ExtractionModel, 'extraction_id')
+    @ForeignKey(() => DeveloperModel)
+    @Column({ field: 'developer_id' })
+    declare developerId: number
+
+    @BelongsTo(() => ExtractionModel, {
+        foreignKey: 'extraction_id',
+        onDelete: 'cascade'
+    })
     declare extractionRef: ExtractionModel
 
-    @BelongsTo(() => SkillModel, 'skill_id')
+    @BelongsTo(() => SkillModel, {
+        foreignKey: 'skill_id',
+        onDelete: 'restrict'    
+    })
     declare skillRef: SkillModel
 
-    @BelongsTo(() => ProjectModel, 'project_id')
+    @BelongsTo(() => ProjectModel, {
+        foreignKey: 'project_id',
+        onDelete: 'cascade'    
+    })
     declare projectRef: ProjectModel
+
+    @BelongsTo(() => DeveloperModel, {
+        foreignKey: 'developer_id',
+        onDelete: 'restrict'    
+    })
+    declare developerRef: DeveloperModel
 
 }

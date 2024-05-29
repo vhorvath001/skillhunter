@@ -24,11 +24,11 @@ export class SkillModel extends Model {
     @ForeignKey(() => ProgLangModel)
     @Column({ field: 'proglang_id' })
     declare progLangId: number
-
-    @BelongsTo(() => SkillModel, 'parent_id')
-    declare parentRef?: SkillModel | null
     
-    @BelongsTo(() => ProgLangModel, 'proglang_id')
+    @BelongsTo(() => ProgLangModel, {
+        foreignKey: 'proglang_id',
+        onDelete: 'restrict'
+    })
     declare progLangRef: ProgLangModel
 
 }

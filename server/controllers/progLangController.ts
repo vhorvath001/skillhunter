@@ -2,15 +2,15 @@ import { Request, Response } from 'express'
 import logger from '../init/initLogger'
 import ProgLangModel from '../models/progLang/progLangModel'
 import { ProgLangType } from '../schema/appTypes'
-import { getAllProgLangsOrderByName } from '../models/progLang/progLangDataService'
+import { deleteProgLangById, getAllProgLangsOrderByName, getProgLangById, saveProgLang, updateProgLang } from '../models/progLang/progLangDataService'
 import { getErrorMessage, logError } from './commonFunctions'
 
-const getProgLangById = async (req: Request, resp: Response) => {
+const getProgLang = async (req: Request, resp: Response) => {
     logger.info(`Request has arrived to get a programming language - id: ${req.params.id}`)
 
     try {
-        const id: string = req.params.id
-        const progLangModel: ProgLangModel | null = await ProgLangModel.findByPk(id)
+        const id: number = Number(req.params.id)
+        const progLangModel: ProgLangModel | null = await getProgLangById(id)
 
         if (!progLangModel) {
             resp.status(404).send({'message': `The programming language [${id}] cannot be found in database!`})
@@ -39,13 +39,12 @@ const getAllProgLangs = async (req: Request, resp: Response) => {
 }
 
 const createNewProgLang = async (req: Request, resp: Response) => {
-    logger.info(`Request has arrived to create a new programming language.`)
-    logger.info(JSON.stringify(req.body))
+    logger.info(`Request has arrived to create a new programming language. - ${JSON.stringify(req.body)}`)
     
     try {
         const newProgLang = req.body as ProgLangType
 
-        const newProgLangModel = await toProgLangModel(newProgLang).save()
+        const newProgLangModel = await saveProgLang(toProgLangModel(newProgLang))
 
         resp.status(201).json(toProgLangType(newProgLangModel))
     } catch(err) {
@@ -55,16 +54,15 @@ const createNewProgLang = async (req: Request, resp: Response) => {
 }
 
 const editExistingProgLang = async (req: Request, resp: Response) => {
-    logger.info(`Request has arrived to edit an existing programming language.`)
-    logger.info(JSON.stringify(req.body))
+    logger.info(`Request has arrived to edit an existing programming language. - ${JSON.stringify(req.body)}`)
 
     try {
         const toUpdateProgLang = req.body as ProgLangType        
-        const id: string = req.params.id
+        const id: number = Number(req.params.id)
 
         const toUpdateProgLangModel: ProgLangModel = toProgLangModel(toUpdateProgLang)
-        const cnt = await ProgLangModel.update(toUpdateProgLangModel.toJSON(), { where: { id: Number(id) } })
-        logger.info(`${cnt} row(s) was/were updated.`)
+        const cnt = await updateProgLang(toUpdateProgLangModel, id)
+        logger.info(`${cnt[0]} row(s) was/were updated.`)
 
         if (!cnt || cnt[0] === 0) {
             resp.status(404).send({'message': `The programming language [${id}] cannot be found in database!`})
@@ -73,7 +71,7 @@ const editExistingProgLang = async (req: Request, resp: Response) => {
         }
     } catch(err) {
         logError(err, `Error occurred when executing 'editExistingProgLang'.`)
-        resp.status(500).send({'message': `Error occurred when trying to edit an existing programming languages! - ${getErrorMessage(err)}`})
+        resp.status(500).send({'message': `Error occurred when trying to edit an existing programming language! - ${getErrorMessage(err)}`})
     }
 }
 
@@ -81,18 +79,16 @@ const deleteProgLang = async (req: Request, resp: Response) => {
     logger.info(`Request has arrived to delete a programming language - id: ${req.params.id}`)
 
     try {
-        const id: string = req.params.id
-        const progLangModel: ProgLangModel | null = await ProgLangModel.findByPk(id)
+        const id: number = Number(req.params.id)
+        const deletedRows: number = await deleteProgLangById(id)
 
-        if (!progLangModel) {
+        if (deletedRows !== 1)
             resp.status(404).send({'message': `The programming language [${id}] cannot be found in database!`})
-        } else {
-            progLangModel.destroy()
+        else
             resp.sendStatus(200)
-        }
     } catch(err) {
         logError(err, `Error occurred when executing 'deleteProgLang'.`)
-        resp.status(500).send({'message': `Error occurred when trying to get a programming language! - ${getErrorMessage(err)}`})
+        resp.status(500).send({'message': `Error occurred when trying to delete a programming language! - ${getErrorMessage(err)}`})
     }
 }
 
@@ -105,25 +101,29 @@ const toProgLangType = (progLangModel: ProgLangModel): ProgLangType => {
         level: progLangModel.level,
         packageSeparator: progLangModel.packageSeparator,
         removingTLDPackages: progLangModel.removingTLDPackages,
-        patterns: JSON.parse(progLangModel.patterns).patternList,
+        patterns: progLangModel.patterns ? JSON.parse(progLangModel.patterns).patternList : [],
+        ignoringLinesPatterns: progLangModel.ignoringLinesPatterns ? JSON.parse(progLangModel.ignoringLinesPatterns).patternList : [],
+        packageRemovalPatterns: progLangModel?.packageRemovalPatterns ? JSON.parse(progLangModel.packageRemovalPatterns).patternList : [],
         scope: progLangModel.scopePattern
     }
 }
 
 const toProgLangModel = (progLang: ProgLangType): ProgLangModel => {
-    const newProgLangModel = ProgLangModel.build({
+    const progLangModel = ProgLangModel.build({
         name: progLang.name,
         desc: progLang.desc,
         sourceFiles: progLang.sourceFiles,
         level: progLang.level,
         patterns: JSON.stringify({ patternList: progLang.patterns }),
+        packageRemovalPatterns: JSON.stringify({ patternList: progLang.packageRemovalPatterns }),
+        ignoringLinesPatterns: JSON.stringify({ patternList: progLang.ignoringLinesPatterns }),
         scopePattern: progLang.scope,
         packageSeparator: progLang.packageSeparator,
         removingTLDPackages: progLang.removingTLDPackages
     })
     if (progLang.id)
-        newProgLangModel.id = Number(progLang.id)
-    return newProgLangModel
+        progLangModel.id = Number(progLang.id)
+    return progLangModel
 }
 
-export { getProgLangById, getAllProgLangs, createNewProgLang, editExistingProgLang, deleteProgLang, toProgLangType }
+export { getProgLang, getAllProgLangs, createNewProgLang, editExistingProgLang, deleteProgLang, toProgLangType }

@@ -1,41 +1,45 @@
 import logger from '../../init/initLogger'
 import TreeNode from '../../schema/treeNode'
+import { logSkillTree } from '../../services/skillService'
 import { saveExtractionSkillFindingModel } from '../extractionSkillFinding/extractionSkillFindingDataService'
-import ProgLangModel from '../progLang/progLangModel'
 import { SkillModel } from './skillModel'
 
-const updateSkillTree = async (parent: SkillModel | undefined, skillNodes: TreeNode[], projectId: number, extractionId: number, skillEnabled: boolean): Promise<void> => {
-    logger.debug(`Updating the skill tree [parent = ${parent?.id} : ${parent?.name}, projectId = ${projectId}, extractionId = ${extractionId}, skillNodes = ${skillNodes.map(s => s.name).toString()}] to DB...`)
+const updateSkillTree = async (parent: SkillModel | null, skillNodes: TreeNode[], projectId: number, extractionId: number): Promise<void> => {
+    logger.debug(`Updating the skill tree [parent = ${parent?.id} : ${parent?.name}, projectId = ${projectId}, extractionId = ${extractionId}] to DB...`)
+    logger.silly(`Skill tree:\n${logSkillTree(skillNodes, '')}`)
 
     const skillModels: SkillModel[] = await SkillModel.findAll({
-        where: { parentRef: parent }
+        where: { parentId: parent ? parent.id : null }
     })
     logger.debug(`SkillModels from DB sharing the same parent (that coming in as parameter): ${skillModels.map(s => '['+s.id+'-'+s.name+']').toString()}`)
 
     for(const skillNode of skillNodes) {
         let skillModel: SkillModel | undefined = skillModels.find(skillModel => skillNode.name === skillModel.name && 
-                                                                                skillNode.progLangId === skillModel.progLangRef.id)
-        logger.debug(`Found SkillModel: ${skillModel}`)
+                                                                                skillNode.progLangId === skillModel.progLangId)
+        logger.silly(`Found SkillModel: ${JSON.stringify(skillModel)}`)
         if (!skillModel) {
-            const progLang: ProgLangModel = ProgLangModel.build({
-                id: skillNode.progLangId!,
-                name: '-', sourceFiles: '-', patterns: '-', scopePattern: '-', removingTLDPackages: false
-            })
             skillModel = await SkillModel.create({
                 name: skillNode.name!,
-                enabled: skillEnabled,
-                parentRef: parent,
-                progLangRef: progLang
-            }, {
-                include: ProgLangModel
+                enabled: await getSkillEnabled(parent, true),
+                parentId: parent ? parent.id : null,
+                progLangId: skillNode.progLangId
             })
         }
 
-        saveExtractionSkillFindingModel(skillNode.score ?? 0, extractionId, skillModel.id, projectId)
+        await saveExtractionSkillFindingModel(skillNode.score, extractionId, skillModel.id, projectId)
 
         if (skillNode.children && skillNode.children.length > 0)
-            await updateSkillTree(skillModel, skillNode.children ?? [], projectId, extractionId, skillEnabled)
+            await updateSkillTree(skillModel, skillNode.children ?? [], projectId, extractionId)
     }
+}
+
+const getSkillEnabled = async (parent: SkillModel | null, enabled: boolean): Promise<boolean> => {
+    if (parent) {
+        const grandParent = await SkillModel.findByPk(parent.parentId)
+        return getSkillEnabled(grandParent, parent.enabled)
+    }
+    else
+        return enabled
 }
 
 const getAllSkillsByProgLangAndParent = async (progLangId: number, parentId: number | null): Promise<SkillModel[]> => {

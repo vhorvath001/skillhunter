@@ -1,3 +1,8 @@
+export type PackageRemovalPatternType = {
+    type: string,
+    value: string
+}
+
 export type ProgLangType = {
     id?: number,
     name: string,
@@ -7,6 +12,8 @@ export type ProgLangType = {
     packageSeparator?: string,
     removingTLDPackages: boolean,
     patterns: string[],
+    packageRemovalPatterns: PackageRemovalPatternType[],
+    ignoringLinesPatterns: string[],
     scope: string
 }
 
@@ -34,9 +41,28 @@ export type SkillTreeNodeType = {
 export type ExtractionType = {
     id: number,
     startDate: Date,
-    branches: string[],
+    projectsBranches: SelectedProjectBranchesType[],
     path: string,
     status: string,
+    progressProjects?: string,
+    progressCommits?: string,
     repository: RepositoryType,
     progLangs: ProgLangType[]
+}
+
+export type SelectedProjectBranchesType = {
+    projectId: string,
+    projectName: string,
+    branch: string
+}
+
+export type ProgressLogType = {
+    timestamp: Date,
+    logText: string
+}
+
+export type DeveloperType = {
+    id: number,
+    name: string,
+    email: string
 }
