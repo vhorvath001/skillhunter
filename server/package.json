@@ -7,7 +7,7 @@
     "build": "npx tsc",
     "start": "node dist/index.js",
     "dev": "nodemon server.ts",
-    "test": "jest --coverage"
+    "test": "jest"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",

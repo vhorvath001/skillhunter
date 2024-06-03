@@ -101,13 +101,13 @@ export const getProgressLogs = async (req: Request, resp: Response): Promise<voi
     }
 }
 
-const toExtractionType = (model: ExtractionModel): ExtractionType => {
+export const toExtractionType = (model: ExtractionModel): ExtractionType => {
     const progLangs: ProgLangType[] | undefined = model.progLangs?.map(m => toProgLangType(m))
 
     return {
         id: model.id,
         startDate: model.startDate,
-        projectsBranches: JSON.parse(model.projectsBranches),
+        projectsBranches: model.projectsBranches ? JSON.parse(model.projectsBranches) : [],
         path: model.path,
         status: model.status,
         progressProjects: model.progressProjects,

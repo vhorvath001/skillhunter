@@ -12,7 +12,7 @@ interface Config {
     appLoggingEveryXCommits: number
 }
 
-const config: Config ={
+const config: Config = {
     encryptionKey: process.env.ENCRYPTION_KEY || '',
     db: {
         host: process.env.DB_HOST || '',

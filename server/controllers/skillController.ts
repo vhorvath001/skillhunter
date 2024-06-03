@@ -21,7 +21,7 @@ export const getSkillTree = async (req: Request, resp: Response) => {
 }
 
 export const handleStatusChange = async (req: Request, resp: Response) => {
-    logger.info(`Request has arrived to disable skills. - ${JSON.stringify(req.body)}`)
+    logger.info(`Request has arrived to change the status of skills. - ${JSON.stringify(req.body)}`)
 
     try {
         const ids: number[] = req.body.ids as number[]

@@ -20,6 +20,7 @@ export default class GitlabAPI {
 
         this._instance = new GitlabAPI()
         this._instance._repository = repository
+
         this._instance._decryptedToken = crypto.AES.decrypt(repository.token, config.encryptionKey).toString(crypto.enc.Utf8)
 
         return this._instance

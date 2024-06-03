@@ -14,8 +14,9 @@ const updateSkillTree = async (parent: SkillModel | null, skillNodes: TreeNode[]
     logger.debug(`SkillModels from DB sharing the same parent (that coming in as parameter): ${skillModels.map(s => '['+s.id+'-'+s.name+']').toString()}`)
 
     for(const skillNode of skillNodes) {
-        let skillModel: SkillModel | undefined = skillModels.find(skillModel => skillNode.name === skillModel.name && 
-                                                                                skillNode.progLangId === skillModel.progLangId)
+        let skillModel: SkillModel | undefined = skillModels.find(
+            skillModel => skillNode.name === skillModel.name && 
+            skillNode.progLangId === skillModel.progLangId)
         logger.silly(`Found SkillModel: ${JSON.stringify(skillModel)}`)
         if (!skillModel) {
             skillModel = await SkillModel.create({

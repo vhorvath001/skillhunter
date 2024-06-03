@@ -3,7 +3,7 @@ import logger from '../init/initLogger'
 import { DeveloperModel } from '../models/developer/developerModel'
 import { DeveloperType } from '../schema/appTypes'
 import { getErrorMessage, logError } from './commonFunctions'
-import { deleteDeveloperById, getAllDevelopersOrderByName, getDeveloperById } from '../models/developer/developerDataService'
+import { deleteDeveloperById, getAllDevelopersOrderByName, getDeveloperById, updateDeveloperById } from '../models/developer/developerDataService'
 
 const getAllDevelopers = async (req: Request, resp: Response) => {
     logger.info(`Request has arrived to get all the developers.`)
@@ -47,7 +47,7 @@ const editExistingDeveloper = async (req: Request, resp: Response) => {
         const id: number = Number(req.params.id)
 
         const toUpdateDeveloperModel: DeveloperModel = toDeveloperModel(toUpdateDeveloper)
-        const cnt = await DeveloperModel.update(toUpdateDeveloperModel.toJSON(), { where: { id: Number(id) } })
+        const cnt = await updateDeveloperById(toUpdateDeveloperModel, id)
         logger.info(`${cnt[0]} row(s) was/were updated.`)
 
         if (!cnt || cnt[0] === 0) {
@@ -76,4 +76,5 @@ const toDeveloperModel = (d: DeveloperType): DeveloperModel => {
         email: d.email
     })
 }
-export { getAllDevelopers, deleteDeveloper, editExistingDeveloper }
+
+export { getAllDevelopers, deleteDeveloper, editExistingDeveloper, toDeveloperType, toDeveloperModel }

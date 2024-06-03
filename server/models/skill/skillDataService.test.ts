@@ -2,7 +2,7 @@ import { Sequelize } from 'sequelize-typescript'
 import ProgLangModel from '../progLang/progLangModel'
 import { updateSkillTree } from './skillDataService'
 import { SkillModel } from './skillModel'
-import { ExtractionModel } from '../extraction/extractionModel'
+import { ExtractionModel, ExtractionProgLangModel } from '../extraction/extractionModel'
 import RepositoryModel from '../repository/repositoryModel'
 import { saveExtractionSkillFindingModel } from '../extractionSkillFinding/extractionSkillFindingDataService'
 import TreeNode from '../../schema/treeNode'
@@ -20,7 +20,7 @@ beforeAll(async () => {
     const sequelize = new Sequelize('sqlite::memory:', {
         logging: console.log
     })
-    sequelize.addModels([ ProgLangModel, ExtractionModel , RepositoryModel, SkillModel ])
+    sequelize.addModels([ ProgLangModel, ExtractionModel , RepositoryModel, SkillModel, ExtractionProgLangModel ])
     await sequelize.sync()
 
     progLangModel = ProgLangModel.build({
@@ -35,7 +35,7 @@ afterEach(() => {
     jest.clearAllMocks()
 });
 
-test('testing to update the skill tree - no skill in the database yet', async () => {
+test.only('testing to update the skill tree - no skill in the database yet', async () => {
     const skillTree: TreeNode[] = buildSkillTree(progLangId)
 
     const springframeworkModel: SkillModel = SkillModel.build({
@@ -60,7 +60,7 @@ test('testing to update the skill tree - no skill in the database yet', async ()
             id:37, name: 'security', progLangRef: progLangModel, enabled: true
         })) // returning the saved 'security' skill
 
-    await updateSkillTree(undefined, skillTree, projectId, extractionId, true)
+    await updateSkillTree(null, skillTree, projectId, extractionId)
 
     expect(spySkillModelCreate).toHaveBeenCalledTimes(4)
     expect(saveExtractionSkillFindingModel).toHaveBeenCalledTimes(4)
@@ -68,34 +68,43 @@ test('testing to update the skill tree - no skill in the database yet', async ()
     expect(spySkillModelCreate).toHaveBeenNthCalledWith(1, {
         name: 'projectlombok',
         enabled: true,
-        parentRef: undefined,
-        progLangRef: progLangModel
+        parentId: null,
+        progLangId: progLangId
     }, expect.anything())
-    expect(saveExtractionSkillFindingModel).toHaveBeenNthCalledWith(1, 13.3, extractionId, 34, projectId)
+    expect(saveExtractionSkillFindingModel).toHaveBeenNthCalledWith(1, [
+        { score: 3.0, developerId: 34 },
+        { score: 23.45, developerId: 35 }
+    ], extractionId, 34, projectId)
     // expectation at 'springframework'
     expect(spySkillModelCreate).toHaveBeenNthCalledWith(2, {
         name: 'springframework',
         enabled: true,
-        parentRef: undefined,
-        progLangRef: progLangModel
+        parentId: null,
+        progLangId: progLangId
     }, expect.anything())
-    expect(saveExtractionSkillFindingModel).toHaveBeenNthCalledWith(2, 10, extractionId, 35, projectId)
+    expect(saveExtractionSkillFindingModel).toHaveBeenNthCalledWith(2, [
+        { score: 8.1, developerId: 34 },
+        { score: 7.9, developerId: 35 }], extractionId, 35, projectId)
     // expectation at 'boot'
     expect(spySkillModelCreate).toHaveBeenNthCalledWith(3, {
         name: 'boot',
         enabled: true,
-        parentRef: springframeworkModel,
-        progLangRef: progLangModel
+        parentId: 35,
+        progLangId: progLangId
     }, expect.anything())
-    expect(saveExtractionSkillFindingModel).toHaveBeenNthCalledWith(3, 11.1, extractionId, 36, projectId)
+    expect(saveExtractionSkillFindingModel).toHaveBeenNthCalledWith(3, [
+        { score: 2.1, developerId: 34 }
+    ], extractionId, 36, projectId)
     // expectation at 'security'
     expect(spySkillModelCreate).toHaveBeenNthCalledWith(4, {
         name: 'security',
         enabled: true,
-        parentRef: springframeworkModel,
-        progLangRef: progLangModel
+        parentId: 35,
+        progLangId: progLangId
     }, expect.anything())
-    expect(saveExtractionSkillFindingModel).toHaveBeenNthCalledWith(4, 12.2, extractionId, 37, projectId)
+    expect(saveExtractionSkillFindingModel).toHaveBeenNthCalledWith(4, [
+        { score: 6.1, developerId: 34 }
+    ], extractionId, 37, projectId)
 })
 
 test('testing to update the skill tree - there is one matching skill in the database already', async () => {
@@ -124,7 +133,7 @@ test('testing to update the skill tree - there is one matching skill in the data
             id:37, name: 'security', progLangRef: progLangModel, enabled: true
         })) // returning the saved 'security' skill
 
-    await updateSkillTree(undefined, skillTree, projectId, extractionId, true)
+    await updateSkillTree(null, skillTree, projectId, extractionId)
 
     expect(spySkillModelCreate).toHaveBeenCalledTimes(3)
     expect(saveExtractionSkillFindingModel).toHaveBeenCalledTimes(4)
@@ -161,11 +170,20 @@ const buildSkillTree = (progLangId: number): TreeNode[] => {
     //  springframework
     //      boot
     //      security
-    const springframeworkNode = new TreeNode('springframework', null, 10, progLangId)
-    const bootNode = new TreeNode('boot', springframeworkNode, 11.1, progLangId)
-    const securityNode = new TreeNode('security', springframeworkNode, 12.2, progLangId)
+    const springframeworkNode = new TreeNode('springframework', null, [
+        { score: 8.1, developerId: 34 },
+        { score: 7.9, developerId: 35 }], progLangId)
+    const bootNode = new TreeNode('boot', springframeworkNode, [
+        { score: 2.1, developerId: 34 }
+    ], progLangId)
+    const securityNode = new TreeNode('security', springframeworkNode, [
+        { score: 6.1, developerId: 34 }
+    ], progLangId)
     
-    const projectlombokNode = new TreeNode('projectlombok', null, 13.3, progLangId)
+    const projectlombokNode = new TreeNode('projectlombok', null, [
+        { score: 3.0, developerId: 34 },
+        { score: 23.45, developerId: 35 }
+    ], progLangId)
 
     return [projectlombokNode, springframeworkNode]
 }

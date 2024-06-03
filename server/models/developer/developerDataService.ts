@@ -43,4 +43,12 @@ const deleteDeveloperById = async (id: number): Promise<boolean> => {
     return deletedRows === 1
 }
 
-export { getOrCreateDeveloper, getAllDevelopersOrderByName, deleteDeveloperById, getDeveloperById }
+const updateDeveloperById = async (model: DeveloperModel, id: number): Promise<number[]>  => {
+    return await DeveloperModel.update(model.toJSON(), {
+        where: {
+            id: Number(id)
+        } 
+    })
+}
+
+export { getOrCreateDeveloper, getAllDevelopersOrderByName, deleteDeveloperById, getDeveloperById, updateDeveloperById }
