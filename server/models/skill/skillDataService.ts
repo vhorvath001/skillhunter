@@ -1,3 +1,4 @@
+import { join } from 'path'
 import logger from '../../init/initLogger'
 import TreeNode from '../../schema/treeNode'
 import { logSkillTree } from '../../services/skillService'
@@ -21,7 +22,7 @@ const updateSkillTree = async (parent: SkillModel | null, skillNodes: TreeNode[]
         if (!skillModel) {
             skillModel = await SkillModel.create({
                 name: skillNode.name!,
-                enabled: await getSkillEnabled(parent, true),
+                enabled: parent ? parent.enabled : true,
                 parentId: parent ? parent.id : null,
                 progLangId: skillNode.progLangId
             })
@@ -32,15 +33,6 @@ const updateSkillTree = async (parent: SkillModel | null, skillNodes: TreeNode[]
         if (skillNode.children && skillNode.children.length > 0)
             await updateSkillTree(skillModel, skillNode.children ?? [], projectId, extractionId)
     }
-}
-
-const getSkillEnabled = async (parent: SkillModel | null, enabled: boolean): Promise<boolean> => {
-    if (parent) {
-        const grandParent = await SkillModel.findByPk(parent.parentId)
-        return getSkillEnabled(grandParent, parent.enabled)
-    }
-    else
-        return enabled
 }
 
 const getAllSkillsByProgLangAndParent = async (progLangId: number, parentId: number | null): Promise<SkillModel[]> => {

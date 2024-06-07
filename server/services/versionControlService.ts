@@ -102,7 +102,8 @@ const getGitLabBranches = async (gitlabAPI: GitlabAPI, projectId: number) => {
     logger.debug(`Getting GitLab branches of a project [projectId=${projectId}] ...`)
 
     const branches: any[]  = await getAll(`/projects/${projectId}/repository/branches`, gitlabAPI, { 
-        'sort': 'updated_desc'})
+        'sort': 'updated_desc'
+    })
 
     const result: string[] = branches.map(b => b.name)
 

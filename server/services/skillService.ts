@@ -177,19 +177,20 @@ const calculateCumulatedScore = (diff: GitLabDiff, ignoringLinesPatterns: string
         else if (lineDiff.startsWith('-'))
             minusLines.push(lineDiff.slice(1).trim())
         else {
-            ignoreLinesIfNecessary(minusLines.map(l => l), plusLines.map(l => l), ignoringLinesPatterns)
-            score = score + calculateScore(minusLines, plusLines)
+            score = score + calculateScore(minusLines, plusLines, ignoringLinesPatterns)
             minusLines = []
             plusLines = []
         }
     }
     if (minusLines.length + plusLines.length > 0)
-        score = score + calculateScore(minusLines, plusLines)
+        score = score + calculateScore(minusLines, plusLines, ignoringLinesPatterns)
     return score
 }
 
-const calculateScore = (minusLines: string[], plusLines: string[]) => {
+const calculateScore = (minusLines: string[], plusLines: string[], ignoringLinesPatterns: string[]): number => {
     logger.debug(`Calculating score ...`)
+    ignoreLinesIfNecessary(minusLines, plusLines, ignoringLinesPatterns)
+    
     let score: number = 0;
     if (minusLines.length > 0 || plusLines.length > 0) {
         logger.silly(`minusLines = [${minusLines}]\nplusLines = [${plusLines}]`)
@@ -210,6 +211,7 @@ const calculateScore = (minusLines: string[], plusLines: string[]) => {
         }
         // 2nd rule: closest match
         else {
+            sortPlusLinesByLeastDifferenceFromMinusLine(plusLines, minusLines)
             for(const plusLine of plusLines) {
                 // if there is no line starting with '-' left then the score is: nr of plus lines * 1
                 if (minusLines.length === 0)
@@ -236,30 +238,43 @@ const calculateScore = (minusLines: string[], plusLines: string[]) => {
 const computeScore = (plusLine: string | null, minusLine: string | null): number => {
     let score: number = 0 
     // if there are - and + lines
-    if (minusLine && plusLine)
+    if (minusLine && plusLine) {
         // similarity -> 0.0 (different) - 1.0 (identical)
-        score = (1 - similarity(plusLine, minusLine)) * plusLine.trim().length
+        const [x, i] = toInt(similarity(plusLine, minusLine))
+        score = ((1*i - x) / i) * plusLine.trim().length
+    }
     // if there is only + line
     else if (plusLine)
-        score = 1 * plusLine.trim().length
+        score = plusLine.trim().length
     else if (minusLine)
         score = 0.5
     return score
 }
 
+const toInt = (v: number) => {
+    if (v === 1)
+        return [1, 1]
+    else if (v === 0)
+        return [0, 1]
+    else {
+        const d = v.toString().split('.')[1].length
+        const p = Math.pow(10, d)
+        const r = v * p
+        return [r, p]    
+    }
+}
+
 const ignoreLinesIfNecessary = (minusLines: string[], plusLines: string[], ignoringLinesPatterns: string[]): void => {
-    logger.debug(`ignoreLinesIfNecessary [minusLines: ${minusLines}\nplusLines: ${plusLines}\nignoringLinesPatterns: ${ignoringLinesPatterns}`)
+    logger.silly(`ignoreLinesIfNecessary [minusLines: ${minusLines}\nplusLines: ${plusLines}\nignoringLinesPatterns: ${ignoringLinesPatterns}`)
     const equalLength: boolean = minusLines.length === plusLines.length
-    logger.silly(`equalLength: ${equalLength}`)
     outerLoop: for (let i = 0; i < plusLines.length; i++) {
         for(const pattern of ignoringLinesPatterns) {
             const regExp: RegExp = new RegExp(pattern, 'gi')
-            logger.silly(`plusLines[i]: ${plusLines[i]}, pattern: ${pattern}`)
             if (plusLines[i].match(regExp)) {
-                logger.debug(`The '+' line [${plusLines[i]}] will be removed.`)
+                logger.silly(`The '+' line [${plusLines[i]}] will be removed.`)
                 plusLines.splice(i, 1)
                 if (equalLength) {
-                    logger.debug(`The '-' line [${minusLines[i]}] will be also removed.`)
+                    logger.silly(`The '-' line [${minusLines[i]}] will be also removed.`)
                     minusLines.splice(i, 1)
                 }
                 continue outerLoop
@@ -290,6 +305,44 @@ const removeUnnecessaryPackage = (pckg: string, progLang: ProgLangModel): string
     }
     logger.debug(`updatedPckg = ${updatedPckg}`)
     return updatedPckg
+}
+
+/*
+-@Autowired private Context beanContext;
++@Autowired public MyContext myBeanContext;
++@Autowired private Context beanContext;
+
+In the example above the logic would have taken the 1st + line and look for the least different - line ->
+however it is wrong as the 1st - and 2nd + line are equal so they should be 'ignored' (their score wil be 0) 
+and just the 1st + line should be calculated =>
+looping through - lines -> find the least different + line and move this + line to the index in plusLines where 
+the currently - line is (for example: the - line is in position 0, the found least different + line is in position 1 =>
+the 1st and 2nd plus line will be swapped)
+*/
+const sortPlusLinesByLeastDifferenceFromMinusLine = (plusLines: string[], minusLines: string[]) => {
+    minusLines.forEach((minusLine, posMinus) => {
+        if (posMinus < plusLines.length) {
+            const posPlus = getPosOfLeastDifferentPlusLine(minusLine, plusLines, posMinus)
+            swap(plusLines, posPlus, posMinus)
+        }
+    })
+}
+const getPosOfLeastDifferentPlusLine = (minusLine: string, plusLines: string[], posMinus: number): number => {
+    let pos: number = 0
+    let minScore: number = 1
+    plusLines.forEach((plusLine, posPlus) => {
+        const currentScore: number = computeScore(plusLine, minusLine)
+        if (currentScore < minScore) {
+            pos = posPlus
+            minScore = currentScore
+        }
+    })
+    return pos
+}
+const swap = (plusLines: string[], pos1: number, pos2: number): void => {
+    const val: string = plusLines[pos1]
+    plusLines[pos1] = plusLines[pos2]
+    plusLines[pos2] = val 
 }
 
 export { populateSkillsFromContent, calculateCumulatedScore, findProgLangByPath, logSkillTree }
