@@ -1,11 +1,11 @@
 import { render, screen } from '@testing-library/react';
-import EditableList from './EditableList';
 import userEvent from '@testing-library/user-event';
+import EditableList from './EditableList';
 
 test('when no list is passed (no existing data) then no EditableListItem is displayed', async () => {
     const list: string[] = [];
     const required: boolean = true;
-    await render( <EditableList 
+    await render( <EditableList
                 list={list}
                 required={required} /> );
     

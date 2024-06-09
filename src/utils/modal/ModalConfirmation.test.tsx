@@ -43,7 +43,6 @@ test('Displaying the confirmation modal and set error message when clicking on C
 
     expect(screen.getByText(/Are you sure to delete the record/i)).toBeInTheDocument();
     expect(within(screen.getByRole('alert')).getByText(/Network Error/i)).toBeInTheDocument();
-    screen.debug();
 })
 
 test('Displaying the confirmation modal and no error message when clicking on Confirm', async () => {

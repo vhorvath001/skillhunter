@@ -155,7 +155,7 @@ const reducer = (state: ExtractionStateType, action: ExtractionAction): Extracti
     }
 }
 
-const initState: UseExtractionContextType = {
+export const initState: UseExtractionContextType = {
     handleStartExtraction: handleStartExtraction,
     show2ndPage: false,
     setShow2ndPage: () => {}, 

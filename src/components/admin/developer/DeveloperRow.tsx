@@ -32,9 +32,7 @@ const DeveloperRow = ({ record, formId, handleSave, handleDelete, dispatch }: Pr
                             role='button'
                             title='Editing the developer.' /> }
                     handleSave={handleSave}
-                    dispatch={dispatch}
-                    // className='me-1'
-                     />
+                    dispatch={dispatch} />
                 <ModalConfirmation
                     icon={<FcDeleteRow 
                             size={25} 

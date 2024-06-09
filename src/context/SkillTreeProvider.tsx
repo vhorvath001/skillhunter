@@ -86,7 +86,8 @@ const handleDelete = (dispatch: React.Dispatch<SkillTreeAction>,
 }
 
 const collectIds = (nodes: SkillTreeNodeType[], operation: string, topDownWalkIds: number[]): number[] => {
-    let ids: number[] = nodes.filter(n => n.selected).map(n => n.id)
+    let ids: number[] = nodes.filter(n => n.selected)
+                             .map(n => n.id)
     for(const node of nodes) {
         if (node.selected) {
             ids.push(...collectAllIds(node))
