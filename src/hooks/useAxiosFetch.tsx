@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios, { AxiosResponse, CancelTokenSource } from 'axios';
-import { client } from '../api/client';
+import { endpointBackEnd } from '../api/client';
 
 
 const useAxiosFetch = (fetchUrl: string) => {
@@ -15,7 +15,7 @@ const useAxiosFetch = (fetchUrl: string) => {
         const fetchData = async (url: string): Promise<void> => {
             setIsLoading(true);
             try {
-                const resp: AxiosResponse = await axios.get(client.defaults.baseURL + url, {
+                const resp: AxiosResponse = await axios.get(endpointBackEnd + url, {
                     cancelToken: sourceCancelToken.token
                 });
                 if (isMounted) {

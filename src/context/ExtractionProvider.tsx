@@ -45,7 +45,7 @@ export type ExtractionAction = {
     payload?: ExtractionType[]
 }
 
-type ExtractionStateType = {
+export type ExtractionStateType = {
     list: ExtractionType[]
 }
 
@@ -74,7 +74,7 @@ export const handleStartExtraction = async (e: FormEvent<HTMLFormElement>,
             }
         }
 
-        client
+        return client
             .post('extractions', {
                 repoId: formData.get('repository'),
                 path: formData.get('path'),
@@ -91,16 +91,18 @@ export const handleStartExtraction = async (e: FormEvent<HTMLFormElement>,
     }
 }
 
-const handleFilterClick = (filterRepoId: number, 
+export const handleFilterClick = async (
+                           filterRepoId: number, 
                            filterStatus: string, 
                            filterDateFrom: string, 
                            filterDateTo: string, 
                            setFilterErrorMessage: (filterErrorMessage: string) => void, 
                            dispatch: React.Dispatch<ExtractionAction>, 
-                           setAreExtractionsLoading: (areExtractionsLoading: boolean) => void): void => {
+                           setAreExtractionsLoading: (areExtractionsLoading: boolean) => void) => {
     setAreExtractionsLoading(true)
     setFilterErrorMessage('')
-    client
+
+    return client
         .get('extractions', {
             params: {
                 repoId: filterRepoId,
@@ -109,7 +111,10 @@ const handleFilterClick = (filterRepoId: number,
                 status: filterStatus
             }
         })
-        .then(resp => dispatch({ type: EXTRACTION_ACTION_TYPES.POPULATE, payload: resp.data }))
+        .then(resp => dispatch({ 
+            type: EXTRACTION_ACTION_TYPES.POPULATE, 
+            payload: resp.data 
+        }))
         .catch(err => handleError(err, setFilterErrorMessage))
         .finally(() => setAreExtractionsLoading(false))
 }
@@ -140,7 +145,7 @@ export const handleDelete = (dispatch: any,
         .catch(err => handleError(err, setErrorMessage))
 }
 
-const reducer = (state: ExtractionStateType, action: ExtractionAction): ExtractionStateType => {
+export const reducer = (state: ExtractionStateType, action: ExtractionAction): ExtractionStateType => {
     switch (action.type) {
         case EXTRACTION_ACTION_TYPES.DELETE: {
             const removableId = Number(action.id)
@@ -174,7 +179,7 @@ export const initState: UseExtractionContextType = {
     setRepoId: () => {}, 
     filterRepoId: -1,
     setFilterRepoId: () => {}, 
-    handleFilterClick: () => {},
+    handleFilterClick: () => Promise.resolve(),
     filterDateFrom: '',
     setFilterDateFrom: () => {},
     filterDateTo: '',
@@ -215,7 +220,6 @@ const useExtractionContext = () => {
     const [ filterDateFrom, setFilterDateFrom ] = useState<string>(format(currentDate, 'yyyy-MM-dd') + 'T00:00:00')
     const [ filterDateTo, setFilterDateTo ] = useState<string>(format(currentDate, 'yyyy-MM-dd') + 'T23:59:59')
     const [ filterErrorMessage, setFilterErrorMessage ] = useState<string>('')
-    // const [ extractions, setExtractions ] = useState<ExtractionType[]>([])
     const [ areExtractionsLoading, setAreExtractionsLoading ] = useState<boolean>(false)
     const [ filterStatus, setFilterStatus ] = useState<string>('-1')
     const [ showExtractionDetails, setShowExtractionDetails ] = useState<boolean>(false)

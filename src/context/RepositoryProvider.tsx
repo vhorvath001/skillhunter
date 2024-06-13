@@ -1,7 +1,7 @@
 import { FormEvent, ReactElement, createContext, useEffect, useReducer } from 'react'
 import useAxiosFetch from '../hooks/useAxiosFetch'
 import axios, { AxiosResponse } from 'axios'
-import { client } from '../api/client'
+import { endpointBackEnd } from '../api/client'
 import { ChildrenType, handleError } from './ContextFunctions'
 
 export const REPOSITORY_ACTION_TYPES = {
@@ -35,7 +35,7 @@ const handleDelete = async (dispatch: React.Dispatch<RepositoryAction>, handleCl
     try {
         await axios({
             method: 'DELETE',
-            url: client.defaults.baseURL + `/repositories/${id}` 
+            url: `${endpointBackEnd}/repositories/${id}` 
         });
         dispatch({ type: REPOSITORY_ACTION_TYPES.DELETE, id: id })
         handleClose();
@@ -58,7 +58,7 @@ const handleSave = async (dispatch: React.Dispatch<RepositoryAction>, e: FormEve
     try {
         const resp: AxiosResponse = await axios({
             method: verb, 
-            url: client.defaults.baseURL + '/repositories' + (verb == 'PUT' ? `/${formDataObj.id}` : ''), 
+            url: `${endpointBackEnd}/repositories` + (verb == 'PUT' ? `/${formDataObj.id}` : ''), 
             data: formDataObj 
         }); 
         dispatch({ 

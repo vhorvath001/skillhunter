@@ -9,29 +9,33 @@ vi.mock('./ExtractionCards')
 
 test('check if Loading appears', () => {
     vi
-      .spyOn(UseExtraction, 'default')
-      .mockImplementation(() => { return {
-        ...initState,
-        setShowStartExtraction: () => {},
-        areExtractionsLoading: true
-    }})
+        .spyOn(UseExtraction, 'default')
+        .mockImplementation(() => {
+            return {
+                ...initState,
+                setShowStartExtraction: () => { },
+                areExtractionsLoading: true
+            }
+        })
 
-    render( <Extraction /> )
+    render(<Extraction />)
 
     expect(screen.queryByText(/Loading the Extraction cards/i)).toBeInTheDocument()
 })
 
 test('check if ExtractionCards appears but Loading does not', () => {
     vi.spyOn(UseExtraction, 'default')
-      .mockImplementation(() => { return {
-        ...initState,
-        setShowStartExtraction: () => {},
-        areExtractionsLoading: false
-    }})
+        .mockImplementation(() => {
+            return {
+                ...initState,
+                setShowStartExtraction: () => { },
+                areExtractionsLoading: false
+            }
+        })
 
-    vi.spyOn(ExtractionCards, 'default').mockImplementation(() => <div data-testid="ExtractionCards"/>) 
+    vi.spyOn(ExtractionCards, 'default').mockImplementation(() => <div data-testid="ExtractionCards" />)
 
-    render( <Extraction /> )
+    render(<Extraction />)
 
     screen.debug()
     expect(screen.queryByTestId('ExtractionCards')).toBeInTheDocument()

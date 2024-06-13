@@ -42,7 +42,7 @@ const SkillTree = () => {
                     </div>
                 }
                 { !isLoading && !fetchError &&
-                    <div className='mt-3 w-50 ml-0 mr-0 mx-auto text-center'>
+                    <div className='mt-3 w-50 ml-0 mr-0 mx-auto text-center' data-testid='dProgLangSelect'>
                         <FloatingLabel label="Choose a programming language to view the skill tree">
                             <Form.Select onChange={handleChange}>
                                 <option key='-1' value='-1'>---</option>
@@ -62,7 +62,7 @@ const SkillTree = () => {
                     </div>
                 }
                 { !treeIsLoading && !treeErrorMessage && 
-                    <div className='mt-3 w-50 ml-0 mr-0 mx-auto '>
+                    <div className='mt-3 w-50 ml-0 mr-0 mx-auto' data-testid='dSkillTree'>
                         {state.skillTree.length > 0 &&
                             <>
                                 <Button className='m-3' size='sm' variant='outline-secondary' onClick={() => changeAllSelected(true)}>Select all</Button>
@@ -77,11 +77,6 @@ const SkillTree = () => {
 
                                 <Button className='mx-2 mt-3 mb-4' variant='primary' onClick={ () => handleStatusChange('ENABLE', state.skillTree, dispatch, setTreeOperationErrorMessage) }>Enable</Button>
                                 <Button className='mx-2 mt-3 mb-4' variant='secondary' onClick={ () => handleStatusChange('DISABLE', state.skillTree, dispatch, setTreeOperationErrorMessage) }>Disable</Button>
-
-
-
-                                {/* <Button className='mx-2 mt-3 mb-4' variant='danger' onClick={() => handleDelete(state.skillTree, dispatch, setTreeOperationErrorMessage)}>Delete</Button> */}
-
 
                                 <ModalConfirmation
                                     icon={<Button className='mx-2 mt-3 mb-4' variant='danger'>Delete</Button>} 

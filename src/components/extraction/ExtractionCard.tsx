@@ -43,8 +43,12 @@ const ExtractionCard = ({ extraction }: PropsType): ReactElement => {
                         <div>Prog. lang.: <b>{extraction.progLangs.map(pl => pl.name).join(', ')}</b></div>
                         <div>
                             Progress: 
-                            <Badge bg="info" title='It shows how many projects have been processed and altogether how many are going to.' className='mx-1'>{extraction.progressProjects}</Badge>
-                            <Badge bg="secondary" title='It shows how many commits have been processed in the current project and how many are going to.' className='ms-1'>{extraction.progressCommits}</Badge>
+                            <Badge bg="info" title='It shows how many projects have been processed and altogether how many are going to.' className='mx-1'>
+                                {extraction.progressProjects}
+                            </Badge>
+                            <Badge bg="secondary" title='It shows how many commits have been processed in the current project and how many are going to.' className='ms-1'>
+                                {extraction.progressCommits}
+                            </Badge>
                         </div>
                     </Card.Text>
                     <Button variant="primary" onClick={() => handleDetailsClick(extraction.id)} className='me-2 mb-2' size='sm'>Details</Button>

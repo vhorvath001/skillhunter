@@ -9,7 +9,7 @@ type PropsType = {
 }
 
 const StartExtractionForm = ({ projectsBranchesData }: PropsType): ReactElement => {
-    const {show2ndPage } = useExtraction()
+    const { show2ndPage } = useExtraction()
 
     return (
         <>

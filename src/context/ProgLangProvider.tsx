@@ -1,7 +1,7 @@
 import { FormEvent, ReactElement, createContext, useEffect, useReducer } from 'react'
 import useAxiosFetch from '../hooks/useAxiosFetch'
 import axios, { AxiosResponse } from 'axios'
-import { client } from '../api/client'
+import { endpointBackEnd } from '../api/client'
 import { ChildrenType, handleError } from './ContextFunctions'
 
 export const PROG_LANG_ACTION_TYPES = {
@@ -38,7 +38,7 @@ export type ProgLangAction = {
     filter?: string
 }
 
-type ProgLangStateType = {
+export type ProgLangStateType = {
     list: ProgLangType[],
     originalList: ProgLangType[],
 }
@@ -47,7 +47,7 @@ export const handleDelete = async (dispatch: React.Dispatch<ProgLangAction>, han
     try {
         await axios({
             method: 'DELETE',
-            url: client.defaults.baseURL + `/prog-langs/${id}`
+            url: `${endpointBackEnd}/prog-langs/${id}`
         })
         dispatch({ type: PROG_LANG_ACTION_TYPES.DELETE, id: id })
         handleClose();
@@ -56,7 +56,7 @@ export const handleDelete = async (dispatch: React.Dispatch<ProgLangAction>, han
     }
 }
 
-const handleSave = async (dispatch: React.Dispatch<ProgLangAction>, e: FormEvent<HTMLFormElement>, handleClose: () => void, setErrorMessage: (errorMessage: string) => void) => {
+export const handleSave = async (dispatch: React.Dispatch<ProgLangAction>, e: FormEvent<HTMLFormElement>, handleClose: () => void, setErrorMessage: (errorMessage: string) => void) => {
     e.preventDefault();
 
     const formData: FormData = new FormData(e.currentTarget)
@@ -69,7 +69,7 @@ const handleSave = async (dispatch: React.Dispatch<ProgLangAction>, e: FormEvent
     try {
         const resp: AxiosResponse = await axios({
             method: verb, 
-            url: client.defaults.baseURL + '/prog-langs' + (verb == 'PUT' ? `/${formData.get('id')}` : ''), 
+            url: `${endpointBackEnd}/prog-langs` + (verb == 'PUT' ? `/${formData.get('id')}` : ''), 
             data: progLang
         }); 
         dispatch({ 
@@ -149,7 +149,7 @@ const initState: UseProgLangContextType = {
 
 const ProgLangContext = createContext<UseProgLangContextType>(initState);
 
-const reducer = (state: ProgLangStateType, action: ProgLangAction): ProgLangStateType => {
+export const reducer = (state: ProgLangStateType, action: ProgLangAction): ProgLangStateType => {
     switch (action.type) {
         case PROG_LANG_ACTION_TYPES.DELETE: {
             const removableId = action.id!
@@ -183,7 +183,7 @@ const reducer = (state: ProgLangStateType, action: ProgLangAction): ProgLangStat
     }
 }
 
-const sortList = (l: ProgLangType[]) => {
+export const sortList = (l: ProgLangType[]) => {
     if (l && l instanceof Array) {
         l.sort((a,b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1 : 
                         a.name.toLowerCase() === b.name.toLowerCase() ? 0 : -1);

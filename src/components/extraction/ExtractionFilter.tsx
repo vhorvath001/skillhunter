@@ -29,23 +29,21 @@ const ExtractionFilter = (): ReactElement => {
 
     const changeFilterDateFromTo = (e: ChangeEvent<HTMLSelectElement>) => {
         const filterDateRangeText: string = e.target.value
-        let dateFrom: Date = new Date()
-        let dateTo: Date = new Date()
+        let dateFrom: Date = new Date(Date.now())
+        let dateTo: Date = new Date(Date.now())
         if (filterDateRangeText === 'YESTERDAY') {
             dateFrom.setDate(dateFrom.getDate() - 1)
             dateTo.setDate(dateTo.getDate() - 1)
         } else if (filterDateRangeText === 'THIS_WEEK') {
-            const currentDay: number = new Date().getDay()
+            const currentDay: number = dateFrom.getDay()
             dateFrom.setDate(dateFrom.getDate() - (currentDay || 7) + 1)
         } else if (filterDateRangeText === 'LAST_WEEK') {
-            const currentDay: number = new Date().getDay()
+            const currentDay: number = dateFrom.getDay()
             dateFrom.setDate(dateFrom.getDate() - ((currentDay || 7) + 6))
             dateTo.setDate(dateTo.getDate() - (currentDay || 7))
         } else if (filterDateRangeText === 'THIS_MONTH') {
             const dayInMonth: number = dateFrom.getDate()
-            const daysInMonth = new Date(dateFrom.getFullYear(), dateFrom.getMonth(), 0).getDate()
             dateFrom.setDate(dateFrom.getDate() - dayInMonth + 1)
-            dateTo.setDate(dateTo.getDate() - dayInMonth + daysInMonth + 1)
         } else if (filterDateRangeText === 'LAST_MONTH') {
             const dayInMonth: number = dateFrom.getDate()
             dateTo.setDate(dateFrom.getDate() - dayInMonth)
@@ -54,8 +52,6 @@ const ExtractionFilter = (): ReactElement => {
         } else if (filterDateRangeText === 'THIS_YEAR') {
             dateFrom.setMonth(0)
             dateFrom.setDate(1)
-            dateTo.setMonth(11)
-            dateTo.setDate(31)
         } else if (filterDateRangeText === 'LAST_YEAR') {
             dateFrom.setFullYear(dateFrom.getFullYear() - 1)
             dateFrom.setMonth(0)
@@ -66,7 +62,7 @@ const ExtractionFilter = (): ReactElement => {
         } else if (filterDateRangeText === 'LAST_7_DAYS') {
             dateFrom.setDate(dateFrom.getDate() - 6)
         } else if (filterDateRangeText === 'LAST_30_DAYS') {
-            dateFrom.setDate(dateFrom.getDate() - 30)
+            dateFrom.setDate(dateFrom.getDate() - 29)
         } else if (filterDateRangeText === 'ALL_TIME') {
             dateFrom = new Date(1977, 8, 13)
         }
@@ -97,11 +93,11 @@ const ExtractionFilter = (): ReactElement => {
                     </select>
 
                     <label className='m-2'>Date range:</label>
-                    <input type='datetime-local' step='1' value={filterDateFrom} onChange={handleFilterDateFrom} />
+                    <input type='datetime-local' step='1' value={filterDateFrom} onChange={handleFilterDateFrom} data-testid='iFilterDateFrom' />
                     <label className='mx-3'>&#8213;</label>
-                    <input type='datetime-local' step='1' value={filterDateTo} onChange={handleFilterDateTo} />
+                    <input type='datetime-local' step='1' value={filterDateTo} onChange={handleFilterDateTo} data-testid='iFilterDateTo' />
 
-                    <select className='ms-2' onChange={changeFilterDateFromTo}>
+                    <select className='ms-2' onChange={changeFilterDateFromTo} data-testid='sFilterDateType'>
                         <option key='TODAY' value='TODAY'>Today</option>
                         <option key='YESTERDAY' value='YESTERDAY'>Yesterday</option>
                         <option key='THIS_WEEK' value='THIS_WEEK'>This week</option>

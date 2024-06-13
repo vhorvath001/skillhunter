@@ -10,12 +10,13 @@ import Button from 'react-bootstrap/Button'
 import useExtraction from '../../hooks/useExtraction'
 
 const StartExtractionModal = (): ReactElement => {
-    const { handleStartExtraction, show2ndPage, setShow2ndPage, showStartExtraction, setShowStartExtraction, errorMessage, setErrorMessage, isLoading, projectsBranchesData, pathTextfield, selectedProgLangs } = useExtraction()
+    const { handleStartExtraction, show2ndPage, setShow2ndPage, showStartExtraction, setShowStartExtraction, errorMessage, setErrorMessage, isLoading, projectsBranchesData, pathTextfield, selectedProgLangs, setSelectedProgLangs } = useExtraction()
 
     const handleClose = (): void => {
         setShowStartExtraction(false)
         setErrorMessage('')
         setShow2ndPage(false)
+        setSelectedProgLangs([])
     }
 
     return (

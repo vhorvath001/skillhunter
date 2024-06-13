@@ -2,7 +2,7 @@ import { FormEvent, ReactElement, createContext, useEffect, useReducer } from 'r
 import { ChildrenType, handleError } from './ContextFunctions'
 import useAxiosFetch from '../hooks/useAxiosFetch'
 import axios, { AxiosResponse } from 'axios'
-import { client } from '../api/client'
+import { endpointBackEnd } from '../api/client'
 
 export const DEVELOPER_ACTION_TYPES = {
     POPULATE: 'POPULATE',
@@ -23,7 +23,7 @@ export type DeveloperAction = {
     payload?: DeveloperType | DeveloperType[]
 }
 
-type DeveloperStateType = {
+export type DeveloperStateType = {
     list: DeveloperType[],
     originalList: DeveloperType[],
 }
@@ -32,7 +32,7 @@ export const handleDelete = async (dispatch: React.Dispatch<DeveloperAction>, ha
     try {
         await axios({
             method: 'DELETE',
-            url: client.defaults.baseURL + `/developers/${id}`
+            url: `${endpointBackEnd}/developers/${id}`
         })
         dispatch({ type: DEVELOPER_ACTION_TYPES.DELETE, id: Number(id) })
         handleClose()
@@ -41,7 +41,7 @@ export const handleDelete = async (dispatch: React.Dispatch<DeveloperAction>, ha
     }
 }
 
-const handleSave = async (dispatch: React.Dispatch<DeveloperAction>, e: FormEvent<HTMLFormElement>, handleClose: () => void, setErrorMessage: (errorMessage: string) => void) => {
+export const handleSave = async (dispatch: React.Dispatch<DeveloperAction>, e: FormEvent<HTMLFormElement>, handleClose: () => void, setErrorMessage: (errorMessage: string) => void) => {
     e.preventDefault();
 
     const formData: FormData = new FormData(e.currentTarget)
@@ -50,14 +50,14 @@ const handleSave = async (dispatch: React.Dispatch<DeveloperAction>, e: FormEven
     try {
         const resp: AxiosResponse = await axios({
             method: 'PUT', 
-            url: client.defaults.baseURL + `/developers/${formData.get('id')}`, 
+            url: `${endpointBackEnd}/developers/${formData.get('id')}`, 
             data: developer
-        }); 
+        })
         dispatch({ 
             type: DEVELOPER_ACTION_TYPES.EDIT, 
             payload: resp.data 
         })       
-        handleClose();
+        handleClose()
     } catch (err) {
         handleError(err, setErrorMessage)
     }
@@ -97,7 +97,7 @@ const initState: UseDeveloperContextType = {
 
 const DeveloperContext = createContext<UseDeveloperContextType>(initState)
 
-const sortList = (l: DeveloperType[]) => {
+export const sortList = (l: DeveloperType[]) => {
     if (l && l instanceof Array) {
         l.sort((a,b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1 : 
                         a.name.toLowerCase() === b.name.toLowerCase() ? 0 : -1);
@@ -107,7 +107,7 @@ const sortList = (l: DeveloperType[]) => {
     }
 }
 
-const reducer = (state: DeveloperStateType, action: DeveloperAction): DeveloperStateType => {
+export const reducer = (state: DeveloperStateType, action: DeveloperAction): DeveloperStateType => {
     switch (action.type) {
         case DEVELOPER_ACTION_TYPES.POPULATE: {
             return {...state, list: sortList(action.payload! as DeveloperType[]), originalList: sortList(action.payload! as DeveloperType[])}

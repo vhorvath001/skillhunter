@@ -19,8 +19,6 @@ const MultiSelectDropdown = ({ options, selectedOptions, setSelectedOptions }: P
         const optionKey: string = event.target.value
         const isChecked: boolean = event.target.checked
 
-        console.log(`optionKey: ${optionKey},   isChecked: ${isChecked}`)
-
         if (isChecked) {
             setSelectedOptions([...selectedOptions, optionKey]);
         } else {
@@ -44,9 +42,10 @@ const MultiSelectDropdown = ({ options, selectedOptions, setSelectedOptions }: P
                         key={option.key}
                         type="checkbox"
                         id={`option_${option.key}`}
+                        data-testid={`option_${option.key}`}
                         label={option.value}
                         onChange={handleOptionChange}
-                        value={option.key} 
+                        value={option.key}
                         />
                 ))}
             </div>
