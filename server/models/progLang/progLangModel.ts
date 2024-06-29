@@ -45,4 +45,8 @@ export default class ProgLangModel extends Model {
     @Column(DataType.BOOLEAN)
     declare removingTLDPackages: boolean
 
+    @AllowNull(true)
+    @Column(DataType.STRING)
+    declare ranking: string
+
 }

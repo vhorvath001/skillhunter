@@ -104,7 +104,8 @@ const toProgLangType = (progLangModel: ProgLangModel): ProgLangType => {
         patterns: progLangModel.patterns ? JSON.parse(progLangModel.patterns).patternList : [],
         ignoringLinesPatterns: progLangModel.ignoringLinesPatterns ? JSON.parse(progLangModel.ignoringLinesPatterns).patternList : [],
         packageRemovalPatterns: progLangModel?.packageRemovalPatterns ? JSON.parse(progLangModel.packageRemovalPatterns).patternList : [],
-        scope: progLangModel.scopePattern
+        scope: progLangModel.scopePattern,
+        ranking: progLangModel?.ranking ? JSON.parse(progLangModel.ranking).patternList : []
     }
 }
 
@@ -119,7 +120,8 @@ const toProgLangModel = (progLang: ProgLangType): ProgLangModel => {
         ignoringLinesPatterns: JSON.stringify({ patternList: progLang.ignoringLinesPatterns }),
         scopePattern: progLang.scope,
         packageSeparator: progLang.packageSeparator,
-        removingTLDPackages: progLang.removingTLDPackages
+        removingTLDPackages: progLang.removingTLDPackages,
+        ranking: JSON.stringify({ patternList: progLang.ranking }),
     })
     if (progLang.id)
         progLangModel.id = Number(progLang.id)

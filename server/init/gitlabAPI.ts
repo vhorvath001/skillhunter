@@ -26,7 +26,7 @@ export default class GitlabAPI {
         return this._instance
     }
 
-    async call (resource: string, queryParams: {}, contentType: string = 'application/json'): Promise<any[] | string> {
+    async call (resource: string, queryParams: {}, contentType: string = 'application/json'): Promise<any[] | string | any> {
         let url: string = this._repository!.host + 
                             (this._repository!.host.endsWith('/') ? '' : '/') +
                             resource
@@ -35,6 +35,8 @@ export default class GitlabAPI {
             url = url + '?' + (new URLSearchParams(queryParams)).toString()
         }
         logger.debug(`Calling the resource [${resource}] with params [${JSON.stringify(queryParams)}]. The crafted URL: ${url}`)
+
+        await new Promise(r => setTimeout(r, config.delayInGitlabCall))
 
         const resp: Response = await fetch(url, {
             method: 'GET', // *GET, POST, PUT, DELETE, etc.

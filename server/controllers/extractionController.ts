@@ -4,12 +4,13 @@ import logger from '../init/initLogger'
 import { parseISO } from 'date-fns'
 import { deleteExtractionById, getExtractionModels } from '../models/extraction/extractionDataService'
 import { ExtractionModel } from '../models/extraction/extractionModel'
-import { ExtractionType, ProgLangType, ProgressLogType, SelectedProjectBranchesType } from '../schema/appTypes'
+import { DevelopersScoresType, ExtractionType, ProgLangType, ProgressLogType, SelectedProjectBranchesType } from '../schema/appTypes'
 import { toProgLangType } from './progLangController'
 import { toRepositoryType } from './repositoryController'
 import { getErrorMessage, logError } from './commonFunctions'
 import ProgressLogModel from '../models/progressLog/progressLogModel'
 import { getProgressLogsByExtractionId } from '../models/progressLog/progressLogDataService'
+import { queryDevelopersScoresBySkillId } from '../models/extractionSkillFinding/extractionSkillFindingDataService'
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
 
@@ -101,6 +102,22 @@ export const getProgressLogs = async (req: Request, resp: Response): Promise<voi
     }
 }
 
+export const getDevelopersScoresBySkill = async (req: Request, resp: Response): Promise<void> => {
+    logger.info(`Request has arrived to get the scores of developers by a skill  - ${JSON.stringify(req.params)}.`)
+
+    try {
+        const extractionId: number = Number(req.params.id as string)
+        const skillId: number = Number(req.params.skillId)
+
+        const rawDevelopersScores: any[] = await queryDevelopersScoresBySkillId(extractionId, skillId)
+
+        resp.status(200).json(toDevelopersScoresType(rawDevelopersScores))
+    } catch(err) {
+        logError(err, `Error occurred when executing 'getDevelopersScoresBySkill'.`)
+        resp.status(500).send({'message': `Error occurred when trying to get the scores of developers by a skill! - ${getErrorMessage(err)}`})
+    }
+}
+
 export const toExtractionType = (model: ExtractionModel): ExtractionType => {
     const progLangs: ProgLangType[] | undefined = model.progLangs?.map(m => toProgLangType(m))
 
@@ -122,4 +139,13 @@ const toProgressLogType = (model: ProgressLogModel): ProgressLogType => {
         timestamp: model.timestamp,
         logText: model.logText
     }
+}
+
+// // [{"developerId":4,"totalScore":117641.14646024398,"developerRef":{"name":"Ric Flair"}}]
+const toDevelopersScoresType = (rawDevelopersScores: any[]): DevelopersScoresType[] => {
+    return rawDevelopersScores.map(r => {return {
+        developerId: r.developerId,
+        totalScore: r.total_score,
+        developerName: r.developerRef.name,
+    } as DevelopersScoresType})
 }

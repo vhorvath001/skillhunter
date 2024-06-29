@@ -191,7 +191,7 @@ const calculateScore = (minusLines: string[], plusLines: string[], ignoringLines
     logger.debug(`Calculating score ...`)
     ignoreLinesIfNecessary(minusLines, plusLines, ignoringLinesPatterns)
     
-    let score: number = 0;
+    let score: number = 0.0
     if (minusLines.length > 0 || plusLines.length > 0) {
         logger.silly(`minusLines = [${minusLines}]\nplusLines = [${plusLines}]`)
         // 1. if the number of minusLines and plusLines are equal then they will be matched by order (1st plusLine belongs to 1st minusLine, etc)
@@ -229,14 +229,14 @@ const calculateScore = (minusLines: string[], plusLines: string[], ignoringLines
         }
         logger.debug(`The calculated score is '${score}'.`)
     }
-    return score;
+    return score
 }
 
 // - both + and - lines are passed: the computed difference score (-> similarity(...) function) is weighted with the lenght of the + line
 // - only the + line is passed: the score is 1 weighted with ....
 // - only the - line is passed: the score is 0.5
 const computeScore = (plusLine: string | null, minusLine: string | null): number => {
-    let score: number = 0 
+    let score: number = 0.0
     // if there are - and + lines
     if (minusLine && plusLine) {
         // similarity -> 0.0 (different) - 1.0 (identical)

@@ -13,6 +13,24 @@ export class ProjectModel extends Model {
     @Column(DataType.STRING)
     declare name: string
 
+    @AllowNull(true)
+    @Column(DataType.STRING)
+    declare desc: string
+
+    @AllowNull(true)
+    @Column(DataType.STRING)
+    declare path: string
+
+    @Column(DataType.DATE)
+    declare created_at: Date
+
+    @AllowNull(true)
+    @Column(DataType.STRING)
+    declare http_url_to_repo: string
+
+    @Column(DataType.DATE)
+    declare last_activity_at: Date
+
     @ForeignKey(() => ExtractionModel)
     @Column({ field: 'extraction_id' })
     declare extractionId: number

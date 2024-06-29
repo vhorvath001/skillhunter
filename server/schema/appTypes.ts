@@ -3,6 +3,11 @@ export type PackageRemovalPatternType = {
     value: string
 }
 
+type RankingType = {
+    name: string,
+    rangeStart: number
+}
+
 export type ProgLangType = {
     id?: number,
     name: string,
@@ -14,7 +19,8 @@ export type ProgLangType = {
     patterns: string[],
     packageRemovalPatterns: PackageRemovalPatternType[],
     ignoringLinesPatterns: string[],
-    scope: string
+    scope: string,
+    ranking?: RankingType[]
 }
 
 export type RepositoryType = {
@@ -65,4 +71,10 @@ export type DeveloperType = {
     id: number,
     name: string,
     email: string
+}
+
+export type DevelopersScoresType = {
+    developerId: number,
+    developerName: string,
+    totalScore: number
 }

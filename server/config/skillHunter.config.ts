@@ -9,7 +9,8 @@ interface Config {
         user: string,
         password: string
     },
-    appLoggingEveryXCommits: number
+    appLoggingEveryXCommits: number,
+    delayInGitlabCall: number
 }
 
 const config: Config = {
@@ -19,7 +20,8 @@ const config: Config = {
         user: process.env.DB_USER || '',
         password: process.env.DB_PASSWORD || ''
     },
-    appLoggingEveryXCommits: Number(process.env.APP_LOGGING_EVERY_X_COMMITS) || 50
+    appLoggingEveryXCommits: Number(process.env.APP_LOGGING_EVERY_X_COMMITS) || 50,
+    delayInGitlabCall: Number(process.env.DELAY_IN_GITLAB_CALL) || 0,
 }
 
 export default config

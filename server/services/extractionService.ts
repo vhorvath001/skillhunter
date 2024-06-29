@@ -1,7 +1,7 @@
 import { populateSkillsFromContent, calculateCumulatedScore, findProgLangByPath } from './skillService'
 import { log } from '../models/progressLog/progressLogDataService'
 import { saveExtraction, updateProgressCommits, updateProgressProjects, updateStatus } from '../models/extraction/extractionDataService'
-import { getGitLabCommits, getGitLabDiffList, getGitLabContentByCommitId, GitLabDiff } from './versionControlService'
+import { getGitLabCommits, getGitLabDiffList, getGitLabContentByCommitId, GitLabDiff, getGitLabProject } from './versionControlService'
 import { updateSkillTree } from '../models/skill/skillDataService'
 import saveProject from '../models/project/projectDataService'
 import logger from '../init/initLogger'
@@ -14,7 +14,10 @@ import config from '../config/skillHunter.config'
 import { getOrCreateDeveloper } from '../models/developer/developerDataService'
 import { toProgLangType } from '../controllers/progLangController'
 
-const start = async (repoId: number, projectsBranches: SelectedProjectBranchesType[], path: string, progLangIds: number[]): Promise<void> => {
+const start = async (repoId: number, 
+                     projectsBranches: SelectedProjectBranchesType[], 
+                     path: string, 
+                     progLangIds: number[]): Promise<void> => {
     logger.info(`Extraction starting [repoId=${repoId}, branches=${JSON.stringify(projectsBranches)}, path=${path}, progLangIds=${progLangIds}] ...`)
     let extractionId: number = -1
 
@@ -37,7 +40,8 @@ const start = async (repoId: number, projectsBranches: SelectedProjectBranchesTy
 
             await log(`Project [${ind+1} / ${projectsBranches.length}] - processing the '${projectBranches.branch}' branch of the '${projectBranches.projectName}' GitLab project...`, extractionId);
 
-            const projectId = await saveProject(projectBranches.projectName, extractionId);
+            const project = await getGitLabProject(gitlabAPI, projectBranches.projectId)
+            const projectId = await saveProject(project, extractionId)
 
             // getting all the commits of the specific project and looping through them
             const commits = await getGitLabCommits(gitlabAPI, gitlabProjectId, projectBranches.branch)

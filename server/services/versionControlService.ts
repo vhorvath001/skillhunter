@@ -44,6 +44,22 @@ const getGitLabProjects = async (gitlabAPI: GitlabAPI, path: string): Promise<Gi
     return gitLabProjects
 }
 
+const getGitLabProject = async (gitlabAPI: GitlabAPI, id: string): Promise<GitLabProjectType> => {
+    logger.debug(`Getting GitLab project [id=${id}] ...`)
+
+    const project = await gitlabAPI.call(`/projects/${id}`, {}) as ProjectSchema
+
+    return {
+        id: project.id,
+        name: project.name,
+        description: project.description,
+        path_with_namespace: project.path_with_namespace,
+        created_at: project.created_at,
+        http_url_to_repo: project.http_url_to_repo,
+        last_activity_at: project.last_activity_at
+    }
+}
+
 const getGitLabCommits = async (gitlabAPI: GitlabAPI, projectId: number, branch: string): Promise<GitLabCommitType[]> => {
     logger.debug(`Getting GitLab commits [projectId=${projectId}, branch=${branch}] ...`)
 
@@ -130,5 +146,5 @@ const getAll = async (resource: string, gitLabApi: GitlabAPI, queryParams: {} = 
     return allResult
 }
 
-export { getGitLabProjects, getGitLabCommits, getGitLabDiffList, getGitLabContentByCommitId, getGitLabFolders, getGitLabBranches, 
+export { getGitLabProjects, getGitLabProject, getGitLabCommits, getGitLabDiffList, getGitLabContentByCommitId, getGitLabFolders, getGitLabBranches, 
          GitLabProjectType, GitLabCommitType, GitLabDiff }

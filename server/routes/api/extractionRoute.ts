@@ -1,5 +1,5 @@
 import express from 'express'
-import { deleteExtraction, extract, getExtractions, getProgressLogs } from '../../controllers/extractionController'
+import { deleteExtraction, extract, getDevelopersScoresBySkill, getExtractions, getProgressLogs } from '../../controllers/extractionController'
 
 const extractionRouter = express.Router()
 
@@ -12,5 +12,8 @@ extractionRouter.route('/:id')
 
 extractionRouter.route('/:id/progressLogs')
     .get(getProgressLogs)
+
+extractionRouter.route('/:id/skills/:skillId/developersScores')
+    .get(getDevelopersScoresBySkill)
 
 export default extractionRouter
