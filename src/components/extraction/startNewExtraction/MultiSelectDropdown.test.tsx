@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import MultiSelectDropdown from './MultiSelectDropdown'
-import { OptionType } from '../../context/ContextFunctions'
+import { OptionType } from '../../../context/ContextFunctions'
 import userEvent from '@testing-library/user-event'
 
 test('selecting an item', async () => {

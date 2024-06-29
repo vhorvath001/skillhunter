@@ -7,21 +7,26 @@ import { format } from 'date-fns'
 import { GrInProgress } from "react-icons/gr"
 import { FcOk } from "react-icons/fc"
 import { FcCancel } from "react-icons/fc"
-import ExtractionDetailsModal from './ExtractionDetailsModal'
+import ExtractionDetailsModal from './details/ExtractionDetailsModal'
 import useExtraction from '../../hooks/useExtraction'
 import Badge from 'react-bootstrap/Badge'
 import ModalConfirmation from '../../utils/modal/ModalConfirmation'
+import ExtractionMapModal from './map/ExtractionMapModal'
 
 type PropsType = {
     extraction: ExtractionType
 }
 
 const ExtractionCard = ({ extraction }: PropsType): ReactElement => {
-    const { showExtractionDetails, setShowExtractionDetails, setProgressLogs, loadProgressLogs, setIsProgressLogLoading, setProgressLogErrorMessage, dispatch, handleDelete } = useExtraction()
+    const { showExtractionDetails, setShowExtractionDetails, setProgressLogs, loadProgressLogs, setIsProgressLogLoading, setProgressLogErrorMessage, dispatch, handleDelete, showExtractionMap, setShowExtractionMap } = useExtraction()
 
     const handleDetailsClick = (extractionId: number): void => {
         loadProgressLogs(extractionId, setProgressLogs, setIsProgressLogLoading, setProgressLogErrorMessage)
         setShowExtractionDetails(true)
+    }
+
+    const handleMapClick = (): void => {
+        setShowExtractionMap(true)
     }
     
     return (
@@ -51,8 +56,16 @@ const ExtractionCard = ({ extraction }: PropsType): ReactElement => {
                             </Badge>
                         </div>
                     </Card.Text>
-                    <Button variant="primary" onClick={() => handleDetailsClick(extraction.id)} className='me-2 mb-2' size='sm'>Details</Button>
-                    <Button variant="primary" className='me-2 mb-2' size='sm'>Map</Button>
+                    <Button 
+                        onClick={() => handleDetailsClick(extraction.id)} 
+                        className='me-2 mb-2' size='sm' variant="primary">
+                        Details
+                    </Button>
+                    <Button 
+                        onClick={() => handleMapClick()} 
+                        className='me-2 mb-2' size='sm' variant="primary">
+                        Map
+                    </Button>
                     <ModalConfirmation
                         icon={<Button variant="danger" className='me-2 mb-2' size='sm' title='This operation does not delete the extracted skills, they can be removed in Skill Tree. '>Delete</Button>} 
                         message='Are you sure to delete the extraction?'
@@ -63,7 +76,11 @@ const ExtractionCard = ({ extraction }: PropsType): ReactElement => {
             </Card>
 
             {showExtractionDetails &&
-                <ExtractionDetailsModal extraction={extraction}/>
+                <ExtractionDetailsModal extraction={extraction} />
+            }
+
+            {showExtractionMap &&
+                <ExtractionMapModal extraction={extraction} />
             }
         </Col>
     )

@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import Button from 'react-bootstrap/Button'
 import useExtraction from '../../hooks/useExtraction'
-import StartExtractionModal from './StartExtractionModal'
+import StartExtractionModal from './startNewExtraction/StartExtractionModal'
 import ExtractionFilter from './ExtractionFilter'
 import ExtractionCards from './ExtractionCards'
 import Loading from '../../utils/Loading'
@@ -11,7 +11,7 @@ const Extraction = (): ReactElement => {
 
     return (
         <div className='extraction-container'>
-            <div className='page-title text-center mb-5'>Extraction</div>
+            <div className='page-title text-center mb-5'>Extractions</div>
             
             <div>
                 <span onClick={() => setShowStartExtraction(true)} className='me-1' data-testid='t-modal-show'>

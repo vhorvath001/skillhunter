@@ -1,9 +1,9 @@
 import { ReactElement, useState } from 'react';
 import Table from 'react-bootstrap/Table'
 import Form from 'react-bootstrap/Form'
-import { ProjectsBranchesType } from '../../context/ExtractionProvider'
-import useExtraction from '../../hooks/useExtraction';
-import Loading from '../../utils/Loading';
+import { ProjectsBranchesType } from '../../../context/ExtractionProvider'
+import useExtraction from '../../../hooks/useExtraction'
+import Loading from '../../../utils/Loading';
 
 type PropsType = {
     projectsBranchesData: ProjectsBranchesType[]

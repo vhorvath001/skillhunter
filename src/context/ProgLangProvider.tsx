@@ -17,6 +17,11 @@ export type PackageRemovalPatternType = {
     value: string
 }
 
+export type RankingType = {
+    name: string,
+    rangeStart: number | null
+}
+
 export type ProgLangType = {
     id?: string,
     name: string,
@@ -28,7 +33,8 @@ export type ProgLangType = {
     patterns: string[],
     packageRemovalPatterns: PackageRemovalPatternType[],
     ignoringLinesPatterns: string[],
-    scope: string
+    scope: string,
+    ranking?: RankingType[]
 }
 
 export type ProgLangAction = {
@@ -56,11 +62,17 @@ export const handleDelete = async (dispatch: React.Dispatch<ProgLangAction>, han
     }
 }
 
-export const handleSave = async (dispatch: React.Dispatch<ProgLangAction>, e: FormEvent<HTMLFormElement>, handleClose: () => void, setErrorMessage: (errorMessage: string) => void) => {
-    e.preventDefault();
+export const handleSave = async (dispatch: React.Dispatch<ProgLangAction>, 
+                                 e: FormEvent<HTMLFormElement>, 
+                                 handleClose: () => void, 
+                                 setErrorMessage: (errorMessage: string) => void) => {
+    e.preventDefault()
+    setErrorMessage('')
 
     const formData: FormData = new FormData(e.currentTarget)
-    const progLang: ProgLangType = toProgLangType(formData)
+    const progLang: ProgLangType | null = toProgLangType(formData, setErrorMessage)
+    if (!progLang)
+        return
     let verb: string = 'PUT';
     if (formData.get('id') === '-1') {
         verb = 'POST';
@@ -93,9 +105,10 @@ const handleFilter = (dispatch: React.Dispatch<ProgLangAction>, e: FormEvent<HTM
     })
 }
 
-const toProgLangType = (formData: FormData): ProgLangType => {
+const toProgLangType = (formData: FormData, setErrorMessage: (errorMessage: string) => void): ProgLangType | null => {
     let patterns: string[] = []
     let packageRemovalPatterns: PackageRemovalPatternType[] = []
+    let ranking: RankingType[] = []
     let ignoringLinesPatterns: string[] = []
     for (const pair of formData.entries()) {
         if (pair[0].startsWith('patternListItem_'))
@@ -111,7 +124,21 @@ const toProgLangType = (formData: FormData): ProgLangType => {
             else
                 packageRemovalPatterns[index].type = pair[1].toString()
         }
+        if (pair[0].startsWith('rankingListItem_')) {
+            const index = getIndex(pair[0])
+            if (!ranking[index])
+                ranking[index] = {name: '', rangeStart: 0}
+            if (pair[0].startsWith('rankingListItem_name'))
+                ranking[index].name = pair[1].toString()
+            else
+                ranking[index].rangeStart = pair[1].toString() ? Number(pair[1].toString()) : null
+        }
     }
+
+    if (isRankingInvalid(ranking, setErrorMessage)) {
+        return null
+    }
+
     const progLang: ProgLangType = {
         id: undefined,
         name: formData.get('name')!.toString(),
@@ -123,18 +150,39 @@ const toProgLangType = (formData: FormData): ProgLangType => {
         patterns: patterns,
         packageRemovalPatterns: packageRemovalPatterns.filter(p => p),
         ignoringLinesPatterns: ignoringLinesPatterns,
-        scope: formData.get('scope')!.toString()
+        scope: formData.get('scope')!.toString(),
+        ranking: ranking.filter(r => r)
     }
     if (formData.get('id') && formData.get('id') !== '-1')
         progLang.id = formData.get('id')!.toString()
     return progLang
 }
 
+const isRankingInvalid = (ranking: RankingType[], setErrorMessage: (errorMessage: string) => void): boolean => {
+    if (ranking.some(r => !r.name || r.rangeStart === null)) {
+        setErrorMessage('None of the following elements can be empty: Name, Range start!')
+        return true
+    }
+    if (ranking.length > 0 && ranking[ranking.length-1].rangeStart !== 0) {
+        setErrorMessage(`The first (bottom) ranking item's starting range must be zero!`)
+        return true
+    }
+    if (ranking.some((r, i) => i !==0 && r.rangeStart! > ranking[i-1].rangeStart!)) {
+        setErrorMessage(`The ranking items' starting range values must be in ascending order!`)
+        return true
+    }
+    return false
+}
+
 const getIndex = (name: string): number => {
     if (name.startsWith('packageRemovalPatternListItem_value_'))
         return Number(name.replace('packageRemovalPatternListItem_value_', ''))
-    else
+    else if (name.startsWith('packageRemovalPatternListItem_type_'))
         return Number(name.replace('packageRemovalPatternListItem_type_', ''))
+    else if (name.startsWith('rankingListItem_rangeStart_'))
+        return Number(name.replace('rankingListItem_rangeStart_', ''))
+    else
+        return Number(name.replace('rankingListItem_name_', ''))
 }
 
 const initState: UseProgLangContextType = { 

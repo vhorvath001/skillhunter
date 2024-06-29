@@ -54,7 +54,7 @@ const Header = (): ReactElement => {
                                 </NavDropdown.Item>
                             </NavDropdown>
                         </Nav>
-                        <Nav.Link href='/extraction'>Extraction</Nav.Link>
+                        <Nav.Link href='/extractions'>Extractions</Nav.Link>
                     </Navbar.Collapse>
                 </Container>
             </Navbar>

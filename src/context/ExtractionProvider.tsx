@@ -201,7 +201,13 @@ export const initState: UseExtractionContextType = {
     progressLogErrorMessage: '',
     setProgressLogErrorMessage: () => {},
     loadProgressLogs: () => {},
-    handleDelete: () => {}
+    handleDelete: () => {},
+    showExtractionMap: false,
+    setShowExtractionMap: () => {},
+    showSkillTreeSelection: false, 
+    setShowSkillTreeSelection: () => {},
+    setSelectedSkill: () => {},
+    selectedSkill: []
 }
 
 const useExtractionContext = () => {
@@ -227,6 +233,9 @@ const useExtractionContext = () => {
     const [ isProgressLogLoading, setIsProgressLogLoading ] = useState<boolean>(false)
     const [ progressLogErrorMessage, setProgressLogErrorMessage ] = useState<string>('')
     const [ state, dispatch ] = useReducer(reducer, { list: [] })
+    const [ showExtractionMap, setShowExtractionMap ] = useState<boolean>(false)
+    const [ showSkillTreeSelection, setShowSkillTreeSelection ] = useState<boolean>(false)
+    const [ selectedSkill, setSelectedSkill ] = useState<any[]>([])
 
     const fetchProjectsBranches = async () => {
         setIsLoading(true)
@@ -288,12 +297,24 @@ const useExtractionContext = () => {
         }
     }, [ show2ndPage ])
 
+    useEffect(() => {
+        if (!showExtractionMap)
+            setSelectedSkill([])
+    }, [showExtractionMap])
+
+    useEffect(() => {
+        if (selectedSkill.length > 0) {
+            alert('focskekanya 2')
+        }
+    }, [selectedSkill])
+
     return { handleStartExtraction, show2ndPage, setShow2ndPage, showStartExtraction, setShowStartExtraction, repositoryOptions, errorMessage, setErrorMessage, isLoading, 
              pathTextfield, setPathTextfield, projectsBranchesData, progLangOptions, selectedProgLangs, setSelectedProgLangs,
              setRepoId, filterRepoId, setFilterRepoId, handleFilterClick, filterDateFrom, setFilterDateFrom, filterDateTo, setFilterDateTo,
              filterErrorMessage, setFilterErrorMessage, state, dispatch, areExtractionsLoading, setAreExtractionsLoading,
              filterStatus, setFilterStatus, showExtractionDetails, setShowExtractionDetails, progressLogs, setProgressLogs,
-             isProgressLogLoading, setIsProgressLogLoading, progressLogErrorMessage, setProgressLogErrorMessage, loadProgressLogs, handleDelete }
+             isProgressLogLoading, setIsProgressLogLoading, progressLogErrorMessage, setProgressLogErrorMessage, loadProgressLogs, handleDelete,
+             showExtractionMap, setShowExtractionMap, showSkillTreeSelection, setShowSkillTreeSelection, setSelectedSkill, selectedSkill }
 }
 
 export type UseExtractionContextType = ReturnType<typeof useExtractionContext>

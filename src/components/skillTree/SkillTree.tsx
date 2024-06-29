@@ -8,10 +8,16 @@ import AlertMessage from '../../utils/AlertMessage'
 import Button from 'react-bootstrap/Button'
 import { SkillTreeNodeType } from '../../context/SkillTreeProvider'
 import ModalConfirmation from '../../utils/modal/ModalConfirmation'
+import useExtraction from '../../hooks/useExtraction'
 
-const SkillTree = () => {
+type PropsType = {
+    mode: String
+}
+
+const SkillTree = ({ mode }: PropsType) => {
     const { dispatch, state, progLangs, setSelectedProgLang, isLoading, treeIsLoading, fetchError, treeErrorMessage, 
-            handleStatusChange, handleDelete, treeOperationErrorMessage, setTreeOperationErrorMessage } = useSkillTree()
+            handleStatusChange, handleDelete, treeOperationErrorMessage, setTreeOperationErrorMessage, } = useSkillTree()
+    const { setShowSkillTreeSelection, setSelectedSkill } = useExtraction()            
 
     const handleChange = (e: ChangeEvent<HTMLSelectElement>): void => {
         setSelectedProgLang(Number(e.currentTarget.value))
@@ -28,6 +34,32 @@ const SkillTree = () => {
             node.selected = isSelected
             changeSelectedOfTree(node.children, isSelected)
         }
+    }
+
+    const handleClose = (): void => {
+        setShowSkillTreeSelection(false)
+    }
+
+    const handleSelect = (treeData: SkillTreeNodeType[]): void => {
+        const ids = collectSelected(treeData, '/')
+        if (ids.length > 1)
+            setTreeOperationErrorMessage('Only one skill can be selected!')
+        else if (ids.length === 0)
+            setTreeOperationErrorMessage('Please select a skill!')
+        else {
+            setSelectedSkill(ids[0])
+            setShowSkillTreeSelection(false)
+        }
+
+    }
+
+    const collectSelected = (nodes: SkillTreeNodeType[], parentName: string): any[][] => {
+        let ids: any[][] = nodes.filter(n => n.selected).map(n => [n.id, parentName + n.name])
+        for (const node of nodes) {
+            if (node.children)
+                ids.push(...collectSelected(node.children, parentName + node.name + '/'))
+        }
+        return ids
     }
 
     return (
@@ -65,7 +97,9 @@ const SkillTree = () => {
                     <div className='mt-3 w-50 ml-0 mr-0 mx-auto' data-testid='dSkillTree'>
                         {state.skillTree.length > 0 &&
                             <>
-                                <Button className='m-3' size='sm' variant='outline-secondary' onClick={() => changeAllSelected(true)}>Select all</Button>
+                                { mode !== 'select' &&
+                                    <Button className='m-3' size='sm' variant='outline-secondary' onClick={() => changeAllSelected(true)}>Select all</Button>
+                                }
                                 <Button className='m-3' size='sm' variant='outline-secondary' onClick={() => changeAllSelected(false)}>Unselect all</Button>
 
                                 <Tree treeNodes={state.skillTree} />
@@ -75,15 +109,25 @@ const SkillTree = () => {
                                     </div>
                                 }
 
-                                <Button className='mx-2 mt-3 mb-4' variant='primary' onClick={ () => handleStatusChange('ENABLE', state.skillTree, dispatch, setTreeOperationErrorMessage) }>Enable</Button>
-                                <Button className='mx-2 mt-3 mb-4' variant='secondary' onClick={ () => handleStatusChange('DISABLE', state.skillTree, dispatch, setTreeOperationErrorMessage) }>Disable</Button>
+                                { mode === 'admin' &&
+                                    <>
+                                        <Button className='mx-2 mt-3 mb-4' variant='primary' onClick={ () => handleStatusChange('ENABLE', state.skillTree, dispatch, setTreeOperationErrorMessage) }>Enable</Button>
+                                        <Button className='mx-2 mt-3 mb-4' variant='secondary' onClick={ () => handleStatusChange('DISABLE', state.skillTree, dispatch, setTreeOperationErrorMessage) }>Disable</Button>
 
-                                <ModalConfirmation
-                                    icon={<Button className='mx-2 mt-3 mb-4' variant='danger'>Delete</Button>} 
-                                    message='Are you sure to delete the skill(s)?'
-                                    id={state.skillTree}
-                                    handleOperation={handleDelete}
-                                    dispatch={dispatch} />
+                                        <ModalConfirmation
+                                            icon={<Button className='mx-2 mt-3 mb-4' variant='danger'>Delete</Button>} 
+                                            message='Are you sure to delete the skill(s)?'
+                                            id={state.skillTree}
+                                            handleOperation={handleDelete}
+                                            dispatch={dispatch} />
+                                    </>
+                                }
+                                { mode === 'select' &&
+                                    <>
+                                        <Button className='mx-2 mt-3 mb-4' variant='primary' onClick={() => handleSelect(state.skillTree)}>Select</Button>
+                                        <Button className='mx-2 mt-3 mb-4' variant='secondary' onClick={handleClose}>Close</Button>
+                                    </>
+                                }
                             </>
                         }
                     </div>

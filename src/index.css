@@ -129,3 +129,12 @@ footer {
 .adminIconsCell {
     min-width: 80px
 }
+
+.accordion-button {
+    background-color: #ececec;
+    padding: 6px;
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: #ececec;
+}

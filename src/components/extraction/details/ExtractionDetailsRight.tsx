@@ -1,5 +1,5 @@
 import { ReactElement } from "react"
-import useExtraction from "../../hooks/useExtraction"
+import useExtraction from "../../../hooks/useExtraction"
 import { format } from 'date-fns'
 import Table from 'react-bootstrap/Table'
 import Button from 'react-bootstrap/Button'

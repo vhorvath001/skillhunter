@@ -30,7 +30,6 @@ const ProgLangRow = ({ record, formId, handleSave, handleDelete, dispatch }: Pro
                             title='Editing the programming language.' /> }
                     handleSave={handleSave}
                     dispatch={dispatch}
-                    // className='me-1'
                      />
                 <ModalConfirmation
                     icon={<FcDeleteRow 

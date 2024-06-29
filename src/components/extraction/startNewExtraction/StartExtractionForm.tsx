@@ -1,8 +1,8 @@
 import { ReactElement } from 'react';
 import StartExtraction1stPage from './StartExtraction1stPage';
 import StartExtraction2ndPage from './StartExtraction2ndPage';
-import { ProjectsBranchesType } from '../../context/ExtractionProvider';
-import useExtraction from '../../hooks/useExtraction';
+import { ProjectsBranchesType } from '../../../context/ExtractionProvider';
+import useExtraction from '../../../hooks/useExtraction';
 
 type PropsType = {
     projectsBranchesData: ProjectsBranchesType[],

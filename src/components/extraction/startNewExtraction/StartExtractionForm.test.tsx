@@ -1,9 +1,9 @@
 import { render, screen } from '@testing-library/react'
-import * as UseExtraction from '../../hooks/useExtraction'
+import * as UseExtraction from '../../../hooks/useExtraction'
 import StartExtractionForm from './StartExtractionForm'
 import * as StartExtraction1stPage from './StartExtraction1stPage'
 import * as StartExtraction2ndPage from './StartExtraction2ndPage'
-import { initState } from '../../context/ExtractionProvider'
+import { initState } from '../../../context/ExtractionProvider'
 
 vi.mock('./StartExtraction1stPage')
 vi.mock('./StartExtraction2ndPage')

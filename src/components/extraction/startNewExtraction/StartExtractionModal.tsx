@@ -7,7 +7,7 @@ import Row from 'react-bootstrap/Row'
 import Form from 'react-bootstrap/Form'
 import StartExtractionForm from './StartExtractionForm'
 import Button from 'react-bootstrap/Button'
-import useExtraction from '../../hooks/useExtraction'
+import useExtraction from '../../../hooks/useExtraction'
 
 const StartExtractionModal = (): ReactElement => {
     const { handleStartExtraction, show2ndPage, setShow2ndPage, showStartExtraction, setShowStartExtraction, errorMessage, setErrorMessage, isLoading, projectsBranchesData, pathTextfield, selectedProgLangs, setSelectedProgLangs } = useExtraction()

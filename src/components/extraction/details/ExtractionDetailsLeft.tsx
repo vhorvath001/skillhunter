@@ -1,5 +1,5 @@
 import { ReactElement } from "react"
-import { ExtractionType } from '../../context/ExtractionProvider'
+import { ExtractionType } from '../../../context/ExtractionProvider'
 import ListGroup from 'react-bootstrap/ListGroup'
 import { format } from 'date-fns'
 import Row from 'react-bootstrap/Row'
