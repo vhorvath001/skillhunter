@@ -43,7 +43,7 @@ const queryDevelopersScoresBySkillId = async (extractionId: number, skillId: num
     return await ExtractionSkillFindingModel.findAll({
         attributes: [
             'developerId',
-            [ fn('sum', col('score')), 'total_score' ]
+            [ fn('sum', col('score')), 'score' ]
         ],
         where: {
             extractionId: extractionId,
@@ -54,7 +54,7 @@ const queryDevelopersScoresBySkillId = async (extractionId: number, skillId: num
             attributes: [ 'name' ]
         },
         group: [ 'developerId' ],
-        order: [ 'developerId' ]
+        order: [ ['score', 'DESC'] ]
     })
 }
 

@@ -143,9 +143,11 @@ const toProgressLogType = (model: ProgressLogModel): ProgressLogType => {
 
 // // [{"developerId":4,"totalScore":117641.14646024398,"developerRef":{"name":"Ric Flair"}}]
 const toDevelopersScoresType = (rawDevelopersScores: any[]): DevelopersScoresType[] => {
-    return rawDevelopersScores.map(r => {return {
-        developerId: r.developerId,
-        totalScore: r.total_score,
-        developerName: r.developerRef.name,
-    } as DevelopersScoresType})
+    return rawDevelopersScores.map(r => {
+        return {
+            developerId: r.developerId,
+            totalScore: r.score,
+            developerName: r.developerRef.name,
+        } as DevelopersScoresType
+    })
 }
