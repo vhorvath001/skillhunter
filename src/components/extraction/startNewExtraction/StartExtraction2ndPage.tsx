@@ -1,16 +1,16 @@
 import { ReactElement, useState } from 'react';
 import Table from 'react-bootstrap/Table'
 import Form from 'react-bootstrap/Form'
-import { ProjectsBranchesType } from '../../../context/ExtractionProvider'
-import useExtraction from '../../../hooks/useExtraction'
 import Loading from '../../../utils/Loading';
+import { ProjectsBranchesType } from '../../../context/AppTypes';
+import useExtractionStartNew from '../../../hooks/useExtractionStartNew';
 
 type PropsType = {
     projectsBranchesData: ProjectsBranchesType[]
 }
 
 const StartExtraction2ndPage = ({ projectsBranchesData }: PropsType): ReactElement => {
-    const { isLoading } = useExtraction()
+    const { isLoading } = useExtractionStartNew()
 
     return (
         <div className='loadingParent container-fluid'>

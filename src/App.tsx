@@ -7,11 +7,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { ProgLangProvider } from './context/ProgLangProvider';
 import { RepositoryProvider } from './context/RepositoryProvider';
 import Extraction from './components/extraction/Extraction';
-import { ExtractionProvider } from './context/ExtractionProvider';
 import { SkillTreeProvider } from './context/SkillTreeProvider';
 import SkillTree from './components/skillTree/SkillTree';
 import { DeveloperProvider } from './context/DeveloperProvider';
 import DeveloperList from './components/admin/developer/DeveloperList';
+import { ExtractionStartNewProvider } from './context/ExtractionStartNewProvider';
+import { ExtractionAdminProvider } from './context/ExtractionAdminProvider';
+import { ExtractionMapProvider } from './context/ExtractionMapProvider';
 
 function App() {
     return (
@@ -33,7 +35,17 @@ function App() {
                     </Route>
                 </Route>
                 <Route path='extractions'>
-                    <Route index element={ <SkillTreeProvider><ExtractionProvider><Extraction /></ExtractionProvider></SkillTreeProvider> } />
+                    <Route index element={ 
+                        <SkillTreeProvider>
+                            <ExtractionStartNewProvider>
+                                <ExtractionAdminProvider>
+                                    <ExtractionMapProvider>
+                                        <Extraction />
+                                    </ExtractionMapProvider>
+                                </ExtractionAdminProvider>
+                            </ExtractionStartNewProvider>
+                        </SkillTreeProvider> 
+                    } />
                 </Route>
                 <Route path="*" element={<Missing />} />
             </Route>

@@ -1,16 +1,16 @@
 import { ReactElement } from "react"
-import useExtraction from "../../../hooks/useExtraction"
 import { format } from 'date-fns'
 import Table from 'react-bootstrap/Table'
 import Button from 'react-bootstrap/Button'
 import { MdOutlineRefresh } from 'react-icons/md'
+import useExtractionAdmin from '../../../hooks/useExtractionAdmin'
 
 type PropsType = {
     extractionId: number
 }
 
 const ExtractionDetailsRight = ({ extractionId }: PropsType): ReactElement => {
-    const { progressLogs, setProgressLogs, loadProgressLogs, setIsProgressLogLoading, setProgressLogErrorMessage } = useExtraction()
+    const { progressLogs, setProgressLogs, loadProgressLogs, setIsProgressLogLoading, setProgressLogErrorMessage } = useExtractionAdmin()
 
     return (
         <>

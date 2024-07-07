@@ -1,8 +1,8 @@
 import { ReactElement, createContext, useEffect, useReducer, useState } from 'react'
-import { ChildrenType, OptionType, handleError } from './ContextFunctions'
+import { handleError } from './ContextFunctions'
 import useAxiosFetch from '../hooks/useAxiosFetch'
-import { ProgLangType } from './ProgLangProvider'
 import { client } from '../api/client'
+import { ChildrenType, OptionType, ProgLangType, SkillTreeNodeType } from './AppTypes'
 
 export const SKILL_TREE_ACTION_TYPE = {
     DELETE: 'DELETE',
@@ -19,14 +19,6 @@ export type SkillTreeAction = {
     payload: SkillTreeNodeType[],
     ids?: number[],
     status?: string
-}
-
-export type SkillTreeNodeType = {
-    id: number,
-    name: string,
-    enabled: boolean,
-    children: SkillTreeNodeType[]
-    selected: boolean
 }
 
 const loadTree = async (progLangId: number, dispatch: React.Dispatch<SkillTreeAction>, setTreeIsLoading: (treeIsLoading: boolean) => void, setTreeErrorMessage: (treeErrorMessage: string) => void): Promise<void> => {
@@ -182,10 +174,11 @@ const useSkillTreeContext = () => {
     const [ treeOperationErrorMessage, setTreeOperationErrorMessage ] = useState<string>('')
 
     useEffect(() => {
-        setProgLangs(
-            (data as ProgLangType[]).map(pl => { return {key: pl.id, value: pl.name} as OptionType})
-        )
-        }, [isLoading])
+        if (!isLoading)
+            setProgLangs(
+                (data as ProgLangType[]).map(pl => { return {key: pl.id, value: pl.name} as OptionType})
+            )
+    }, [isLoading])
 
     useEffect(() => {
         if (selectedProgLang === -1)

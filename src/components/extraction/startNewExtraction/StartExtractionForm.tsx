@@ -1,15 +1,15 @@
 import { ReactElement } from 'react';
 import StartExtraction1stPage from './StartExtraction1stPage';
 import StartExtraction2ndPage from './StartExtraction2ndPage';
-import { ProjectsBranchesType } from '../../../context/ExtractionProvider';
-import useExtraction from '../../../hooks/useExtraction';
+import { ProjectsBranchesType } from '../../../context/AppTypes';
+import useExtractionStartNew from '../../../hooks/useExtractionStartNew';
 
 type PropsType = {
     projectsBranchesData: ProjectsBranchesType[],
 }
 
 const StartExtractionForm = ({ projectsBranchesData }: PropsType): ReactElement => {
-    const { show2ndPage } = useExtraction()
+    const { show2ndPage } = useExtractionStartNew()
 
     return (
         <>

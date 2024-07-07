@@ -2,10 +2,10 @@ import { ReactElement } from 'react'
 import Modal from 'react-bootstrap/Modal'
 import Container from 'react-bootstrap/Container'
 import SkillTree from '../../skillTree/SkillTree'
-import useExtraction from '../../../hooks/useExtraction'
+import useExtractionMap from '../../../hooks/useExtractionMap'
 
 const SkillTreeSelectionModal = (): ReactElement => {
-    const { showSkillTreeSelection, setShowSkillTreeSelection } = useExtraction()
+    const { showSkillTreeSelection, setShowSkillTreeSelection } = useExtractionMap()
 
     const handleClose = (): void => {
         setShowSkillTreeSelection(false)

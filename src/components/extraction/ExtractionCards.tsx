@@ -1,12 +1,12 @@
 import { ReactElement } from 'react'
 import Row from 'react-bootstrap/Row'
-import useExtraction from '../../hooks/useExtraction'
 import ExtractionCard from './ExtractionCard'
 import Container from 'react-bootstrap/Container'
+import useExtractionAdmin from '../../hooks/useExtractionAdmin'
 
 
 const ExtractionCards = (): ReactElement => {
-    const { state } = useExtraction()
+    const { state } = useExtractionAdmin()
 
     return (
         <Container fluid>

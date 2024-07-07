@@ -3,11 +3,11 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form'
 import Row from 'react-bootstrap/Row'
 import MultiSelectDropdown from './MultiSelectDropdown'
-import useExtraction from '../../../hooks/useExtraction'
-import Loading from '../../../utils/Loading';
+import Loading from '../../../utils/Loading'
+import useExtractionStartNew from '../../../hooks/useExtractionStartNew';
 
 const StartExtraction1stPage = (): ReactElement => {
-    const { repositoryOptions, setPathTextfield, progLangOptions, setSelectedProgLangs, pathTextfield, selectedProgLangs, setRepoId, isLoading } = useExtraction()
+    const { repositoryOptions, setPathTextfield, progLangOptions, setSelectedProgLangs, pathTextfield, selectedProgLangs, setRepoId, isLoading } = useExtractionStartNew()
 
     const changeRepositoryOptions = (e: ChangeEvent<HTMLSelectElement>) => {
         setRepoId(Number(e.target.value))

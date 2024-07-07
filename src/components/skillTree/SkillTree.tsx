@@ -6,9 +6,9 @@ import Tree from './Tree'
 import Loading from '../../utils/Loading'
 import AlertMessage from '../../utils/AlertMessage'
 import Button from 'react-bootstrap/Button'
-import { SkillTreeNodeType } from '../../context/SkillTreeProvider'
 import ModalConfirmation from '../../utils/modal/ModalConfirmation'
-import useExtraction from '../../hooks/useExtraction'
+import useExtractionMap from '../../hooks/useExtractionMap'
+import { SkillTreeNodeType } from '../../context/AppTypes'
 
 type PropsType = {
     mode: String
@@ -17,7 +17,7 @@ type PropsType = {
 const SkillTree = ({ mode }: PropsType) => {
     const { dispatch, state, progLangs, setSelectedProgLang, isLoading, treeIsLoading, fetchError, treeErrorMessage, 
             handleStatusChange, handleDelete, treeOperationErrorMessage, setTreeOperationErrorMessage, } = useSkillTree()
-    const { setShowSkillTreeSelection, setSelectedSkill } = useExtraction()            
+    const { setShowSkillTreeSelection, setSelectedSkill } = useExtractionMap()
 
     const handleChange = (e: ChangeEvent<HTMLSelectElement>): void => {
         setSelectedProgLang(Number(e.currentTarget.value))
@@ -50,7 +50,6 @@ const SkillTree = ({ mode }: PropsType) => {
             setSelectedSkill(ids[0])
             setShowSkillTreeSelection(false)
         }
-
     }
 
     const collectSelected = (nodes: SkillTreeNodeType[], parentName: string): any[][] => {
@@ -103,6 +102,7 @@ const SkillTree = ({ mode }: PropsType) => {
                                 <Button className='m-3' size='sm' variant='outline-secondary' onClick={() => changeAllSelected(false)}>Unselect all</Button>
 
                                 <Tree treeNodes={state.skillTree} />
+
                                 {treeOperationErrorMessage && 
                                     <div className='mt-3 w-90 ml-0 mr-0 mx-auto text-center'>
                                         <AlertMessage errorMessage={treeOperationErrorMessage} />

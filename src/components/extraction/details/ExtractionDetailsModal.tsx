@@ -1,21 +1,21 @@
 import { ReactElement } from "react"
-import useExtraction from "../../../hooks/useExtraction"
 import Modal from 'react-bootstrap/Modal'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
-import { ExtractionType } from '../../../context/ExtractionProvider'
 import ExtractionDetailsLeft from './ExtractionDetailsLeft'
 import Loading from '../../../utils/Loading'
 import AlertMessage from '../../../utils/AlertMessage'
 import ExtractionDetailsRight from './ExtractionDetailsRight'
 import Container from 'react-bootstrap/Container'
+import { ExtractionType } from '../../../context/AppTypes'
+import useExtractionAdmin from '../../../hooks/useExtractionAdmin'
 
 type PropsType = {
     extraction: ExtractionType
 }
 
 const ExtractionDetailsModal = ({ extraction }: PropsType): ReactElement => {
-    const { showExtractionDetails, setShowExtractionDetails, isProgressLogLoading, progressLogErrorMessage } = useExtraction()
+    const { showExtractionDetails, setShowExtractionDetails, isProgressLogLoading, progressLogErrorMessage } = useExtractionAdmin()
 
     const handleClose = (): void => {
         setShowExtractionDetails(false)

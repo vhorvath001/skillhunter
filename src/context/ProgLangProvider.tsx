@@ -2,7 +2,8 @@ import { FormEvent, ReactElement, createContext, useEffect, useReducer } from 'r
 import useAxiosFetch from '../hooks/useAxiosFetch'
 import axios, { AxiosResponse } from 'axios'
 import { endpointBackEnd } from '../api/client'
-import { ChildrenType, handleError } from './ContextFunctions'
+import { handleError } from './ContextFunctions'
+import { ChildrenType, PackageRemovalPatternType, ProgLangType, RankingType } from './AppTypes'
 
 export const PROG_LANG_ACTION_TYPES = {
     NEW: 'NEW',
@@ -10,31 +11,6 @@ export const PROG_LANG_ACTION_TYPES = {
     DELETE: 'DELETE',
     POPULATE: 'POPULATE',
     FILTER: 'FILTER'
-}
-
-export type PackageRemovalPatternType = {
-    type: string,
-    value: string
-}
-
-export type RankingType = {
-    name: string,
-    rangeStart: number | null
-}
-
-export type ProgLangType = {
-    id?: string,
-    name: string,
-    desc?: string,
-    sourceFiles: string,
-    level: number,
-    packageSeparator?: string,
-    removingTLDPackages: boolean,
-    patterns: string[],
-    packageRemovalPatterns: PackageRemovalPatternType[],
-    ignoringLinesPatterns: string[],
-    scope: string,
-    ranking?: RankingType[]
 }
 
 export type ProgLangAction = {

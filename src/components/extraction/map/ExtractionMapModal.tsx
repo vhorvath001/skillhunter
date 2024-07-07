@@ -1,21 +1,17 @@
 import { ReactElement } from 'react'
-import { ExtractionType } from '../../../context/ExtractionProvider'
 import Modal from 'react-bootstrap/Modal'
-import useExtraction from '../../../hooks/useExtraction'
 import Container from 'react-bootstrap/Container'
 import Tabs from 'react-bootstrap/Tabs'
 import Tab from 'react-bootstrap/Tab'
 import ExtractionMapDevelopersScores from './ExtractionMapDevelopersScores'
+import useExtractionMap from '../../../hooks/useExtractionMap'
 
-type PropsType = {
-    extraction: ExtractionType
-}
-
-const ExtractionMapModal = ({ extraction }: PropsType): ReactElement => {
-    const { showExtractionMap, setShowExtractionMap } = useExtraction()
+const ExtractionMapModal = (): ReactElement => {
+    const { showExtractionMap, setShowExtractionMap, setDevelopersScores } = useExtractionMap()
 
     const handleClose = (): void => {
         setShowExtractionMap(false)
+        setDevelopersScores([])
     }
     
     return (
@@ -36,7 +32,7 @@ const ExtractionMapModal = ({ extraction }: PropsType): ReactElement => {
                             <h2>Not yet</h2>
                         </Tab>
                         <Tab eventKey='developers-scores' title="Developers' scores">
-                            <ExtractionMapDevelopersScores extraction={extraction} />
+                            <ExtractionMapDevelopersScores />
                         </Tab>
                     </Tabs>
                 </Container>

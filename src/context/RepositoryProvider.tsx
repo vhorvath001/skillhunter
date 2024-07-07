@@ -2,7 +2,8 @@ import { FormEvent, ReactElement, createContext, useEffect, useReducer } from 'r
 import useAxiosFetch from '../hooks/useAxiosFetch'
 import axios, { AxiosResponse } from 'axios'
 import { endpointBackEnd } from '../api/client'
-import { ChildrenType, handleError } from './ContextFunctions'
+import { handleError } from './ContextFunctions'
+import { ChildrenType, RepositoryType } from './AppTypes'
 
 export const REPOSITORY_ACTION_TYPES = {
     NEW: 'NEW',
@@ -10,14 +11,6 @@ export const REPOSITORY_ACTION_TYPES = {
     DELETE: 'DELETE',
     POPULATE: 'POPULATE',
     FILTER: 'FILTER'
-}
-
-export type RepositoryType = {
-    id: string,
-    name: string,
-    desc?: string,
-    url: string,
-    token: string
 }
 
 export type RepositoryAction = {

@@ -2,23 +2,25 @@ import { ReactElement } from 'react'
 import Col from 'react-bootstrap/Col'
 import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
-import { ExtractionType } from '../../context/ExtractionProvider'
 import { format } from 'date-fns'
 import { GrInProgress } from "react-icons/gr"
 import { FcOk } from "react-icons/fc"
 import { FcCancel } from "react-icons/fc"
 import ExtractionDetailsModal from './details/ExtractionDetailsModal'
-import useExtraction from '../../hooks/useExtraction'
 import Badge from 'react-bootstrap/Badge'
 import ModalConfirmation from '../../utils/modal/ModalConfirmation'
 import ExtractionMapModal from './map/ExtractionMapModal'
+import { ExtractionType } from '../../context/AppTypes'
+import useExtractionAdmin from '../../hooks/useExtractionAdmin'
+import useExtractionMap from '../../hooks/useExtractionMap'
 
 type PropsType = {
     extraction: ExtractionType
 }
 
 const ExtractionCard = ({ extraction }: PropsType): ReactElement => {
-    const { showExtractionDetails, setShowExtractionDetails, setProgressLogs, loadProgressLogs, setIsProgressLogLoading, setProgressLogErrorMessage, dispatch, handleDelete, showExtractionMap, setShowExtractionMap } = useExtraction()
+    const { showExtractionDetails, setShowExtractionDetails, setProgressLogs, loadProgressLogs, setIsProgressLogLoading, setProgressLogErrorMessage, dispatch, handleDelete } = useExtractionAdmin()
+    const { showExtractionMap, setShowExtractionMap, setExtraction } = useExtractionMap()
 
     const handleDetailsClick = (extractionId: number): void => {
         loadProgressLogs(extractionId, setProgressLogs, setIsProgressLogLoading, setProgressLogErrorMessage)
@@ -27,6 +29,7 @@ const ExtractionCard = ({ extraction }: PropsType): ReactElement => {
 
     const handleMapClick = (): void => {
         setShowExtractionMap(true)
+        setExtraction(extraction)
     }
     
     return (
@@ -80,7 +83,7 @@ const ExtractionCard = ({ extraction }: PropsType): ReactElement => {
             }
 
             {showExtractionMap &&
-                <ExtractionMapModal extraction={extraction} />
+                <ExtractionMapModal />
             }
         </Col>
     )

@@ -1,16 +1,18 @@
 import { ChangeEvent, ReactElement } from 'react'
 import Button from 'react-bootstrap/Button'
-import useExtraction from '../../hooks/useExtraction'
 import Col from 'react-bootstrap/Col'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Alert from 'react-bootstrap/Alert'
 import { format } from 'date-fns'
+import useExtractionAdmin from '../../hooks/useExtractionAdmin'
+import useExtractionStartNew from '../../hooks/useExtractionStartNew'
 
 const ExtractionFilter = (): ReactElement => {
-    const { repositoryOptions, filterRepoId, setFilterRepoId, handleFilterClick, filterDateFrom, setFilterDateFrom, filterDateTo, setFilterDateTo,
-            filterErrorMessage, setFilterErrorMessage, dispatch, setAreExtractionsLoading, filterStatus, setFilterStatus } = useExtraction()
-
+    const { handleFilterClick, filterDateFrom, setFilterDateFrom, filterDateTo, setFilterDateTo,
+            filterErrorMessage, setFilterErrorMessage, dispatch, setAreExtractionsLoading, filterStatus, setFilterStatus } = useExtractionAdmin()
+    const { repositoryOptions, filterRepoId, setFilterRepoId } = useExtractionStartNew()
+    
     const changeFilterRepositoryOptions = (e: ChangeEvent<HTMLSelectElement>) => {
         setFilterRepoId(Number(e.target.value))
     }

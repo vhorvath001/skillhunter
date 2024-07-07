@@ -1,20 +1,15 @@
 import { FormEvent, ReactElement, createContext, useEffect, useReducer } from 'react'
-import { ChildrenType, handleError } from './ContextFunctions'
+import { handleError } from './ContextFunctions'
 import useAxiosFetch from '../hooks/useAxiosFetch'
 import axios, { AxiosResponse } from 'axios'
 import { endpointBackEnd } from '../api/client'
+import { ChildrenType, DeveloperType } from './AppTypes'
 
 export const DEVELOPER_ACTION_TYPES = {
     POPULATE: 'POPULATE',
     EDIT: 'EDIT',
     DELETE: 'DELETE',
     FILTER: 'FILTER'
-}
-
-export type DeveloperType = {
-    id?: number,
-    name: string,
-    email: string
 }
 
 export type DeveloperAction = {

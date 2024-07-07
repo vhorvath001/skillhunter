@@ -2,34 +2,22 @@ import { ReactElement } from 'react'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Button from 'react-bootstrap/Button'
-import { ExtractionType } from '../../../context/ExtractionProvider'
 import SkillTreeSelectionModal from './SkillTreeSelectionModal'
-import useExtraction from '../../../hooks/useExtraction'
 import Form from 'react-bootstrap/Form'
 import useSkillTree from '../../../hooks/useSkillTree'
-import { SkillTreeNodeType } from '../../../context/SkillTreeProvider'
+import BarDiagram from './BarDiagram'
+import useExtractionMap from '../../../hooks/useExtractionMap'
 
-type PropsType = {
-    extraction: ExtractionType
-}
-
-const ExtractionMapDevelopersScores = ({ extraction }: PropsType): ReactElement => {
-    const { showSkillTreeSelection, setShowSkillTreeSelection, selectedSkill, setSelectedSkill } = useExtraction()
-    const { state, setTreeOperationErrorMessage } = useSkillTree()
-
+const ExtractionMapDevelopersScores = (): ReactElement => {
+    const { showSkillTreeSelection, setShowSkillTreeSelection, selectedSkill, setSelectedSkill } = useExtractionMap()
+    const { state, setTreeOperationErrorMessage, setSelectedProgLang } = useSkillTree()
 
     const handleShowSkillTreeSelection = (): void => {
         setShowSkillTreeSelection(true)
         setSelectedSkill([])
-        unselect(state.skillTree)
+        state.skillTree = []
         setTreeOperationErrorMessage('')
-    }
-
-    const unselect = (nodes: SkillTreeNodeType[]) => {
-        for(const node of nodes) {
-            node.selected = false
-            unselect(node.children)
-        }
+        setSelectedProgLang(-1)
     }
 
     return (
@@ -43,6 +31,11 @@ const ExtractionMapDevelopersScores = ({ extraction }: PropsType): ReactElement 
                             {selectedSkill[1]}
                         </>
                     }
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                    <BarDiagram />
                 </Col>
             </Row>
 
