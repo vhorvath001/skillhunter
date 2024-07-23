@@ -3,15 +3,17 @@ import Modal from 'react-bootstrap/Modal'
 import Container from 'react-bootstrap/Container'
 import Tabs from 'react-bootstrap/Tabs'
 import Tab from 'react-bootstrap/Tab'
-import ExtractionMapDevelopersScores from './ExtractionMapDevelopersScores'
+import ExtractionMapDevelopersScores from './developersScores/ExtractionMapDevelopersScores'
 import useExtractionMap from '../../../hooks/useExtractionMap'
+import ExtractionMapDeveloperSkillMap from './developerSkillMap/ExtractionMapDeveloperSkillMap'
 
 const ExtractionMapModal = (): ReactElement => {
-    const { showExtractionMap, setShowExtractionMap, setDevelopersScores } = useExtractionMap()
+    const { showExtractionMap, setShowExtractionMap, setDevelopersScores, setDevelopersScoresColSize } = useExtractionMap()
 
     const handleClose = (): void => {
         setShowExtractionMap(false)
         setDevelopersScores([])
+        setDevelopersScoresColSize(12)
     }
     
     return (
@@ -23,7 +25,7 @@ const ExtractionMapModal = (): ReactElement => {
                 <Container fluid>
                     <Tabs defaultActiveKey='developers-scores' className='mb-3'>
                         <Tab eventKey='developer-skill-map' title='Developer-Skill map'>
-                            <h2>Not yet</h2>
+                            <ExtractionMapDeveloperSkillMap />
                         </Tab>
                         <Tab eventKey='developer-project-map' title='Developer-Project map'>
                             <h2>Not yet</h2>

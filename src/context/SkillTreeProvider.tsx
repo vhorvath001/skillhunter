@@ -135,7 +135,8 @@ export const initState: UseSkillTreeContextType = {
     handleStatusChange: () => Promise.resolve(),
     handleDelete: () => Promise.resolve(),
     treeOperationErrorMessage: '', 
-    setTreeOperationErrorMessage: () => {}
+    setTreeOperationErrorMessage: () => {},
+    selectedProgLang: -1
 }
 
 const SkillTreeContext = createContext<UseSkillTreeContextType>(initState)
@@ -188,7 +189,7 @@ const useSkillTreeContext = () => {
     }, [ selectedProgLang ])
 
     return { dispatch, state, progLangs, setSelectedProgLang, isLoading, fetchError, treeIsLoading, treeErrorMessage, 
-             handleStatusChange, handleDelete, treeOperationErrorMessage, setTreeOperationErrorMessage }
+             handleStatusChange, handleDelete, treeOperationErrorMessage, setTreeOperationErrorMessage, selectedProgLang }
 }
 
 export type UseSkillTreeContextType = ReturnType<typeof useSkillTreeContext>

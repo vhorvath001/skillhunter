@@ -84,3 +84,9 @@ export type SkillTreeNodeType = {
     children: SkillTreeNodeType[]
     selected: boolean
 }
+
+export type RankingsFromSkillType = {
+    extractionId: number,
+    skillId: number,
+    rankings: RankingType[]
+}

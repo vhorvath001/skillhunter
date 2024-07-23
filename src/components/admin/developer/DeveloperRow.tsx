@@ -2,8 +2,9 @@ import { FcDeleteRow, FcEditImage } from 'react-icons/fc'
 import ModalForm from '../../../utils/modal/ModalForm'
 import ModalConfirmation from '../../../utils/modal/ModalConfirmation'
 import { ReactElement } from 'react'
-import { DeveloperAction, DeveloperType } from '../../../context/DeveloperProvider'
+import { DeveloperAction } from '../../../context/DeveloperProvider'
 import DeveloperForm from './DeveloperForm'
+import { DeveloperType } from '../../../context/AppTypes'
 
 type PropsType = {
     record: DeveloperType, 

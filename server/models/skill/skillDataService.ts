@@ -4,6 +4,7 @@ import TreeNode from '../../schema/treeNode'
 import { logSkillTree } from '../../services/skillService'
 import { saveExtractionSkillFindingModel } from '../extractionSkillFinding/extractionSkillFindingDataService'
 import { SkillModel } from './skillModel'
+import ProgLangModel from '../progLang/progLangModel'
 
 const updateSkillTree = async (parent: SkillModel | null, skillNodes: TreeNode[], projectId: number, extractionId: number): Promise<void> => {
     logger.debug(`Updating the skill tree [parent = ${parent?.id} : ${parent?.name}, projectId = ${projectId}, extractionId = ${extractionId}] to DB...`)
@@ -65,4 +66,15 @@ const deleteSkills =  async (ids: number[]): Promise<void> => {
     )
 }
 
-export { updateSkillTree, getAllSkillsByProgLangAndParent, changeSkillsStatus, deleteSkills }
+const getSkillById = async (skillId: number): Promise<SkillModel|null> => {
+    return await SkillModel.findOne({
+        where: {
+            id: skillId
+        },
+        include: [{
+            model: ProgLangModel
+        }]
+    })
+}
+
+export { updateSkillTree, getAllSkillsByProgLangAndParent, changeSkillsStatus, deleteSkills, getSkillById }

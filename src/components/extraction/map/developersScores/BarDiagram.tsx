@@ -1,14 +1,15 @@
 import { ReactElement, useEffect, useRef } from 'react'
-import Loading from '../../../utils/Loading'
+import Loading from '../../../../utils/Loading'
 import { ECharts, graphic, init } from 'echarts'
 import { ECBasicOption } from 'echarts/types/dist/shared'
-import AlertMessage from '../../../utils/AlertMessage'
-import useExtractionMap from '../../../hooks/useExtractionMap'
+import AlertMessage from '../../../../utils/AlertMessage'
+import useExtractionMap from '../../../../hooks/useExtractionMap'
 
 const BarDiagram = (): ReactElement => {
     const { isDevelopersScoresLoading, developersScores, developersScoresErrorMessage } = useExtractionMap()
 
     const diagramRef = useRef<HTMLDivElement>(null)
+
     let diagram: ECharts|null = null
     function resizeChart() {
         diagram?.resize()
@@ -130,10 +131,9 @@ const BarDiagram = (): ReactElement => {
                     </div>
                 }
                 {!isDevelopersScoresLoading && !developersScoresErrorMessage &&
-                    <div ref={diagramRef} style={{ width: "100%", height: "500px" }} />
+                    <div ref={diagramRef} style={{ width: "100%", height: "500px" }} id='aa'/>
                 }
             </div>
-
         </>
     )
 }

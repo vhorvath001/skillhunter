@@ -134,7 +134,7 @@ const toProgLangType = (formData: FormData, setErrorMessage: (errorMessage: stri
     return progLang
 }
 
-const isRankingInvalid = (ranking: RankingType[], setErrorMessage: (errorMessage: string) => void): boolean => {
+export const isRankingInvalid = (ranking: RankingType[], setErrorMessage: (errorMessage: string) => void): boolean => {
     if (ranking.some(r => !r.name || r.rangeStart === null)) {
         setErrorMessage('None of the following elements can be empty: Name, Range start!')
         return true
@@ -143,14 +143,20 @@ const isRankingInvalid = (ranking: RankingType[], setErrorMessage: (errorMessage
         setErrorMessage(`The first (bottom) ranking item's starting range must be zero!`)
         return true
     }
-    if (ranking.some((r, i) => i !==0 && r.rangeStart! > ranking[i-1].rangeStart!)) {
-        setErrorMessage(`The ranking items' starting range values must be in ascending order!`)
-        return true
+    if (ranking.length > 1) {
+        if (ranking.some((r, i) => i !==0 && r.rangeStart! > ranking[i-1].rangeStart!)) {
+            setErrorMessage(`The ranking items' starting range values must be in ascending order!`)
+            return true
+        }
+        if (ranking.some((r, i) => i !==0 && r.rangeStart! === ranking[i-1].rangeStart!)) {
+            setErrorMessage(`The ranking items' starting range values must have different values!`)
+            return true
+        }
     }
     return false
 }
 
-const getIndex = (name: string): number => {
+export const getIndex = (name: string): number => {
     if (name.startsWith('packageRemovalPatternListItem_value_'))
         return Number(name.replace('packageRemovalPatternListItem_value_', ''))
     else if (name.startsWith('packageRemovalPatternListItem_type_'))

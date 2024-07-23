@@ -3,7 +3,7 @@ export type PackageRemovalPatternType = {
     value: string
 }
 
-type RankingType = {
+export type RankingType = {
     name: string,
     rangeStart: number
 }
@@ -77,4 +77,10 @@ export type DevelopersScoresType = {
     developerId: number,
     developerName: string,
     totalScore: number
+}
+
+export type RankingsFromSkillType = {
+    extractionId: number,
+    skillId: number,
+    rankings: RankingType[]
 }

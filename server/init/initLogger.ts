@@ -13,7 +13,7 @@ const logger: winston.Logger = winston.createLogger({
     transports: [
         new winston.transports.Console({
             // level: process.env.LOG_LEVEL || 'debug',
-            level: 'debug',
+            level: 'info',
             format: winston.format.combine(winston.format.colorize())
         }),
         new winston.transports.File({ 

@@ -1,3 +1,4 @@
+import { RankingType } from '../../schema/appTypes';
 import ProgLangModel from './progLangModel';
 
 const getAllProgLangsOrderByName = async (): Promise<ProgLangModel[]> => {
@@ -39,4 +40,17 @@ const deleteProgLangById = async (id: number): Promise<number> => {
     })
 }
 
-export { getAllProgLangsOrderByName, getProgLangsByIds, getProgLangById, saveProgLang, updateProgLang, deleteProgLangById }
+const updateRankings = async (transformedRankings: RankingType[], id: number): Promise<void> => {
+    await ProgLangModel.update({
+        ranking: JSON.stringify({
+            'patternList': transformedRankings
+        })
+    }, {
+        where: {
+            id: id
+        }
+    }
+)
+}
+
+export { getAllProgLangsOrderByName, getProgLangsByIds, getProgLangById, saveProgLang, updateProgLang, deleteProgLangById, updateRankings }

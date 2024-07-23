@@ -1,11 +1,11 @@
 import { ReactElement } from 'react'
-import { ProgLangType } from '../../../context/ProgLangProvider'
 import Tab from 'react-bootstrap/Tab'
 import Tabs from 'react-bootstrap/Tabs'
 import ProgLangFormBasic from './ProgLangFormBasic'
 import ProgLangFormPackageRemoval from './ProgLangFormPackageRemoval'
 import ProgLangFormIgnoringLines from './ProgLangFormIgnoringLines'
 import ProgLangFormRanking from './ProgLangFormRanking'
+import { ProgLangType } from '../../../context/AppTypes'
 
 type PropsType = {
     record?: ProgLangType

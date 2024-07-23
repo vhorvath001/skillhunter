@@ -1,9 +1,13 @@
 import { Request, Response } from 'express'
 import logger from '../init/initLogger'
 import ProgLangModel from '../models/progLang/progLangModel'
-import { ProgLangType } from '../schema/appTypes'
-import { deleteProgLangById, getAllProgLangsOrderByName, getProgLangById, saveProgLang, updateProgLang } from '../models/progLang/progLangDataService'
+import { ProgLangType, RankingsFromSkillType, RankingType } from '../schema/appTypes'
+import { deleteProgLangById, getAllProgLangsOrderByName, getProgLangById, saveProgLang, updateProgLang, updateRankings } from '../models/progLang/progLangDataService'
 import { getErrorMessage, logError } from './commonFunctions'
+import ExtractionSkillFindingModel from '../models/extractionSkillFinding/extractionSkillFindingModel'
+import { getExtractionSkillFindingBySkill, getSumScoreTopLevelSkill } from '../models/extractionSkillFinding/extractionSkillFindingDataService'
+import { getSkillById } from '../models/skill/skillDataService'
+import { SkillModel } from '../models/skill/skillModel'
 
 const getProgLang = async (req: Request, resp: Response) => {
     logger.info(`Request has arrived to get a programming language - id: ${req.params.id}`)
@@ -92,6 +96,24 @@ const deleteProgLang = async (req: Request, resp: Response) => {
     }
 }
 
+const calculateRankingsFromSkill = async (req: Request, resp: Response) => {
+    logger.info(`Request has arrived to calculate rankings from skill. - id: ${req.params.id}, ${JSON.stringify(req.body)}`)
+    
+    try {
+        const rankingsFromSkill: RankingsFromSkillType = req.body as RankingsFromSkillType
+        const progLangId: number = Number(req.params.id)
+
+        const transformedRankings: RankingType[] = await transformRankings(rankingsFromSkill.rankings, rankingsFromSkill.extractionId, rankingsFromSkill.skillId)
+
+        await updateRankings(transformedRankings, progLangId)
+
+        resp.sendStatus(200)
+    } catch(err) {
+        logError(err, `Error occurred when executing 'calculateRankingsFromSkill'.`)
+        resp.status(500).send({'message': `Error occurred when trying to to calculate rankings from skill! - ${getErrorMessage(err)}`})
+    }
+}
+
 const toProgLangType = (progLangModel: ProgLangModel): ProgLangType => {
     return {
         id: progLangModel.id,
@@ -128,4 +150,19 @@ const toProgLangModel = (progLang: ProgLangType): ProgLangModel => {
     return progLangModel
 }
 
-export { getProgLang, getAllProgLangs, createNewProgLang, editExistingProgLang, deleteProgLang, toProgLangType }
+const transformRankings = async (rankings: RankingType[], extractionId: number, skillId: number): Promise<RankingType[]> => {
+    const extractionSkillFinding: ExtractionSkillFindingModel | null = await getExtractionSkillFindingBySkill(extractionId, skillId)
+
+    const sumScoreTopLevelSkill: number = await getSumScoreTopLevelSkill(extractionId)
+    
+    if (extractionSkillFinding && sumScoreTopLevelSkill > 0) {
+        logger.debug(`sumScoreTopLevelSkill: ${sumScoreTopLevelSkill}, the ratio to be used to to calculate the rankings for the programming lang: ${extractionSkillFinding.score / sumScoreTopLevelSkill}`)
+        for(const ranking of rankings) {
+            ranking.rangeStart = ranking.rangeStart / (extractionSkillFinding.score / sumScoreTopLevelSkill)
+        }
+    }
+
+    return rankings
+}
+
+export { getProgLang, getAllProgLangs, createNewProgLang, editExistingProgLang, deleteProgLang, toProgLangType, calculateRankingsFromSkill }

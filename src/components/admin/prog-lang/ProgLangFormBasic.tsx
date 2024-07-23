@@ -1,11 +1,11 @@
 import { ReactElement } from 'react'
-import { ProgLangType } from '../../../context/ProgLangProvider'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
 import { FaStarOfLife } from 'react-icons/fa'
 import { BsInfoSquare } from 'react-icons/bs'
 import EditableList from '../../../utils/list/EditableList'
+import { ProgLangType } from '../../../context/AppTypes'
 
 type PropsType = {
     record?: ProgLangType

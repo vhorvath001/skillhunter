@@ -1,8 +1,9 @@
-import { col, fn } from 'sequelize'
+import { cast, col, fn, literal, Op } from 'sequelize'
 import logger from '../../init/initLogger'
 import { ScoreType } from '../../schema/treeNode'
 import ExtractionSkillFindingModel from './extractionSkillFindingModel'
 import { DeveloperModel } from '../developer/developerModel'
+import { SkillModel } from '../skill/skillModel'
 
 const saveExtractionSkillFindingModel = async (score: ScoreType[], extractionId: number, skillId: number, projectId: number) => {
     logger.debug(`Saving an extraction skill finding [score = ${JSON.stringify(score)}, extractionId = ${extractionId}, skillId = ${skillId}, projectId = ${projectId}] to DB...`)
@@ -58,4 +59,27 @@ const queryDevelopersScoresBySkillId = async (extractionId: number, skillId: num
     })
 }
 
-export { saveExtractionSkillFindingModel, queryDevelopersScoresBySkillId }
+const getExtractionSkillFindingBySkill = async (extractionId: number, skillId: number): Promise<ExtractionSkillFindingModel | null> => {
+    return await ExtractionSkillFindingModel.findOne({
+        where: {
+            extractionId: extractionId,
+            skillId: skillId
+        }
+    })
+}
+
+const getSumScoreTopLevelSkill = async (extractionId: number): Promise<number> => {
+    return (await ExtractionSkillFindingModel.findOne({
+        attributes: [
+            [ fn('sum', col('score')), 'total_score'], 
+        ],
+        include: [{
+            model: SkillModel,
+            where: {
+                parentId: null
+            }
+        }]
+    }))?.dataValues['total_score'] ?? 0
+}
+
+export { saveExtractionSkillFindingModel, queryDevelopersScoresBySkillId, getExtractionSkillFindingBySkill, getSumScoreTopLevelSkill }

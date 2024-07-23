@@ -10,8 +10,8 @@ type PropsType = {
     icon: ReactElement,
     message: string, 
     id: any, 
-    handleOperation: (dispatch: React.Dispatch<any>, handleClose: () => void, setErrorMessage: (errorMessage: string) => void, id: any) => void,
-    dispatch: React.Dispatch<any>
+    handleOperation: (dispatch: React.Dispatch<any> | null, handleClose: () => void, setErrorMessage: (errorMessage: string) => void, id: any) => void,
+    dispatch: React.Dispatch<any> | null
 }
 
 const ModalConfirmation = ({ icon, message, id, handleOperation, dispatch }: PropsType ): ReactElement => {

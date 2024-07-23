@@ -70,7 +70,9 @@ const updateProgressProjects = async (extractionId: number, current: number, all
 const updateProgressCommits = async (extractionId: number, current: number, all: number) => {
     logger.debug(`Updating the progress of the commits [extractionId = ${extractionId}, current=${current}, all=${all}] ...`)
     ExtractionModel.update(
-        { progressCommits: `[${current} / ${all}]`},
+        { 
+            progressCommits: `[${current} / ${all}]` 
+        },
         {
             where: {
                 id: extractionId
