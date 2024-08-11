@@ -90,3 +90,14 @@ export type RankingsFromSkillType = {
     skillId: number,
     rankings: RankingType[]
 }
+
+export type DeveloperSkillMapType = {
+    developerName: string,
+    developerEmail: string,
+    developerId: number,
+    skillName: string,
+    skillId: number,
+    score: number,
+    ranking: string,
+    progLang: string
+}

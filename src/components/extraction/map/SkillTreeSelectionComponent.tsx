@@ -5,7 +5,7 @@ import useSkillTree from '../../../hooks/useSkillTree'
 import Form from 'react-bootstrap/Form'
 
 const SkillTreeSelectionComponent = (): ReactElement => {
-    const { setShowSkillTreeSelection, selectedSkill, setSelectedSkill, setDevelopersScoresColSize } = useExtractionMap()
+    const { setShowSkillTreeSelection, selectedSkill, setSelectedSkill } = useExtractionMap()
     const { state, setTreeOperationErrorMessage, setSelectedProgLang } = useSkillTree()
 
     const handleShowSkillTreeSelection = (): void => {
@@ -16,10 +16,6 @@ const SkillTreeSelectionComponent = (): ReactElement => {
         setSelectedProgLang(-1)
     }
 
-    const handleClickGenerateRankings = (): void => {
-        setDevelopersScoresColSize(6)
-    }
-
     return (
         <>
             <Button onClick={handleShowSkillTreeSelection} className='ms-5'>Choose a skill</Button>
@@ -27,7 +23,6 @@ const SkillTreeSelectionComponent = (): ReactElement => {
                 <>
                     <Form.Label className='ms-4 me-2 fw-bolder'>The selected skill:</Form.Label>
                     {selectedSkill[1]}
-                    <Button onClick={handleClickGenerateRankings} variant='secondary' className='ms-5'>Calculate rankings</Button>
                 </>
             }
         

@@ -5,7 +5,7 @@ import Button from 'react-bootstrap/Button'
 import SkillTreeSelectionModal from '../SkillTreeSelectionModal'
 import Form from 'react-bootstrap/Form'
 import useSkillTree from '../../../../hooks/useSkillTree'
-import BarDiagram from './BarDiagram'
+import DevelopersScoresBarDiagram from './DevelopersScoresBarDiagram'
 import useExtractionMap from '../../../../hooks/useExtractionMap'
 import ProgLangFormRanking from '../../../admin/prog-lang/ProgLangFormRanking'
 import ModalConfirmation from '../../../../utils/modal/ModalConfirmation'
@@ -14,7 +14,7 @@ import AlertMessage from '../../../../utils/AlertMessage'
 import SkillTreeSelectionComponent from '../SkillTreeSelectionComponent'
 
 const ExtractionMapDevelopersScores = (): ReactElement => {
-    const { showSkillTreeSelection, selectedSkill, developersScoresColSize, handleGenerateRankingsSubmit, extraction, showSaveSuccssfulCalculateRanking, setShowSaveSuccssfulCalculateRanking, setErrorMessageCalculateRankings, errorMessageCalculateRankings } = useExtractionMap()
+    const { showSkillTreeSelection, selectedSkill, developersScoresColSize, handleGenerateRankingsSubmit, extraction, showSaveSuccssfulCalculateRanking, setShowSaveSuccssfulCalculateRanking, setErrorMessageCalculateRankings, errorMessageCalculateRankings, setDevelopersScoresColSize, fetchDevelopersScores, setIsDevelopersScoresLoading, setDevelopersScores, setDevelopersScoresErrorMessage } = useExtractionMap()
     const { selectedProgLang } = useSkillTree()
 
     const handleConfirmationQuestion = (dispatch: React.Dispatch<any> | null, handleClose: () => void, setErrorMessage: (errorMessage: string) => void, id: any): void => {
@@ -25,16 +25,30 @@ const ExtractionMapDevelopersScores = (): ReactElement => {
         handleClose()
     }
 
+    const handleClickGenerateRankings = (): void => {
+        setDevelopersScoresColSize(6)
+    }
+
+    const handleShowDevelopersScores = (): void => {
+        fetchDevelopersScores(selectedSkill[0], extraction?.id!, setIsDevelopersScoresLoading, setDevelopersScores, setDevelopersScoresErrorMessage)
+    }
+
     return (
         <>
             <Row className='mb-4'>
                 <Col>
                     <SkillTreeSelectionComponent />
+                    {selectedSkill.length > 0 &&
+                        <>
+                            <Button onClick={handleShowDevelopersScores} className='ms-2'>Show</Button>
+                            <Button onClick={handleClickGenerateRankings} variant='secondary' className='ms-5'>Calculate rankings</Button>
+                        </>
+                    }
                 </Col>
             </Row>
             <Row>
                 <Col xs={developersScoresColSize}>
-                    <BarDiagram />
+                    <DevelopersScoresBarDiagram />
                 </Col>
                 {12-developersScoresColSize > 0 &&
                     <Col xs={12-developersScoresColSize} className='p-4 mb-3 bg-light bg-gradient border'>

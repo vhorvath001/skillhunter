@@ -1,10 +1,10 @@
 import { Request, Response } from 'express'
-import { start } from '../services/extractionService'
+import { buildDeveloperSkillMap, start } from '../services/extractionService'
 import logger from '../init/initLogger'
 import { parseISO } from 'date-fns'
 import { deleteExtractionById, getExtractionModels } from '../models/extraction/extractionDataService'
 import { ExtractionModel } from '../models/extraction/extractionModel'
-import { DevelopersScoresType, ExtractionType, ProgLangType, ProgressLogType, SelectedProjectBranchesType } from '../schema/appTypes'
+import { DeveloperSkillMapType, DevelopersScoresType, ExtractionType, ProgLangType, ProgressLogType, SelectedProjectBranchesType } from '../schema/appTypes'
 import { toProgLangType } from './progLangController'
 import { toRepositoryType } from './repositoryController'
 import { getErrorMessage, logError } from './commonFunctions'
@@ -115,6 +115,23 @@ export const getDevelopersScoresBySkill = async (req: Request, resp: Response): 
     } catch(err) {
         logError(err, `Error occurred when executing 'getDevelopersScoresBySkill'.`)
         resp.status(500).send({'message': `Error occurred when trying to get the scores of developers by a skill! - ${getErrorMessage(err)}`})
+    }
+}
+
+export const getDeveloperSkillMap = async (req: Request, resp: Response): Promise<void> => {
+    logger.info(`Request has arrived to get the developer-skill map  - ${JSON.stringify(req.params)}.`)
+
+    try {
+        const extractionId: number = Number(req.params.id as string)
+        const resourceType: string = req.params.resourceType
+        const resourceId: number = Number(req.params.resourceId)
+
+        const developerSkillMap: DeveloperSkillMapType[] = await buildDeveloperSkillMap(extractionId, resourceType, resourceId)
+
+        resp.status(200).json(developerSkillMap)
+    } catch(err) {
+        logError(err, `Error occurred when executing 'getDeveloperSkillMap'.`)
+        resp.status(500).send({'message': `Error occurred when trying to get the developer-skill map! - ${getErrorMessage(err)}`})
     }
 }
 

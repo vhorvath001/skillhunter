@@ -1,15 +1,20 @@
-import { ReactElement } from 'react';
+import { ChangeEvent, ReactElement, useState } from 'react';
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import ExtractionMapFilter from '../ExtractionMapFilter';
 import SkillTreeSelectionComponent from '../SkillTreeSelectionComponent'
 import Form from 'react-bootstrap/Form'
+import AlertMessage from '../../../../utils/AlertMessage';
+import useExtractionMap from '../../../../hooks/useExtractionMap';
+import DeveloperSkillGraph from './DeveloperSkillGraph';
 
 const ExtractionMapDeveloperSkillMap = (): ReactElement => {
     const resourceTypes: string[][] = [['ALL', 'all the resources'], 
                                        ['DEVELOPER', 'the following developer only'], 
                                        ['SKILL', 'the following skill only']]
-    const developers: string[][] = [['1', 'Viktor']]
+
+    const { errorMessageDeveloperSkillMap, developers, showDeveloperSkillMap, setIsDeveloperSkillMapLoading, setDeveloperSkillMap } = useExtractionMap()
+    const [ selectedDeveloper, setSelectedDeveloper ] = useState<string>('')
 
     return (
         <>
@@ -18,15 +23,27 @@ const ExtractionMapDeveloperSkillMap = (): ReactElement => {
                     <ExtractionMapFilter 
                         resourceTypes={resourceTypes}
                         componentOne={
-                            <Form.Select className='mb-2 me-3 w-auto d-lg-inline' name='????'>
-                                {developers.map(r1 => (
-                                    <option value={r1[0]}>{r1[1]}</option>    
+                            <Form.Select className='mb-2 me-3 w-auto d-lg-inline' name='????' onChange={(e: ChangeEvent<HTMLSelectElement>) => setSelectedDeveloper(e.target.value)}>
+                                {developers.map(d => (
+                                    <option value={d.id}>{d.name} - ({d.email})</option>    
                                 ))}
                             </Form.Select>        
                         }
-                        componentTwo={ <SkillTreeSelectionComponent /> } />
+                        componentTwo={ <SkillTreeSelectionComponent /> } 
+                        handleShow={showDeveloperSkillMap}
+                        selectedResource={selectedDeveloper}
+                        setIsLoading={setIsDeveloperSkillMapLoading}
+                        setData={setDeveloperSkillMap}
+                    />
                 </Col>
-                
+            </Row>
+            <Row>
+                <DeveloperSkillGraph />
+            </Row>
+            <Row>
+                { errorMessageDeveloperSkillMap &&
+                    <AlertMessage errorMessage={errorMessageDeveloperSkillMap} />
+                }
             </Row>
         </>
     )
