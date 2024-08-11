@@ -5,12 +5,13 @@ import { ECBasicOption } from 'echarts/types/dist/shared'
 import AlertMessage from '../../../../utils/AlertMessage'
 import useExtractionMap from '../../../../hooks/useExtractionMap'
 
-const BarDiagram = (): ReactElement => {
+const DevelopersScoresBarDiagram = (): ReactElement => {
     const { isDevelopersScoresLoading, developersScores, developersScoresErrorMessage } = useExtractionMap()
 
     const diagramRef = useRef<HTMLDivElement>(null)
 
     let diagram: ECharts|null = null
+    
     function resizeChart() {
         diagram?.resize()
     }
@@ -106,10 +107,14 @@ const BarDiagram = (): ReactElement => {
                 });
             });
 
-
             diagram.setOption(option)
 
             window.addEventListener("resize", resizeChart)
+        } else {
+            if (diagram) {
+                diagram.clear()
+                diagram.dispose()
+            }
         }
 
         // Return cleanup function
@@ -131,11 +136,11 @@ const BarDiagram = (): ReactElement => {
                     </div>
                 }
                 {!isDevelopersScoresLoading && !developersScoresErrorMessage &&
-                    <div ref={diagramRef} style={{ width: "100%", height: "500px" }} id='aa'/>
+                    <div ref={diagramRef} style={{ width: "100%", height: "500px" }} id='developersScoresBarDiagram'/>
                 }
             </div>
         </>
     )
 }
 
-export default BarDiagram
+export default DevelopersScoresBarDiagram

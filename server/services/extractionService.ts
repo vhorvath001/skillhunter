@@ -7,12 +7,16 @@ import saveProject from '../models/project/projectDataService'
 import logger from '../init/initLogger'
 import TreeNode from '../schema/treeNode'
 import GitlabAPI from '../init/gitlabAPI'
-import { ProgLangType, SelectedProjectBranchesType } from '../schema/appTypes'
+import { DeveloperSkillMapType, ProgLangType, RankingType, SelectedProjectBranchesType } from '../schema/appTypes'
 import ProgLangModel from '../models/progLang/progLangModel'
 import { getProgLangsByIds } from '../models/progLang/progLangDataService'
 import config from '../config/skillHunter.config'
 import { getOrCreateDeveloper } from '../models/developer/developerDataService'
 import { toProgLangType } from '../controllers/progLangController'
+import { getSumScoreForDeveloperSkill } from '../models/extractionSkillFinding/extractionSkillFindingDataService'
+import ExtractionSkillFindingModel from '../models/extractionSkillFinding/extractionSkillFindingModel'
+import { DeveloperModel } from '../models/developer/developerModel'
+import { SkillModel } from '../models/skill/skillModel'
 
 const start = async (repoId: number, 
                      projectsBranches: SelectedProjectBranchesType[], 
@@ -84,9 +88,8 @@ const start = async (repoId: number,
         await updateStatus(extractionId, 'COMPLETED')
     } catch(err) {
         let errorMessage: string = JSON.stringify(err)
-        if (err instanceof Error) {
+        if (err instanceof Error)
             logger.error(`${errorMessage} - ${err.stack}`)
-        }
         else
             logger.error(`${errorMessage} - ${err}`)            
         await log('Extraction failed! - ' + errorMessage, extractionId)
@@ -94,4 +97,57 @@ const start = async (repoId: number,
     }
 }
 
-export { start }
+const buildDeveloperSkillMap = async (extractionId: number, resourceType: string, resourceId: number): Promise<DeveloperSkillMapType[]> => {
+    const esfmList: ExtractionSkillFindingModel[] = await getSumScoreForDeveloperSkill(extractionId, resourceType, resourceId)
+    
+    const tempDeveloperSkillList = esfmList.map(rec => { return {
+        developer: rec.dataValues['developerRef'] as DeveloperModel,
+        skill: rec.dataValues['skillRef'] as SkillModel,
+        score: rec.dataValues['score'],
+        ranking: JSON.parse(((rec.dataValues['skillRef'] as SkillModel).progLangRef as ProgLangModel).ranking)?.patternList ?? []
+    }})
+
+    return tempDeveloperSkillList.map(rec => { return {
+        developerName: rec.developer.name,
+        developerEmail: rec.developer.email,
+        developerId: rec.developer.id,
+        skillName: rec.skill.name,
+        skillId: rec.skill.id,
+        score: rec.score,
+        ranking: getRanking(rec.score, rec.ranking, rec.developer.id, rec.skill.parentId, tempDeveloperSkillList),
+        progLang: rec.skill.progLangRef.name
+    }})
+}
+
+/*
+- junit       1152        1152 / 22152 = 0.052
+- spring     21000       21000 / 22152 = 0.948
+
+on prog lnag level:
+master: 25000
+medium: 10000
+novice:     0
+
+master level for spring: 25000 * 0.948 = 23700
+master level for junit:  25000 * 0.052 = 1300
+*/
+const getRanking = (score: number, ranking: RankingType[], developerId: number, skillParentId: number, tempDeveloperSkillList: any[]): string => {
+    if (!ranking || ranking.length === 0) {
+        return 'UNKNOWN'
+    } else {
+        const sumOfScoreOnThisLevel = tempDeveloperSkillList
+            .filter(rec => rec.developer.id === developerId && ((!rec.skill.parentId && !skillParentId) || rec.skill.parentId === skillParentId))
+            .reduce((n, { score }) => n + score, 0)
+
+        // transforming the rankings from prog lang level to the specific skill level
+        const transformedRanking = ranking.map(rec => { return {
+            name: rec.name,
+            rangeStart: score / sumOfScoreOnThisLevel * rec.rangeStart
+        }})
+
+        // finding which ranking has to be selected (which is not higher than the score -> the 1st element in the ranking array is the highest and so on...)
+        return transformedRanking && transformedRanking.length > 0 ? transformedRanking.find(rec => rec.rangeStart <= score)!.name : 'UNKNOWN'
+    }
+}
+
+export { start, buildDeveloperSkillMap };

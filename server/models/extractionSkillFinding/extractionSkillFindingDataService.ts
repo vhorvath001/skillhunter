@@ -4,6 +4,7 @@ import { ScoreType } from '../../schema/treeNode'
 import ExtractionSkillFindingModel from './extractionSkillFindingModel'
 import { DeveloperModel } from '../developer/developerModel'
 import { SkillModel } from '../skill/skillModel'
+import ProgLangModel from '../progLang/progLangModel'
 
 const saveExtractionSkillFindingModel = async (score: ScoreType[], extractionId: number, skillId: number, projectId: number) => {
     logger.debug(`Saving an extraction skill finding [score = ${JSON.stringify(score)}, extractionId = ${extractionId}, skillId = ${skillId}, projectId = ${projectId}] to DB...`)
@@ -82,4 +83,38 @@ const getSumScoreTopLevelSkill = async (extractionId: number): Promise<number> =
     }))?.dataValues['total_score'] ?? 0
 }
 
-export { saveExtractionSkillFindingModel, queryDevelopersScoresBySkillId, getExtractionSkillFindingBySkill, getSumScoreTopLevelSkill }
+const getSumScoreForDeveloperSkill = async (extractionId: number, resourceType: string, resourceId: number): Promise<ExtractionSkillFindingModel[]> => {
+    let whereCond: {} = {
+        extractionId: extractionId
+    }
+    if (resourceType === 'DEVELOPER') {
+        whereCond = { ...whereCond, 'developerId': resourceId }
+    } else if (resourceType === 'SKILL') {
+        whereCond = { ...whereCond, 'skillId': resourceId }
+    }
+    
+    return await ExtractionSkillFindingModel.findAll({
+        attributes: [
+            'developerId',
+            'skillId',
+            [ fn('sum', col('score')), 'score']
+        ],
+        where: {
+            ...whereCond
+        },
+        include: [{
+            model: DeveloperModel,
+            attributes: [ 'id', 'name' ]
+        }, {
+            model: SkillModel,
+            attributes: [ 'id', 'name', 'parentId' ],
+            include: [{
+                model: ProgLangModel,
+                attributes: [ 'name', 'ranking' ]
+            }]
+        }],
+        group: [ 'developerId', 'skillId' ]
+    })
+}
+
+export { saveExtractionSkillFindingModel, queryDevelopersScoresBySkillId, getExtractionSkillFindingBySkill, getSumScoreTopLevelSkill, getSumScoreForDeveloperSkill }
