@@ -7,7 +7,7 @@ import Loading from '../../../utils/Loading'
 import useExtractionStartNew from '../../../hooks/useExtractionStartNew';
 
 const StartExtraction1stPage = (): ReactElement => {
-    const { repositoryOptions, setPathTextfield, progLangOptions, setSelectedProgLangs, pathTextfield, selectedProgLangs, setRepoId, isLoading } = useExtractionStartNew()
+    const { repositoryOptions, setPathTextfield, progLangOptions, setSelectedProgLangs, pathTextfield, setNameTextfield, nameTextfield, selectedProgLangs, setRepoId, isLoading } = useExtractionStartNew()
 
     const changeRepositoryOptions = (e: ChangeEvent<HTMLSelectElement>) => {
         setRepoId(Number(e.target.value))
@@ -18,6 +18,12 @@ const StartExtraction1stPage = (): ReactElement => {
 
     return (
         <>
+            <Form.Group as={Row} className='mb-3' controlId='name'>
+                <Form.Label column sm='2'>Name</Form.Label>
+                <Col>
+                    <Form.Control name='name' type='text' value={nameTextfield} onChange={e => setNameTextfield(e.target.value)} />
+                </Col>
+            </Form.Group>
             <Form.Group as={Row} className='mb-3' controlId='repository'>
                 <Form.Label column sm='2'>Repository</Form.Label>
                 <Col>

@@ -32,6 +32,8 @@ export const extract = async (req: Request, resp: Response): Promise<void> => {
         errorMessage = 'Repository ID is not provided or invalid.'
     else if (!req?.body?.path) 
         errorMessage = 'Path is not provided.'
+    else if (!req?.body?.name) 
+        errorMessage = 'Name is not provided.'
     else if (!req?.body?.progLangs) 
         errorMessage = 'Programming langague array is not provided.'
     else if (!req?.body?.projectsBranches) 
@@ -42,6 +44,7 @@ export const extract = async (req: Request, resp: Response): Promise<void> => {
         resp.status(422).json({ 'message': errorMessage })  // Unprocessable Entity
     } else {
         start(Number(req.body.repoId), 
+              req.body.name as string,
               req.body.projectsBranches as SelectedProjectBranchesType[], 
               req.body.path as string, 
               req.body.progLangs as number[])

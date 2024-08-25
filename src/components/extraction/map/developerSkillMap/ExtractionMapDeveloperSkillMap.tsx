@@ -1,4 +1,4 @@
-import { ChangeEvent, ReactElement, useState } from 'react';
+import { ChangeEvent, ReactElement, useEffect, useState } from 'react';
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import ExtractionMapFilter from '../ExtractionMapFilter';
@@ -16,6 +16,10 @@ const ExtractionMapDeveloperSkillMap = (): ReactElement => {
     const { errorMessageDeveloperSkillMap, developers, showDeveloperSkillMap, setIsDeveloperSkillMapLoading, setDeveloperSkillMap } = useExtractionMap()
     const [ selectedDeveloper, setSelectedDeveloper ] = useState<string>('')
 
+    useEffect(() => {
+        setSelectedDeveloper(String(developers[0]?.id) ?? '')
+    }, [developers])
+
     return (
         <>
             <Row>
@@ -23,15 +27,16 @@ const ExtractionMapDeveloperSkillMap = (): ReactElement => {
                     <ExtractionMapFilter 
                         resourceTypes={resourceTypes}
                         componentOne={
-                            <Form.Select className='mb-2 me-3 w-auto d-lg-inline' name='????' onChange={(e: ChangeEvent<HTMLSelectElement>) => setSelectedDeveloper(e.target.value)}>
+                            <Form.Select className='mb-2 me-3 w-auto d-lg-inline' name='????' onChange={(e: ChangeEvent<HTMLSelectElement>) => {setSelectedDeveloper(e.target.value);console.log('selectedDeveloper: ', selectedDeveloper);}}>
                                 {developers.map(d => (
-                                    <option value={d.id}>{d.name} - ({d.email})</option>    
+                                    <option value={d.id} key={d.id}>{d.name} - ({d.email})</option>    
                                 ))}
                             </Form.Select>        
                         }
                         componentTwo={ <SkillTreeSelectionComponent /> } 
                         handleShow={showDeveloperSkillMap}
                         selectedResource={selectedDeveloper}
+                        resetSelectedResource={() => {setSelectedDeveloper(String(developers[0].id) ?? '')}}
                         setIsLoading={setIsDeveloperSkillMapLoading}
                         setData={setDeveloperSkillMap}
                     />

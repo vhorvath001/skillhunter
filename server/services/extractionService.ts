@@ -19,14 +19,15 @@ import { DeveloperModel } from '../models/developer/developerModel'
 import { SkillModel } from '../models/skill/skillModel'
 
 const start = async (repoId: number, 
+                     name: string,
                      projectsBranches: SelectedProjectBranchesType[], 
                      path: string, 
                      progLangIds: number[]): Promise<void> => {
-    logger.info(`Extraction starting [repoId=${repoId}, branches=${JSON.stringify(projectsBranches)}, path=${path}, progLangIds=${progLangIds}] ...`)
+    logger.info(`Extraction starting, repoId=[${repoId}], name=[${name}], branches=[${JSON.stringify(projectsBranches)}], path=[${path}], progLangIds=[${progLangIds}] ...`)
     let extractionId: number = -1
 
     try {
-        extractionId = await saveExtraction(repoId, projectsBranches, path, progLangIds);
+        extractionId = await saveExtraction(repoId, name, projectsBranches, path, progLangIds);
         await log('Extraction has started.', extractionId);
 
         const gitlabAPI: GitlabAPI = await GitlabAPI.createGitlapAPI(repoId)
@@ -66,11 +67,12 @@ const start = async (repoId: number,
                         const foundProgLang: ProgLangType = toProgLangType(foundProgLangModel)
                         // first the diff has to be checked how heavily it was modified
                         // a score (integer between 0 and 1) will be calculated which will mirror the size of the alteration on the file by the committer
-                        const score: number = calculateCumulatedScore(diff, foundProgLang.ignoringLinesPatterns)
+
+                        const [score, nrOfChangedLines]: number[] = calculateCumulatedScore(diff, foundProgLang.ignoringLinesPatterns)
 
                         // then the whole file conten (in specific revision) has to be retrieved to extract the imported packages which will be the skills                
                         const content: string = await getGitLabContentByCommitId(gitlabAPI, gitlabProjectId, diff.path, commit.id)
-                        await populateSkillsFromContent(gitlabAPI, skillTree, content, score, diff.path, progLangs, gitlabProjectId, commit.id, developerId)
+                        await populateSkillsFromContent(gitlabAPI, skillTree, content, score, nrOfChangedLines, diff.path, progLangs, gitlabProjectId, commit.id, developerId)
                     } else {
                         logger.debug(`The file [${diff.path}] does not belong to any of the selected prog lang(s), it will be ignored.`)
                     }
@@ -107,16 +109,18 @@ const buildDeveloperSkillMap = async (extractionId: number, resourceType: string
         ranking: JSON.parse(((rec.dataValues['skillRef'] as SkillModel).progLangRef as ProgLangModel).ranking)?.patternList ?? []
     }})
 
-    return tempDeveloperSkillList.map(rec => { return {
-        developerName: rec.developer.name,
-        developerEmail: rec.developer.email,
-        developerId: rec.developer.id,
-        skillName: rec.skill.name,
-        skillId: rec.skill.id,
-        score: rec.score,
-        ranking: getRanking(rec.score, rec.ranking, rec.developer.id, rec.skill.parentId, tempDeveloperSkillList),
-        progLang: rec.skill.progLangRef.name
-    }})
+    return tempDeveloperSkillList.map(rec => {
+        return {
+            developerName: rec.developer.name,
+            developerEmail: rec.developer.email,
+            developerId: rec.developer.id,
+            skillName: rec.skill.name,
+            skillId: rec.skill.id,
+            score: rec.score,
+            ranking: getRanking(rec.score, rec.ranking, rec.developer.id, rec.skill.parentId, tempDeveloperSkillList),
+            progLang: rec.skill.progLangRef.name
+        }
+    })
 }
 
 /*

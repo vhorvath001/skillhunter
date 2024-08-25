@@ -10,8 +10,10 @@ export const getSkillTree = async (req: Request, resp: Response) => {
 
     try {
         const progLangId: string = req.params.progLangId
+        const treeMode: string = req.params.treeMode
+        const extractionId: string|null = req.params.extractionId
 
-        const tree: SkillTreeNodeType[] = await buildTree(Number(progLangId), null, null)
+        const tree: SkillTreeNodeType[] = await buildTree(Number(progLangId), null, null, treeMode, extractionId)
 
         resp.status(200).json(tree)
     } catch(err) {
@@ -52,20 +54,26 @@ export const handleDelete = async (req: Request, resp: Response) => {
     }
 }
 
-const buildTree = async (progLangId: number, parentId: number | null, parentNode: SkillTreeNodeType | null): Promise<SkillTreeNodeType[]> => {
-    logger.debug(`Building tree for ${parentNode?.id} - ${parentNode?.name}...`)
-    const skillModels: SkillModel[] = await getAllSkillsByProgLangAndParent(progLangId, parentId)
+const buildTree = async (progLangId: number, 
+                         parentId: number | null, 
+                         parentNode: SkillTreeNodeType | null,
+                         treeMode: string, 
+                         extractionId: string | null): Promise<SkillTreeNodeType[]> => {
+    logger.debug(`Building tree, progLangId: [${progLangId}], parentId: [${parentId}], parentNodeName: [${parentNode?.name}], treeMode: [${treeMode}], extractionId: [${extractionId}] ...`)
+    const skillModels: SkillModel[] = await getAllSkillsByProgLangAndParent(progLangId, parentId, treeMode, extractionId)
     logger.debug(`Found skills: ${skillModels.map(m => '['+m.id+'--'+m.name+']').join(',   ')}`)
 
-    const childNodes: SkillTreeNodeType[] = skillModels.map(m => { return {
+    const childNodes: SkillTreeNodeType[] = skillModels.map(m => { 
+        return {
             id: m.id, 
             name: m.name,
             enabled: m.enabled
-        } as SkillTreeNodeType})
+        } as SkillTreeNodeType
+    })
     if (parentNode)
         parentNode.children = childNodes
     for(const childNode of childNodes) {
-        await buildTree(progLangId, childNode.id, childNode)
+        await buildTree(progLangId, childNode.id, childNode, treeMode, extractionId)
     }
     return childNodes
 }

@@ -45,7 +45,7 @@ const checkIfPackageLocal = (pckg: string, folders: string[], packageSeparator: 
     return false;
 }
 
-const addToSkillTree = (explodedPackage: string[], skillTree: TreeNode, score: number, progLangId: number, developerId: number): void => {
+const addToSkillTree = (explodedPackage: string[], skillTree: TreeNode, score: number, nrOfChangedLines: number, progLangId: number, developerId: number): void => {
     logger.debug(`Adding the skill to the tree [explodedPackage=${explodedPackage}, score=${score}, progLangId=${progLangId}, developerId=${developerId}] ...`)
     logger.silly(`Skill tree:\n${logSkillTree(skillTree.children, '')}`)
 
@@ -54,12 +54,13 @@ const addToSkillTree = (explodedPackage: string[], skillTree: TreeNode, score: n
         if (!skillJourney.hasPackage(pckg)) {
             const scoreType: ScoreType = {
                 score: score,
-                developerId: developerId
+                developerId: developerId,
+                nrOfChangedLines: nrOfChangedLines
             }
 
-            const treeNode: TreeNode = new TreeNode(pckg, skillJourney, [scoreType], progLangId)
+            new TreeNode(pckg, skillJourney, [scoreType], progLangId)
         } else {
-            skillJourney.getChild(pckg)!.addScore(score, developerId)
+            skillJourney.getChild(pckg)!.addScore(score, nrOfChangedLines, developerId)
         }
         skillJourney = skillJourney.getChild(pckg)!
     }
@@ -73,7 +74,7 @@ const addToSkillTree = (explodedPackage: string[], skillTree: TreeNode, score: n
 // 5. remove the TLD-like package names (e.g. the starting 'com', 'org', 'uk', etc)
 // 6. only 'level' number of packages will be taken into 
 // 7. add/append the package to the the skill tree
-const populateSkillsFromContent = async (gitlabAPI: GitlabAPI, skillTree: TreeNode, content: string, score: number, filePath: string, 
+const populateSkillsFromContent = async (gitlabAPI: GitlabAPI, skillTree: TreeNode, content: string, score: number, nrOfChangedLines: number, filePath: string, 
                                          progLangs: ProgLangModel[], projectId: number, commitId: string, developerId: number) => {
     logger.debug(`Populating skills from code content [score=${score}, filePath=${filePath}, progLangIds=${progLangs.map(pl => pl.id).join(', ')}, projectId=${projectId}, commitId=${commitId}, developerId=${developerId}] ...`)
     logger.silly(`Incoming skill tree:\n${logSkillTree(skillTree.children, '')}`)
@@ -127,17 +128,18 @@ const populateSkillsFromContent = async (gitlabAPI: GitlabAPI, skillTree: TreeNo
                         if (progLang.level)
                             explodedPackage = explodedPackage.slice(0, progLang.level)
 
-                        addToSkillTree(explodedPackage, skillTree, score, progLang.id, developerId)
+                        addToSkillTree(explodedPackage, skillTree, score, nrOfChangedLines, progLang.id, developerId)
                     } else {
                         if (!skillTree.hasPackage(pckg)) {
                             const scoreType: ScoreType = {
                                 score: score,
-                                developerId: developerId
+                                developerId: developerId,
+                                nrOfChangedLines: nrOfChangedLines
                             }                
                             const treeNode: TreeNode = new TreeNode(pckg, skillTree, [scoreType], progLang.id)
                             skillTree.addToChildren(treeNode)
                         } else {
-                            skillTree.getChild(pckg)!.addScore(score, developerId)
+                            skillTree.getChild(pckg)!.addScore(score, nrOfChangedLines, developerId)
                         }
                     }
                 } else 
@@ -163,13 +165,14 @@ const logSkillTree = (childNodes: TreeNode[], indentation: string): string => {
     return logg
 }
 
-const calculateCumulatedScore = (diff: GitLabDiff, ignoringLinesPatterns: string[]): number => {
+const calculateCumulatedScore = (diff: GitLabDiff, ignoringLinesPatterns: string[]): number[] => {
     logger.debug(`Calculating cumulated score ...`)
     logger.silly(`\n${JSON.stringify(diff)}`)
 
-    let score: number = 0;
-    let minusLines: string[] = [];
-    let plusLines: string[] = [];
+    let score: number = 0
+    let minusLines: string[] = []
+    let plusLines: string[] = []
+    let nrOfChangedLines: number = 0
     
     for(const lineDiff of diff.diff.split('\n')) {
         if (lineDiff.startsWith('+'))
@@ -178,13 +181,14 @@ const calculateCumulatedScore = (diff: GitLabDiff, ignoringLinesPatterns: string
             minusLines.push(lineDiff.slice(1).trim())
         else {
             score = score + calculateScore(minusLines, plusLines, ignoringLinesPatterns)
+            nrOfChangedLines += plusLines.length > minusLines.length ? plusLines.length : minusLines.length
             minusLines = []
             plusLines = []
         }
     }
     if (minusLines.length + plusLines.length > 0)
         score = score + calculateScore(minusLines, plusLines, ignoringLinesPatterns)
-    return score
+    return [ score, nrOfChangedLines ]
 }
 
 const calculateScore = (minusLines: string[], plusLines: string[], ignoringLinesPatterns: string[]): number => {

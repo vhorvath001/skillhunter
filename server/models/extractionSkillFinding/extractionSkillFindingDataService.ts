@@ -22,6 +22,7 @@ const saveExtractionSkillFindingModel = async (score: ScoreType[], extractionId:
         if (mList.length === 0) {
             await ExtractionSkillFindingModel.create({
                 score: s.score, 
+                nrOfChangedLines: s.nrOfChangedLines,
                 extractionId: extractionId, 
                 skillId: skillId, 
                 projectId: projectId,
@@ -30,6 +31,7 @@ const saveExtractionSkillFindingModel = async (score: ScoreType[], extractionId:
         } else if (mList.length === 1) {
             const m = mList[0]
             m.score += s.score
+            m.nrOfChangedLines += s.nrOfChangedLines
             await m.save()
         } else {
             logger.warn(`Multiple ExtractionSkillFinding records found! extractionId=${extractionId}, skillId=${skillId}, projectId=${projectId}, developerId=${s.developerId}`)
@@ -104,7 +106,7 @@ const getSumScoreForDeveloperSkill = async (extractionId: number, resourceType: 
         },
         include: [{
             model: DeveloperModel,
-            attributes: [ 'id', 'name' ]
+            attributes: [ 'id', 'name', 'email' ]
         }, {
             model: SkillModel,
             attributes: [ 'id', 'name', 'parentId' ],

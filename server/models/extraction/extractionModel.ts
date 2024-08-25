@@ -10,6 +10,10 @@ export class ExtractionModel extends Model {
     @Column(DataType.INTEGER)
     declare id: number
 
+    @AllowNull(false)
+    @Column(DataType.STRING)
+    declare name: string
+
     @Default(DataType.NOW)
     @Column(DataType.DATE)
     declare startDate: Date

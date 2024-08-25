@@ -155,7 +155,9 @@ export const initState: UseExtractionMapContextType = {
     isDeveloperSkillMapLoading: false,
     setIsDeveloperSkillMapLoading: () => {},
     developerSkillMap: [], 
-    setDeveloperSkillMap: () => {}
+    setDeveloperSkillMap: () => {},
+    selectedResourceType: '', 
+    setSelectedResourceType: () => {}
 }
 
 const useExtractionMapContext = () => {
@@ -175,6 +177,7 @@ const useExtractionMapContext = () => {
     const [ errorMessageDeveloperSkillMap, setErrorMessageDeveloperSkillMap ] = useState<string>('')
     const [ isDeveloperSkillMapLoading, setIsDeveloperSkillMapLoading ] = useState<boolean>(false)
     const [ developerSkillMap, setDeveloperSkillMap ] = useState<DeveloperSkillMapType[]>()
+    const [ selectedResourceType, setSelectedResourceType ]= useState<string>('')
 
     useEffect(() => {
         if (!showExtractionMap)
@@ -196,7 +199,8 @@ const useExtractionMapContext = () => {
              handleGenerateRankingsSubmit, showSaveSuccssfulCalculateRanking, setShowSaveSuccssfulCalculateRanking,
              errorMessageCalculateRankings, setErrorMessageCalculateRankings, fetchDevelopers, setDevelopers, errorMessageDeveloperSkillMap, 
              setErrorMessageDeveloperSkillMap, developers, fetchDevelopersScores, setDevelopersScoresErrorMessage, showDeveloperSkillMap,
-             isDeveloperSkillMapLoading, setIsDeveloperSkillMapLoading, developerSkillMap, setDeveloperSkillMap }
+             isDeveloperSkillMapLoading, setIsDeveloperSkillMapLoading, developerSkillMap, setDeveloperSkillMap, selectedResourceType, 
+             setSelectedResourceType }
 }
 
 export type UseExtractionMapContextType = ReturnType<typeof useExtractionMapContext>

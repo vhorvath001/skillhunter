@@ -1,8 +1,8 @@
 import { ReactElement, createContext, useEffect, useReducer, useState } from 'react'
 import { handleError } from './ContextFunctions'
-import useAxiosFetch from '../hooks/useAxiosFetch'
-import { client } from '../api/client'
+import { client, endpointBackEnd } from '../api/client'
 import { ChildrenType, OptionType, ProgLangType, SkillTreeNodeType } from './AppTypes'
+import axios, { AxiosResponse } from 'axios'
 
 export const SKILL_TREE_ACTION_TYPE = {
     DELETE: 'DELETE',
@@ -21,11 +21,13 @@ export type SkillTreeAction = {
     status?: string
 }
 
-const loadTree = async (progLangId: number, dispatch: React.Dispatch<SkillTreeAction>, setTreeIsLoading: (treeIsLoading: boolean) => void, setTreeErrorMessage: (treeErrorMessage: string) => void): Promise<void> => {
+const loadTree = async (progLangId: number, dispatch: React.Dispatch<SkillTreeAction>, setTreeIsLoading: (treeIsLoading: boolean) => void, setTreeErrorMessage: (treeErrorMessage: string) => void, treeMode: string, extractionId: number|undefined): Promise<void> => {
     setTreeIsLoading(true)
-    client.get(`/skills/${progLangId}`)
+    client.get(`/skills/${progLangId}/${treeMode}/${extractionId}`)
         .then(resp => {
-            dispatch({ type: SKILL_TREE_ACTION_TYPE.POPULATE, payload: resp.data })
+            dispatch({ 
+                type: SKILL_TREE_ACTION_TYPE.POPULATE, 
+                payload: resp.data })
         })
         .catch(err => {
             handleError(err, setTreeErrorMessage)
@@ -123,6 +125,32 @@ const deleteNodes = (treeNodes: SkillTreeNodeType[], ids: number[]): void => {
     }
 }
 
+const fetchProgLangs = async (setProgLangs: React.Dispatch<React.SetStateAction<OptionType[]>>, 
+                              extractionId: number|undefined,
+                              setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
+                              setFetchError: React.Dispatch<React.SetStateAction<string>>,
+                              treeMode: string) => {
+    try {
+        setIsLoading(true)
+        const url: string = treeMode === 'select' ? `${endpointBackEnd}/prog-langs/extractions/${extractionId}` : `${endpointBackEnd}/prog-langs`
+        const resp: AxiosResponse = await axios({
+            method: 'GET', 
+            url: url
+        })
+
+        setProgLangs( (resp.data as ProgLangType[]).map(pl => { 
+            return {
+                key: pl.id, 
+                value: pl.name
+            } as OptionType
+        }))
+    } catch(err) {
+        handleError(err, setFetchError)
+    } finally {
+        setIsLoading(false)
+    }
+}
+
 export const initState: UseSkillTreeContextType = { 
     dispatch: () => {},
     state: {} as SkillTreeStateType,
@@ -136,7 +164,10 @@ export const initState: UseSkillTreeContextType = {
     handleDelete: () => Promise.resolve(),
     treeOperationErrorMessage: '', 
     setTreeOperationErrorMessage: () => {},
-    selectedProgLang: -1
+    selectedProgLang: -1,
+    treeMode: '', 
+    setTreeMode: () => {},
+    setExtractionId: () => {}
 }
 
 const SkillTreeContext = createContext<UseSkillTreeContextType>(initState)
@@ -158,7 +189,6 @@ export const reducer = (state: SkillTreeStateType, action: SkillTreeAction): Ski
             const treeNodes: SkillTreeNodeType[] = action.payload
             deleteNodes(treeNodes, ids)
             return { ...state, skillTree: treeNodes }
-
         }
         default:
             throw new Error('Unidentified reducer action type!')
@@ -166,30 +196,45 @@ export const reducer = (state: SkillTreeStateType, action: SkillTreeAction): Ski
 }
 
 const useSkillTreeContext = () => {
-    const { data, isLoading, fetchError } = useAxiosFetch('/prog-langs')
+    // const { data, isLoading, fetchError } = useAxiosFetch('/prog-langs')
+    const [ isLoading, setIsLoading ] = useState<boolean>(false)
+    const [ fetchError, setFetchError ] = useState<string>('')
     const [ progLangs, setProgLangs ] = useState<OptionType[]>([])
     const [ selectedProgLang, setSelectedProgLang ] = useState<number>(-1)
     const [ treeIsLoading, setTreeIsLoading ] = useState<boolean>(false)
     const [ treeErrorMessage, setTreeErrorMessage ] = useState<string>('')
     const [ state, dispatch ] = useReducer(reducer, { skillTree: [] })
     const [ treeOperationErrorMessage, setTreeOperationErrorMessage ] = useState<string>('')
+    const [ treeMode, setTreeMode ] = useState<string>('')
+    const [ extractionId, setExtractionId ] = useState<number|undefined>(-1)
+
+    // useEffect(() => {
+    //     if (!isLoading && !fetchError)
+    //         setProgLangs( (data as ProgLangType[]).map(pl => { 
+    //             return {
+    //                 key: pl.id, 
+    //                 value: pl.name
+    //             } as OptionType
+    //         }))
+    // }, [ isLoading ])
 
     useEffect(() => {
-        if (!isLoading)
-            setProgLangs(
-                (data as ProgLangType[]).map(pl => { return {key: pl.id, value: pl.name} as OptionType})
-            )
-    }, [isLoading])
+        fetchProgLangs(setProgLangs, extractionId, setIsLoading, setFetchError, treeMode)
+    }, [ extractionId ])
 
     useEffect(() => {
         if (selectedProgLang === -1)
-            dispatch({ type: SKILL_TREE_ACTION_TYPE.POPULATE, payload: []})
+            dispatch({ 
+                type: SKILL_TREE_ACTION_TYPE.POPULATE, 
+                payload: []
+            })
         else
-            loadTree(selectedProgLang, dispatch, setTreeIsLoading, setTreeErrorMessage)
+            loadTree(selectedProgLang, dispatch, setTreeIsLoading, setTreeErrorMessage, treeMode, extractionId)
     }, [ selectedProgLang ])
 
     return { dispatch, state, progLangs, setSelectedProgLang, isLoading, fetchError, treeIsLoading, treeErrorMessage, 
-             handleStatusChange, handleDelete, treeOperationErrorMessage, setTreeOperationErrorMessage, selectedProgLang }
+             handleStatusChange, handleDelete, treeOperationErrorMessage, setTreeOperationErrorMessage, selectedProgLang,
+             treeMode, setTreeMode, setExtractionId }
 }
 
 export type UseSkillTreeContextType = ReturnType<typeof useSkillTreeContext>

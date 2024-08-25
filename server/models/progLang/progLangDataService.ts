@@ -1,9 +1,22 @@
+import { QueryTypes } from 'sequelize';
+import sequelize from '../../init/initSequelize';
 import { RankingType } from '../../schema/appTypes';
 import ProgLangModel from './progLangModel';
 
 const getAllProgLangsOrderByName = async (): Promise<ProgLangModel[]> => {
     return await ProgLangModel.findAll({
         order: ['name']
+    })
+}
+
+const getAllProgLangsByExtractionIdOrderByName = async (extractionId: number|undefined): Promise<ProgLangModel[]> => {
+    return await sequelize.query('SELECT DISTINCT pl.* FROM proglang AS pl, skill AS s, extraction_skill_finding AS esf WHERE pl.id = s.proglang_id AND s.id = esf.skill_id AND esf.extraction_id = :extractionId ORDER BY pl.name', {
+        replacements: {
+            extractionId: extractionId
+        },
+        model: ProgLangModel,
+        mapToModel: true,
+        type: QueryTypes.SELECT,
     })
 }
 
@@ -53,4 +66,4 @@ const updateRankings = async (transformedRankings: RankingType[], id: number): P
 )
 }
 
-export { getAllProgLangsOrderByName, getProgLangsByIds, getProgLangById, saveProgLang, updateProgLang, deleteProgLangById, updateRankings }
+export { getAllProgLangsOrderByName, getProgLangsByIds, getProgLangById, saveProgLang, updateProgLang, deleteProgLangById, updateRankings, getAllProgLangsByExtractionIdOrderByName }

@@ -10,20 +10,25 @@ type PropsType = {
     handleShow: (setErrorMessageDeveloperSkillMap: (m: string) => void, extractionId: number, resourceType: string, resourceId: string, setIsLoading: (isLoading: boolean) => void, setData: (data: any[]) => void) => Promise<void>,
     selectedResource: string,
     setIsLoading: (isLoading: boolean) => void,
-    setData: (data: any[]) => void
+    setData: (data: any[]) => void,
+    resetSelectedResource: () => void
 }
 
-const ExtractionMapFilter = ({ resourceTypes, componentOne, componentTwo, handleShow, selectedResource, setIsLoading, setData }: PropsType): ReactElement => {
-    const { selectedSkill, setErrorMessageDeveloperSkillMap, extraction } = useExtractionMap()
+const ExtractionMapFilter = ({ resourceTypes, componentOne, componentTwo, handleShow, selectedResource, setIsLoading, setData, resetSelectedResource }: PropsType): ReactElement => {
+    const { selectedSkill, setErrorMessageDeveloperSkillMap, extraction, selectedResourceType, setSelectedResourceType } = useExtractionMap()
 
     const [ showComponentOne, setShowComponentOne ] = useState<boolean>(false)
     const [ showComponentTwo, setShowComponentTwo ] = useState<boolean>(false)
     const [ showButton, setShowButton ] = useState<boolean>(true)
-    const [ selectedResourceType, setSelectedResourceType ]= useState<string>(resourceTypes[0][0])
+    // const [ selectedResourceType, setSelectedResourceType ]= useState<string>(resourceTypes[0][0])
+    useEffect(() => {
+        setSelectedResourceType(resourceTypes[0][0])
+    }, [])
 
     const changeResourceTypeOption = (e: ChangeEvent<HTMLSelectElement>): void => {
         const selected: string = e.target.value
         setSelectedResourceType(selected)
+        resetSelectedResource()
         if (selected === resourceTypes[0][0]) {
             setShowComponentOne(false)
             setShowComponentTwo(false)
@@ -64,7 +69,7 @@ const ExtractionMapFilter = ({ resourceTypes, componentOne, componentTwo, handle
             <label className='me-3'>Showing </label>
             <Form.Select onChange={changeResourceTypeOption} value={selectedResourceType} name='selectedResourceType' className='mb-2 me-1 w-auto d-lg-inline'>
                 { resourceTypes.map(rt => (
-                    <option value={rt[0]}>{rt[1]}</option>    
+                    <option value={rt[0]} key={rt[0]}>{rt[1]}</option>    
                 ))}
             </Form.Select>
             { showComponentOne && 

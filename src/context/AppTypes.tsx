@@ -23,6 +23,7 @@ export type ProjectsBranchesType = {
 
 export type ExtractionType = {
     id: number,
+    name: string,
     startDate: Date,
     projectsBranches: SelectedProjectBranchesType[],
     path: string,

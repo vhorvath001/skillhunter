@@ -1,5 +1,5 @@
 import express from 'express'
-import { calculateRankingsFromSkill, createNewProgLang, deleteProgLang, editExistingProgLang, getAllProgLangs, getProgLang } from '../../controllers/progLangController'
+import { calculateRankingsFromSkill, createNewProgLang, deleteProgLang, editExistingProgLang, getAllProgLangs, getProgLang, getAllProgLangsByExtraction } from '../../controllers/progLangController'
 const progLangRouter = express.Router()
 
 progLangRouter.route('/:id')
@@ -14,5 +14,8 @@ progLangRouter.route('/')
     .post(createNewProgLang)
     .get(getAllProgLangs)
 
+progLangRouter.route('/extractions/:extractionId')
+    .get(getAllProgLangsByExtraction)
+    
 export default progLangRouter
     

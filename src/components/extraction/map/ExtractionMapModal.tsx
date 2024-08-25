@@ -29,7 +29,7 @@ const ExtractionMapModal = (): ReactElement => {
     }
     
     return (
-        <Modal show={showExtractionMap} onHide={handleClose} dialogClassName="modal-90w">
+        <Modal show={showExtractionMap} onHide={handleClose} dialogClassName="modal-fullscreen">
             <Modal.Header closeButton>
                 <Modal.Title>Extraction map</Modal.Title>
             </Modal.Header>

@@ -53,6 +53,7 @@ export const handleStartExtraction = async (e: FormEvent<HTMLFormElement>,
             .post('extractions', {
                 repoId: formData.get('repository'),
                 path: formData.get('path'),
+                name: formData.get('name'),
                 progLangs: selectedProgLangs,
                 projectsBranches: projectsBranches
             })
@@ -78,6 +79,8 @@ export const initState: UseExtractionStartNewContextType = {
     isLoading: true,
     pathTextfield: '', 
     setPathTextfield: () => {},
+    nameTextfield: '', 
+    setNameTextfield: () => {},
     projectsBranchesData: [],
     progLangOptions: [],
     selectedProgLangs: [], 
@@ -94,6 +97,7 @@ const useExtractionStartNewContext = () => {
     const [ progLangOptions, setProgLangOptions ] = useState<OptionType[]>([])
     const [ errorMessage, setErrorMessage ] = useState<string>('')
     const [ pathTextfield, setPathTextfield ] = useState<string>('')
+    const [ nameTextfield, setNameTextfield ] = useState<string>('')
     const [ projectsBranchesData, setProjectsBranchesData ] = useState<ProjectsBranchesType[]>([])
     const [ isLoading, setIsLoading ] = useState<boolean>(false)
     const [ selectedProgLangs, setSelectedProgLangs ] = useState<string[]>([])
@@ -161,7 +165,7 @@ const useExtractionStartNewContext = () => {
     }, [ show2ndPage ])
 
     return { handleStartExtraction, show2ndPage, setShow2ndPage, showStartExtraction, setShowStartExtraction, repositoryOptions, errorMessage, setErrorMessage, 
-             isLoading, pathTextfield, setPathTextfield, projectsBranchesData, progLangOptions, selectedProgLangs, setSelectedProgLangs,
+             isLoading, pathTextfield, setPathTextfield, nameTextfield, setNameTextfield, projectsBranchesData, progLangOptions, selectedProgLangs, setSelectedProgLangs,
              setRepoId, filterRepoId, setFilterRepoId }
 }
 

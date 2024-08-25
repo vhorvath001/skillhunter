@@ -5,7 +5,7 @@ import SkillTree from '../../skillTree/SkillTree'
 import useExtractionMap from '../../../hooks/useExtractionMap'
 
 const SkillTreeSelectionModal = (): ReactElement => {
-    const { showSkillTreeSelection, setShowSkillTreeSelection } = useExtractionMap()
+    const { showSkillTreeSelection, setShowSkillTreeSelection, extraction } = useExtractionMap()
 
     const handleClose = (): void => {
         setShowSkillTreeSelection(false)
@@ -18,7 +18,7 @@ const SkillTreeSelectionModal = (): ReactElement => {
             </Modal.Header>
             <Modal.Body>
                 <Container fluid>
-                    <SkillTree mode='select' />
+                    <SkillTree mode='select' extractionId={extraction?.id} />
                 </Container>
             </Modal.Body>
         </Modal>

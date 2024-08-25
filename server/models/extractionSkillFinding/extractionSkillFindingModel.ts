@@ -23,6 +23,10 @@ export default class ExtractionSkillFindingModel extends Model {
     @Column(DataType.DOUBLE)
     declare score: number
 
+    @AllowNull(false)
+    @Column(DataType.INTEGER)
+    declare nrOfChangedLines: number
+
     @ForeignKey(() => ExtractionModel)
     @Column({ field: 'extraction_id' })
     declare extractionId: number

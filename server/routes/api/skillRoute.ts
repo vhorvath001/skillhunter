@@ -3,7 +3,7 @@ import { handleStatusChange, getSkillTree, handleDelete } from '../../controller
 
 const skillRouter = express.Router()
 
-skillRouter.route('/:progLangId')
+skillRouter.route('/:progLangId/:treeMode/:extractionId?')
     .get(getSkillTree)
 skillRouter.route('/status')
     .post(handleStatusChange)

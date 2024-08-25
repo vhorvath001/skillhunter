@@ -14,6 +14,10 @@ export class SkillModel extends Model {
     declare name: string
 
     @AllowNull(false)
+    @Column(DataType.STRING)
+    declare path: string
+
+    @AllowNull(false)
     @Column(DataType.BOOLEAN)
     declare enabled: boolean
 

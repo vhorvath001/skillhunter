@@ -9,7 +9,7 @@ const sequelize: Sequelize = new Sequelize({
         freezeTableName: true,
         timestamps: false
     },
-    logging: msg => logger.debug(msg),
+    logging: msg => logger.info(msg),
     // logging: false,
     logQueryParameters: true
 })

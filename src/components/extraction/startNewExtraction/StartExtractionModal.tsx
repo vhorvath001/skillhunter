@@ -10,7 +10,7 @@ import Button from 'react-bootstrap/Button'
 import useExtractionStartNew from '../../../hooks/useExtractionStartNew'
 
 const StartExtractionModal = (): ReactElement => {
-    const { handleStartExtraction, show2ndPage, setShow2ndPage, showStartExtraction, setShowStartExtraction, errorMessage, setErrorMessage, isLoading, projectsBranchesData, pathTextfield, selectedProgLangs, setSelectedProgLangs } = useExtractionStartNew()
+    const { handleStartExtraction, show2ndPage, setShow2ndPage, showStartExtraction, setShowStartExtraction, errorMessage, setErrorMessage, isLoading, projectsBranchesData, pathTextfield, nameTextfield, selectedProgLangs, setSelectedProgLangs } = useExtractionStartNew()
 
     const handleClose = (): void => {
         setShowStartExtraction(false)
@@ -48,7 +48,7 @@ const StartExtractionModal = (): ReactElement => {
                                     onClick={handleClose}>Close</Button>
                                 <Button 
                                     className='mx-2 mt-3 mb-4' 
-                                    disabled={isLoading || ((errorMessage?.trim()?.length || 0) > 0 && !show2ndPage) || (!pathTextfield) || (selectedProgLangs?.length === 0)} 
+                                    disabled={isLoading || ((errorMessage?.trim()?.length || 0) > 0 && !show2ndPage) || (!pathTextfield) || (!nameTextfield) || (selectedProgLangs?.length === 0)} 
                                     variant='primary' 
                                     type='submit'>
                                     {show2ndPage ? 'Start!' : 'Next >>'}

@@ -30,3 +30,5 @@ package-lock.json
 github_token.txt
 /_tmp
 _tmp/diff.txt
+
+package-lock.json

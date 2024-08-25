@@ -2,12 +2,10 @@ import { Request, Response } from 'express'
 import logger from '../init/initLogger'
 import ProgLangModel from '../models/progLang/progLangModel'
 import { ProgLangType, RankingsFromSkillType, RankingType } from '../schema/appTypes'
-import { deleteProgLangById, getAllProgLangsOrderByName, getProgLangById, saveProgLang, updateProgLang, updateRankings } from '../models/progLang/progLangDataService'
+import { deleteProgLangById, getAllProgLangsOrderByName, getProgLangById, saveProgLang, updateProgLang, updateRankings, getAllProgLangsByExtractionIdOrderByName } from '../models/progLang/progLangDataService'
 import { getErrorMessage, logError } from './commonFunctions'
 import ExtractionSkillFindingModel from '../models/extractionSkillFinding/extractionSkillFindingModel'
 import { getExtractionSkillFindingBySkill, getSumScoreTopLevelSkill } from '../models/extractionSkillFinding/extractionSkillFindingDataService'
-import { getSkillById } from '../models/skill/skillDataService'
-import { SkillModel } from '../models/skill/skillModel'
 
 const getProgLang = async (req: Request, resp: Response) => {
     logger.info(`Request has arrived to get a programming language - id: ${req.params.id}`)
@@ -33,9 +31,22 @@ const getAllProgLangs = async (req: Request, resp: Response) => {
     try {
         const progLangModels: ProgLangModel[] = await getAllProgLangsOrderByName()
 
-        resp.status(200).json(
-            progLangModels.map(m => toProgLangType(m))
-        )
+        resp.status(200).json( progLangModels.map(m => toProgLangType(m)) )
+    } catch(err) {
+        logError(err, `Error occurred when executing 'getAllProgLangs'.`)
+        resp.status(500).send({'message': `Error occurred when trying to get all the programming languages! - ${getErrorMessage(err)}`})
+    }
+}
+
+const getAllProgLangsByExtraction = async (req: Request, resp: Response) => {
+    logger.info(`Request has arrived to get all the programming languages by extraction. - ${JSON.stringify(req.params)}`)
+
+    try {
+        const extractionId: number = Number(req.params.extractionId)
+
+        const progLangModels: ProgLangModel[] = await getAllProgLangsByExtractionIdOrderByName(extractionId)
+
+        resp.status(200).json( progLangModels.map(m => toProgLangType(m)) )
     } catch(err) {
         logError(err, `Error occurred when executing 'getAllProgLangs'.`)
         resp.status(500).send({'message': `Error occurred when trying to get all the programming languages! - ${getErrorMessage(err)}`})
@@ -165,4 +176,4 @@ const transformRankings = async (rankings: RankingType[], extractionId: number, 
     return rankings
 }
 
-export { getProgLang, getAllProgLangs, createNewProgLang, editExistingProgLang, deleteProgLang, toProgLangType, calculateRankingsFromSkill }
+export { getProgLang, getAllProgLangs, createNewProgLang, editExistingProgLang, deleteProgLang, toProgLangType, calculateRankingsFromSkill, getAllProgLangsByExtraction }
