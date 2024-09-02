@@ -7,7 +7,7 @@ type PropsType = {
     resourceTypes: string[][],
     componentOne: ReactElement,
     componentTwo: ReactElement,
-    handleShow: (setErrorMessageDeveloperSkillMap: (m: string) => void, extractionId: number, resourceType: string, resourceId: string, setIsLoading: (isLoading: boolean) => void, setData: (data: any[]) => void) => Promise<void>,
+    handleShow: (setErrorMessageDeveloperSkillMap: (m: string) => void, extractionId: number, resourceType: string, resourceId: string, filterSkillLevel: number, setIsLoading: (isLoading: boolean) => void, setData: (data: any[]) => void) => Promise<void>,
     selectedResource: string,
     setIsLoading: (isLoading: boolean) => void,
     setData: (data: any[]) => void,
@@ -15,12 +15,12 @@ type PropsType = {
 }
 
 const ExtractionMapFilter = ({ resourceTypes, componentOne, componentTwo, handleShow, selectedResource, setIsLoading, setData, resetSelectedResource }: PropsType): ReactElement => {
-    const { selectedSkill, setErrorMessageDeveloperSkillMap, extraction, selectedResourceType, setSelectedResourceType } = useExtractionMap()
+    const { selectedSkill, setErrorMessageDeveloperSkillMap, extraction, selectedResourceType, setSelectedResourceType, setFilterSkillLevel, filterSkillLevel } = useExtractionMap()
 
     const [ showComponentOne, setShowComponentOne ] = useState<boolean>(false)
     const [ showComponentTwo, setShowComponentTwo ] = useState<boolean>(false)
     const [ showButton, setShowButton ] = useState<boolean>(true)
-    // const [ selectedResourceType, setSelectedResourceType ]= useState<string>(resourceTypes[0][0])
+
     useEffect(() => {
         setSelectedResourceType(resourceTypes[0][0])
     }, [])
@@ -51,6 +51,7 @@ const ExtractionMapFilter = ({ resourceTypes, componentOne, componentTwo, handle
                    extraction!.id,
                    selectedResourceType, 
                    selectedResourceType === 'SKILL' ? selectedSkill[0] : selectedResource,
+                   filterSkillLevel,
                    setIsLoading,
                    setData)
     }
@@ -78,6 +79,16 @@ const ExtractionMapFilter = ({ resourceTypes, componentOne, componentTwo, handle
             { showComponentTwo && 
                 componentTwo
             }
+
+            { (selectedResourceType === 'ALL' || selectedResourceType === 'DEVELOPER') &&
+                <>
+                    on
+                    <Form.Control type="number" placeholder="ALL" className='d-lg-inline' style={{width: "70px"}} 
+                                  onChange={(e: ChangeEvent<HTMLInputElement>) => setFilterSkillLevel(Number(e.target.value))} />
+                    level(s)
+                </>
+            }
+
             { showButton &&
                 <Button className='ms-4' onClick={handleClickOnShowButton}>Show</Button>
             }

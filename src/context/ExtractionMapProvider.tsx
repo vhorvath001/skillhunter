@@ -107,14 +107,20 @@ const showDeveloperSkillMap = async (setErrorMessageDeveloperSkillMap: (m: strin
                                      extractionId: number,
                                      resourceType: string, 
                                      resourceId: string,
+                                     filterSkillLevel: number,
                                      setIsDeveloperSkillMapLoading: (isDeveloperSkillMapLoading: boolean) => void,
                                      setDeveloperSkillMap: (developerSkillMap: DeveloperSkillMapType[]) => void): Promise<void> => {
     try {
         setIsDeveloperSkillMapLoading(true)
+
+        const urlParams = new URLSearchParams(`${endpointBackEnd}/extractions/${extractionId}/maps/developerSkill/${resourceType}/${resourceId}`)
+        if (filterSkillLevel !== 0)
+            urlParams.set('skillLevel', String(filterSkillLevel))
         const resp: AxiosResponse = await axios({
             method: 'GET',
-            url: `${endpointBackEnd}/extractions/${extractionId}/maps/developerSkill/${resourceType}/${resourceId}`
+            url: urlParams.toString()
         })
+
         setDeveloperSkillMap(resp.data)
         setIsDeveloperSkillMapLoading(false)
     } catch(err) {
@@ -157,7 +163,9 @@ export const initState: UseExtractionMapContextType = {
     developerSkillMap: [], 
     setDeveloperSkillMap: () => {},
     selectedResourceType: '', 
-    setSelectedResourceType: () => {}
+    setSelectedResourceType: () => {},
+    filterSkillLevel: 0,
+    setFilterSkillLevel: () => {}
 }
 
 const useExtractionMapContext = () => {
@@ -177,7 +185,8 @@ const useExtractionMapContext = () => {
     const [ errorMessageDeveloperSkillMap, setErrorMessageDeveloperSkillMap ] = useState<string>('')
     const [ isDeveloperSkillMapLoading, setIsDeveloperSkillMapLoading ] = useState<boolean>(false)
     const [ developerSkillMap, setDeveloperSkillMap ] = useState<DeveloperSkillMapType[]>()
-    const [ selectedResourceType, setSelectedResourceType ]= useState<string>('')
+    const [ selectedResourceType, setSelectedResourceType ] = useState<string>('')
+    const [ filterSkillLevel, setFilterSkillLevel ] = useState<number>(0)
 
     useEffect(() => {
         if (!showExtractionMap)
@@ -200,7 +209,7 @@ const useExtractionMapContext = () => {
              errorMessageCalculateRankings, setErrorMessageCalculateRankings, fetchDevelopers, setDevelopers, errorMessageDeveloperSkillMap, 
              setErrorMessageDeveloperSkillMap, developers, fetchDevelopersScores, setDevelopersScoresErrorMessage, showDeveloperSkillMap,
              isDeveloperSkillMapLoading, setIsDeveloperSkillMapLoading, developerSkillMap, setDeveloperSkillMap, selectedResourceType, 
-             setSelectedResourceType }
+             setSelectedResourceType, filterSkillLevel, setFilterSkillLevel }
 }
 
 export type UseExtractionMapContextType = ReturnType<typeof useExtractionMapContext>

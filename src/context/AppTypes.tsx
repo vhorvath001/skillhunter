@@ -100,5 +100,7 @@ export type DeveloperSkillMapType = {
     skillId: number,
     score: number,
     ranking: string,
-    progLang: string
+    progLang: string,
+    skillLocation: string,
+    nrOfChangedLines: number
 }

@@ -27,7 +27,8 @@ const ExtractionMapDeveloperSkillMap = (): ReactElement => {
                     <ExtractionMapFilter 
                         resourceTypes={resourceTypes}
                         componentOne={
-                            <Form.Select className='mb-2 me-3 w-auto d-lg-inline' name='????' onChange={(e: ChangeEvent<HTMLSelectElement>) => {setSelectedDeveloper(e.target.value);console.log('selectedDeveloper: ', selectedDeveloper);}}>
+                            <Form.Select className='mb-2 me-3 w-auto d-lg-inline' 
+                                         onChange={(e: ChangeEvent<HTMLSelectElement>) => setSelectedDeveloper(e.target.value)}>
                                 {developers.map(d => (
                                     <option value={d.id} key={d.id}>{d.name} - ({d.email})</option>    
                                 ))}
@@ -36,7 +37,7 @@ const ExtractionMapDeveloperSkillMap = (): ReactElement => {
                         componentTwo={ <SkillTreeSelectionComponent /> } 
                         handleShow={showDeveloperSkillMap}
                         selectedResource={selectedDeveloper}
-                        resetSelectedResource={() => {setSelectedDeveloper(String(developers[0].id) ?? '')}}
+                        resetSelectedResource={() => setSelectedDeveloper(String(developers[0].id) ?? '')}
                         setIsLoading={setIsDeveloperSkillMapLoading}
                         setData={setDeveloperSkillMap}
                     />
