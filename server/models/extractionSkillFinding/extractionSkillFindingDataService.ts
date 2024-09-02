@@ -85,24 +85,29 @@ const getSumScoreTopLevelSkill = async (extractionId: number): Promise<number> =
     }))?.dataValues['total_score'] ?? 0
 }
 
-const getSumScoreForDeveloperSkill = async (extractionId: number, resourceType: string, resourceId: number): Promise<ExtractionSkillFindingModel[]> => {
-    let whereCond: {} = {
+const getSumScoreForDeveloperSkill = async (extractionId: number, resourceType: string, resourceId: number, skillLevel: number | null): Promise<ExtractionSkillFindingModel[]> => {
+    let whereCondEsfm: {} = {
         extractionId: extractionId
     }
     if (resourceType === 'DEVELOPER') {
-        whereCond = { ...whereCond, 'developerId': resourceId }
+        whereCondEsfm = { ...whereCondEsfm, 'developerId': resourceId }
     } else if (resourceType === 'SKILL') {
-        whereCond = { ...whereCond, 'skillId': resourceId }
+        whereCondEsfm = { ...whereCondEsfm, 'skillId': resourceId }
     }
+
+    let whereCondSkill = {}
+    if (skillLevel)
+        whereCondSkill = { 'level': skillLevel}
     
     return await ExtractionSkillFindingModel.findAll({
         attributes: [
             'developerId',
             'skillId',
-            [ fn('sum', col('score')), 'score']
+            [ fn('sum', col('score')), 'score'],
+            [ fn('sum', col('NR_OF_CHANGED_LINES')), 'nrOfChangedLines']
         ],
         where: {
-            ...whereCond
+            ...whereCondEsfm
         },
         include: [{
             model: DeveloperModel,
@@ -110,6 +115,7 @@ const getSumScoreForDeveloperSkill = async (extractionId: number, resourceType: 
         }, {
             model: SkillModel,
             attributes: [ 'id', 'name', 'parentId' ],
+            where: whereCondSkill,
             include: [{
                 model: ProgLangModel,
                 attributes: [ 'name', 'ranking' ]

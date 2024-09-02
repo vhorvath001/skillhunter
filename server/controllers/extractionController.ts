@@ -128,8 +128,9 @@ export const getDeveloperSkillMap = async (req: Request, resp: Response): Promis
         const extractionId: number = Number(req.params.id as string)
         const resourceType: string = req.params.resourceType
         const resourceId: number = Number(req.params.resourceId)
+        const skillLevel = req.query.skillLevel ? Number(req.query.skillLevel) : null
 
-        const developerSkillMap: DeveloperSkillMapType[] = await buildDeveloperSkillMap(extractionId, resourceType, resourceId)
+        const developerSkillMap: DeveloperSkillMapType[] = await buildDeveloperSkillMap(extractionId, resourceType, resourceId, skillLevel)
 
         resp.status(200).json(developerSkillMap)
     } catch(err) {

@@ -99,13 +99,14 @@ const start = async (repoId: number,
     }
 }
 
-const buildDeveloperSkillMap = async (extractionId: number, resourceType: string, resourceId: number): Promise<DeveloperSkillMapType[]> => {
-    const esfmList: ExtractionSkillFindingModel[] = await getSumScoreForDeveloperSkill(extractionId, resourceType, resourceId)
+const buildDeveloperSkillMap = async (extractionId: number, resourceType: string, resourceId: number, skillLevel: number | null): Promise<DeveloperSkillMapType[]> => {
+    const esfmList: ExtractionSkillFindingModel[] = await getSumScoreForDeveloperSkill(extractionId, resourceType, resourceId, skillLevel)
     
     const tempDeveloperSkillList = esfmList.map(rec => { return {
         developer: rec.dataValues['developerRef'] as DeveloperModel,
         skill: rec.dataValues['skillRef'] as SkillModel,
         score: rec.dataValues['score'],
+        nrOfChangedLines: rec.dataValues['nrOfChangedLines'],
         ranking: JSON.parse(((rec.dataValues['skillRef'] as SkillModel).progLangRef as ProgLangModel).ranking)?.patternList ?? []
     }})
 
@@ -118,7 +119,9 @@ const buildDeveloperSkillMap = async (extractionId: number, resourceType: string
             skillId: rec.skill.id,
             score: rec.score,
             ranking: getRanking(rec.score, rec.ranking, rec.developer.id, rec.skill.parentId, tempDeveloperSkillList),
-            progLang: rec.skill.progLangRef.name
+            progLang: rec.skill.progLangRef.name,
+            skillLocation: rec.skill.location,
+            nrOfChangedLines: rec.nrOfChangedLines
         }
     })
 }

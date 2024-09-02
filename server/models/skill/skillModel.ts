@@ -15,7 +15,11 @@ export class SkillModel extends Model {
 
     @AllowNull(false)
     @Column(DataType.STRING)
-    declare path: string
+    declare location: string
+
+    @AllowNull(false)
+    @Column(DataType.INTEGER)
+    declare level: number
 
     @AllowNull(false)
     @Column(DataType.BOOLEAN)
