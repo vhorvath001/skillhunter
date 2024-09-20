@@ -1,8 +1,7 @@
-import { FormEvent, ReactElement } from 'react'
+import { FormEvent, ReactElement, useEffect, useState } from 'react'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Button from 'react-bootstrap/Button'
-import SkillTreeSelectionModal from '../SkillTreeSelectionModal'
 import Form from 'react-bootstrap/Form'
 import useSkillTree from '../../../../hooks/useSkillTree'
 import DevelopersScoresBarDiagram from './DevelopersScoresBarDiagram'
@@ -14,8 +13,11 @@ import AlertMessage from '../../../../utils/AlertMessage'
 import SkillTreeSelectionComponent from '../SkillTreeSelectionComponent'
 
 const ExtractionMapDevelopersScores = (): ReactElement => {
-    const { showSkillTreeSelection, selectedSkill, developersScoresColSize, handleGenerateRankingsSubmit, extraction, showSaveSuccssfulCalculateRanking, setShowSaveSuccssfulCalculateRanking, setErrorMessageCalculateRankings, errorMessageCalculateRankings, setDevelopersScoresColSize, fetchDevelopersScores, setIsDevelopersScoresLoading, setDevelopersScores, setDevelopersScoresErrorMessage } = useExtractionMap()
+    const { developersScoresColSize, handleGenerateRankingsSubmit, extraction, showSaveSuccssfulCalculateRanking, setShowSaveSuccssfulCalculateRanking, setErrorMessageCalculateRankings, errorMessageCalculateRankings, setDevelopersScoresColSize, fetchDevelopersScores, setIsDevelopersScoresLoading, setDevelopersScores, setDevelopersScoresErrorMessage } = useExtractionMap()
     const { selectedProgLang } = useSkillTree()
+
+    const [ selectedSkill, setSelectedSkill ] = useState<any[]>([])
+    const [ showSkillTreeSelection, setShowSkillTreeSelection ] = useState<boolean>(false)
 
     const handleConfirmationQuestion = (dispatch: React.Dispatch<any> | null, handleClose: () => void, setErrorMessage: (errorMessage: string) => void, id: any): void => {
         setShowSaveSuccssfulCalculateRanking(false)
@@ -33,11 +35,18 @@ const ExtractionMapDevelopersScores = (): ReactElement => {
         fetchDevelopersScores(selectedSkill[0], extraction?.id!, setIsDevelopersScoresLoading, setDevelopersScores, setDevelopersScoresErrorMessage)
     }
 
+    useEffect(() => {
+        setDevelopersScores([])
+    }, [ selectedSkill ])
+
     return (
         <>
             <Row className='mb-4'>
                 <Col>
-                    <SkillTreeSelectionComponent />
+                    <SkillTreeSelectionComponent setSelectedSkill={setSelectedSkill} 
+                                                 selectedSkill={selectedSkill} 
+                                                 showSkillTreeSelection={showSkillTreeSelection}
+                                                 setShowSkillTreeSelection={setShowSkillTreeSelection} />
                     {selectedSkill.length > 0 &&
                         <>
                             <Button onClick={handleShowDevelopersScores} className='ms-2'>Show</Button>
@@ -77,10 +86,6 @@ const ExtractionMapDevelopersScores = (): ReactElement => {
                     </Col>
                 }
             </Row>
-
-            {showSkillTreeSelection && 
-                <SkillTreeSelectionModal />
-            }
         </>
     )
 }

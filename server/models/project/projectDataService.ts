@@ -1,4 +1,5 @@
 import logger from '../../init/initLogger'
+import { ProjectType } from '../../schema/appTypes'
 import { GitLabProjectType } from '../../services/versionControlService'
 import { ProjectModel } from './projectModel'
 import { parseISO } from 'date-fns'
@@ -16,6 +17,18 @@ const saveProject = async (project: GitLabProjectType, extractionId: number) => 
         extractionId: extractionId
     })
     return projectModel.id
+}
+
+export const toProjectType = (m: ProjectModel): ProjectType => {
+    return {
+        id: m.id,
+        name: m.name,
+        desc: m.desc,
+        path: m.path,
+        created_at: m.created_at,
+        http_url_to_repo: m.http_url_to_repo,
+        last_activity_at: m.last_activity_at    
+    }
 }
 
 export default saveProject

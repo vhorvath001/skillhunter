@@ -18,7 +18,7 @@ export const getSkillTree = async (req: Request, resp: Response) => {
         resp.status(200).json(tree)
     } catch(err) {
         logError(err, `Error occurred when executing 'getSkillTree'.`)
-        resp.status(500).send({'message': `Error occurred when trying to get the skill tree! - ${getErrorMessage(err)}`})
+        resp.status(500).send({'message': `${getErrorMessage(err)}`})
     }
 }
 
@@ -34,7 +34,7 @@ export const handleStatusChange = async (req: Request, resp: Response) => {
         resp.sendStatus(200)
     } catch(err) {
         logError(err, `Error occurred when executing 'handleStatusChange'.`)
-        resp.status(500).send({'message': `Error occurred when trying to disable skills! - ${getErrorMessage(err)}`})
+        resp.status(500).send({'message': `${getErrorMessage(err)}`})
     }
 }
 
@@ -50,7 +50,7 @@ export const handleDelete = async (req: Request, resp: Response) => {
     } catch(err) {
         logError(err, `Error occurred when executing 'handleDelete'.`)
         
-        resp.status(500).send({'message': `Error occurred when trying to delete skills! - ${getErrorMessage(err)}`})
+        resp.status(500).send({'message': `${getErrorMessage(err)}`})
     }
 }
 

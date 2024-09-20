@@ -1,7 +1,7 @@
 import { FormEvent, ReactElement, createContext, useEffect, useState } from 'react'
 import { handleError } from './ContextFunctions'
 import { client, endpointBackEnd } from '../api/client'
-import { ChildrenType, DeveloperSkillMapType, DeveloperType, ExtractionType, RankingType } from './AppTypes'
+import { ChildrenType, DeveloperProjectMapType, DeveloperSkillMapType, DeveloperType, ExtractionType, ProjectSkillMapType, ProjectType, RankingType } from './AppTypes'
 import { getIndex, isRankingInvalid } from './ProgLangProvider'
 import axios, { AxiosResponse } from 'axios'
 
@@ -23,6 +23,7 @@ export type ExtractionStateType = {
 export type DevelopersScoresType = {
     developerId: number,
     developerName: string,
+    developerEmail: string,
     totalScore: number
 }
 
@@ -89,17 +90,33 @@ const fetchDevelopersScores = async (skillId: number,
         })
 }
 
-const fetchDevelopers = async (setDevelopers: (developers: DeveloperType[]) => void, setErrorMessageDeveloperSkillMap: (m: string) => void): Promise<void> => {
+const fetchDevelopers = async (extractionId: number,
+                               setDevelopers: (developers: DeveloperType[]) => void, 
+                               setErrorMessage: (m: string) => void): Promise<void> => {
     try {
         const resp: AxiosResponse = await axios({
             method: 'GET', 
-            url: `${endpointBackEnd}/developers`
+            url: `${endpointBackEnd}/extractions/${extractionId}/developers`
         })
 
-        // displaying a confirmation message that the ranking update was successful
         setDevelopers(resp.data)
     } catch (err) {
-        handleError(err, setErrorMessageDeveloperSkillMap, 'Error occurred when populated the developer list: ')
+        handleError(err, setErrorMessage, 'Error occurred when populated the developer list: ')
+    }
+}
+
+const fetchProjects = async (extractionId: number,
+                             setProjects: (projects: ProjectType[]) => void, 
+                             setErrorMessage: (m: string) => void): Promise<void> => {
+    try {
+        const resp: AxiosResponse = await axios({
+            method: 'GET', 
+            url: `${endpointBackEnd}/extractions/${extractionId}/projects`
+        })
+
+        setProjects(resp.data)
+    } catch (err) {
+        handleError(err, setErrorMessage, 'Error occurred when populated the project list: ')
     }
 }
 
@@ -107,18 +124,18 @@ const showDeveloperSkillMap = async (setErrorMessageDeveloperSkillMap: (m: strin
                                      extractionId: number,
                                      resourceType: string, 
                                      resourceId: string,
-                                     filterSkillLevel: number,
                                      setIsDeveloperSkillMapLoading: (isDeveloperSkillMapLoading: boolean) => void,
-                                     setDeveloperSkillMap: (developerSkillMap: DeveloperSkillMapType[]) => void): Promise<void> => {
+                                     setDeveloperSkillMap: (developerSkillMap: DeveloperSkillMapType[]) => void,
+                                     filterSkillLevel?: number): Promise<void> => {
     try {
         setIsDeveloperSkillMapLoading(true)
 
-        const urlParams = new URLSearchParams(`${endpointBackEnd}/extractions/${extractionId}/maps/developerSkill/${resourceType}/${resourceId}`)
+        const url = new URL(`${endpointBackEnd}/extractions/${extractionId}/maps/developersSkills/${resourceType}/${resourceId}`)
         if (filterSkillLevel !== 0)
-            urlParams.set('skillLevel', String(filterSkillLevel))
+            url.searchParams.append('skillLevel', String(filterSkillLevel))
         const resp: AxiosResponse = await axios({
             method: 'GET',
-            url: urlParams.toString()
+            url: url.toString()
         })
 
         setDeveloperSkillMap(resp.data)
@@ -129,50 +146,61 @@ const showDeveloperSkillMap = async (setErrorMessageDeveloperSkillMap: (m: strin
     }
 }
 
+const showDeveloperProjectMap = async (setErrorMessageDeveloperProjectMap: (m: string) => void, 
+                                       extractionId: number,
+                                       resourceType: string, 
+                                       resourceId: string,
+                                       setIsDeveloperProjectMapLoading: (isDeveloperProjectMapLoading: boolean) => void,
+                                       setDeveloperProjectMap: (developerProjectMap: DeveloperProjectMapType[]) => void): Promise<void> => {
+    try {
+        setIsDeveloperProjectMapLoading(true)
+
+        const resp: AxiosResponse = await axios({
+            method: 'GET',
+            url: `${endpointBackEnd}/extractions/${extractionId}/maps/developersProjects/${resourceType}/${resourceId}`
+        })
+
+        setDeveloperProjectMap(resp.data)
+        setIsDeveloperProjectMapLoading(false)
+    } catch(err) {
+        setIsDeveloperProjectMapLoading(false)
+        handleError(err, setErrorMessageDeveloperProjectMap, 'Error occurred when populated the developer-project map: ')
+    }
+}
+
+const showProjectSkillMap = async (setErrorMessageProjectSkillMap: (m: string) => void, 
+                                   extractionId: number,
+                                   resourceType: string, 
+                                   resourceId: string,
+                                   setIsProjectSkillMapLoading: (isProjectSkillMapLoading: boolean) => void,
+                                   setProjectSkillMap: (projectSkillMap: ProjectSkillMapType[]) => void,
+                                   filterSkillLevel?: number): Promise<void> => {
+    try {
+        setIsProjectSkillMapLoading(true)
+
+        const url = new URL(`${endpointBackEnd}/extractions/${extractionId}/maps/projectsSkills/${resourceType}/${resourceId}`)
+        if (filterSkillLevel !== 0)
+            url.searchParams.append('skillLevel', String(filterSkillLevel))
+        const resp: AxiosResponse = await axios({
+            method: 'GET',
+            url: url.toString()
+        })
+
+        setProjectSkillMap(resp.data)
+        setIsProjectSkillMapLoading(false)
+    } catch(err) {
+        setIsProjectSkillMapLoading(false)
+        handleError(err, setErrorMessageProjectSkillMap, 'Error occurred when populated the project-skill map: ')
+    }
+}
+
 export const initState: UseExtractionMapContextType = {
-    showExtractionMap: false,
-    setShowExtractionMap: () => {},
-    showSkillTreeSelection: false, 
-    setShowSkillTreeSelection: () => {},
-    setSelectedSkill: () => {},
-    selectedSkill: [],
-    extraction: null, 
-    setExtraction: () => {},
-    isDevelopersScoresLoading: false, 
-    setIsDevelopersScoresLoading: () => {},
-    developersScores: [],
-    developersScoresErrorMessage: '',
-    setDevelopersScores: () => {},
-    developersScoresColSize: 12, 
-    setDevelopersScoresColSize: () => {},
-    handleGenerateRankingsSubmit: handleGenerateRankingsSubmit,
-    showSaveSuccssfulCalculateRanking: false, 
-    setShowSaveSuccssfulCalculateRanking: () => {},
-    errorMessageCalculateRankings: '', 
-    setErrorMessageCalculateRankings: () => {},
-    fetchDevelopers: fetchDevelopers,
-    setDevelopers: () => {},
-    errorMessageDeveloperSkillMap: '', 
-    setErrorMessageDeveloperSkillMap: () => {},
-    developers: [],
-    fetchDevelopersScores: fetchDevelopersScores,
-    setDevelopersScoresErrorMessage: () => {},
-    showDeveloperSkillMap: showDeveloperSkillMap,
-    isDeveloperSkillMapLoading: false,
-    setIsDeveloperSkillMapLoading: () => {},
-    developerSkillMap: [], 
-    setDeveloperSkillMap: () => {},
-    selectedResourceType: '', 
-    setSelectedResourceType: () => {},
-    filterSkillLevel: 0,
-    setFilterSkillLevel: () => {}
+    showExtractionMap: false, setShowExtractionMap: () => {}, extraction: null,  setExtraction: () => {}, isDevelopersScoresLoading: false,  setIsDevelopersScoresLoading: () => {}, developersScores: [], developersScoresErrorMessage: '', setDevelopersScores: () => {}, developersScoresColSize: 12, setDevelopersScoresColSize: () => {}, handleGenerateRankingsSubmit: handleGenerateRankingsSubmit, showSaveSuccssfulCalculateRanking: false, setShowSaveSuccssfulCalculateRanking: () => {}, errorMessageCalculateRankings: '',  setErrorMessageCalculateRankings: () => {}, fetchDevelopers: fetchDevelopers, setDevelopers: () => {}, errorMessageDeveloperSkillMap: '', setErrorMessageDeveloperSkillMap: () => {}, developers: [], fetchDevelopersScores: fetchDevelopersScores, setDevelopersScoresErrorMessage: () => {}, showDeveloperSkillMap: showDeveloperSkillMap, isDeveloperSkillMapLoading: false, setIsDeveloperSkillMapLoading: () => {}, developerSkillMap: [],  setDeveloperSkillMap: () => {}, filterSkillLevel: 0, setFilterSkillLevel: () => {}, errorMessageDeveloperProjectMap: '', showDeveloperProjectMap: showDeveloperProjectMap, setIsDeveloperProjectMapLoading: () => {}, setDeveloperProjectMap: () => {}, fetchProjects: fetchProjects, setProjects: () => {}, setErrorMessageDeveloperProjectMap: () => {}, projects: [], isDeveloperProjectMapLoading: false, developerProjectMap: [], errorMessageProjectSkillMap: '', showProjectSkillMap: showProjectSkillMap, setIsProjectSkillMapLoading: () => {}, setProjectSkillMap: () => {}, setErrorMessageProjectSkillMap: () => {}, projectSkillMap: [], isProjectSkillMapLoading: false
 }
 
 const useExtractionMapContext = () => {
     // developers' score
     const [ showExtractionMap, setShowExtractionMap ] = useState<boolean>(false)
-    const [ showSkillTreeSelection, setShowSkillTreeSelection ] = useState<boolean>(false)
-    const [ selectedSkill, setSelectedSkill ] = useState<any[]>([])
     const [ extraction, setExtraction ] = useState<ExtractionType|null>(null)
     const [ developersScores, setDevelopersScores ] = useState<DevelopersScoresType[]>([])
     const [ isDevelopersScoresLoading, setIsDevelopersScoresLoading ] = useState<boolean>(false)
@@ -185,31 +213,32 @@ const useExtractionMapContext = () => {
     const [ errorMessageDeveloperSkillMap, setErrorMessageDeveloperSkillMap ] = useState<string>('')
     const [ isDeveloperSkillMapLoading, setIsDeveloperSkillMapLoading ] = useState<boolean>(false)
     const [ developerSkillMap, setDeveloperSkillMap ] = useState<DeveloperSkillMapType[]>()
-    const [ selectedResourceType, setSelectedResourceType ] = useState<string>('')
     const [ filterSkillLevel, setFilterSkillLevel ] = useState<number>(0)
-
-    useEffect(() => {
-        if (!showExtractionMap)
-            setSelectedSkill([])
-    }, [showExtractionMap])
-
-    useEffect(() => {
-        setDevelopersScores([])
-    }, [ selectedSkill ])
+    // developer-project map
+    const [ projects, setProjects ] = useState<ProjectType[]>([])
+    const [ errorMessageDeveloperProjectMap, setErrorMessageDeveloperProjectMap ] = useState<string>('')
+    const [ isDeveloperProjectMapLoading, setIsDeveloperProjectMapLoading ] = useState<boolean>(false)
+    const [ developerProjectMap, setDeveloperProjectMap ] = useState<DeveloperProjectMapType[]>()
+    // project-skill map
+    const [ errorMessageProjectSkillMap, setErrorMessageProjectSkillMap ] = useState<string>('')
+    const [ isProjectSkillMapLoading, setIsProjectSkillMapLoading ] = useState<boolean>(false)
+    const [ projectSkillMap, setProjectSkillMap ] = useState<ProjectSkillMapType[]>()
 
     // this one is needed to resize the bar diagram when clicked on the 'Calculate rankings' -> the diagram has to be resized half size
     useEffect(() => {
         window.dispatchEvent(new Event('resize'))
     }, [ developersScoresColSize ])
 
-    return { showExtractionMap, setShowExtractionMap, showSkillTreeSelection, setShowSkillTreeSelection, setSelectedSkill, selectedSkill,
-             extraction, setExtraction, isDevelopersScoresLoading, setIsDevelopersScoresLoading, developersScores, 
+    return { showExtractionMap, setShowExtractionMap, extraction, setExtraction, isDevelopersScoresLoading, setIsDevelopersScoresLoading, developersScores, 
              developersScoresErrorMessage, setDevelopersScores, developersScoresColSize, setDevelopersScoresColSize,
              handleGenerateRankingsSubmit, showSaveSuccssfulCalculateRanking, setShowSaveSuccssfulCalculateRanking,
              errorMessageCalculateRankings, setErrorMessageCalculateRankings, fetchDevelopers, setDevelopers, errorMessageDeveloperSkillMap, 
              setErrorMessageDeveloperSkillMap, developers, fetchDevelopersScores, setDevelopersScoresErrorMessage, showDeveloperSkillMap,
-             isDeveloperSkillMapLoading, setIsDeveloperSkillMapLoading, developerSkillMap, setDeveloperSkillMap, selectedResourceType, 
-             setSelectedResourceType, filterSkillLevel, setFilterSkillLevel }
+             isDeveloperSkillMapLoading, setIsDeveloperSkillMapLoading, developerSkillMap, setDeveloperSkillMap, 
+             filterSkillLevel, setFilterSkillLevel, errorMessageDeveloperProjectMap, showDeveloperProjectMap,
+             setIsDeveloperProjectMapLoading, setDeveloperProjectMap, fetchProjects, setProjects, setErrorMessageDeveloperProjectMap, 
+             projects, isDeveloperProjectMapLoading, developerProjectMap, errorMessageProjectSkillMap, showProjectSkillMap, setIsProjectSkillMapLoading,
+             setProjectSkillMap, setErrorMessageProjectSkillMap, projectSkillMap, isProjectSkillMapLoading }
 }
 
 export type UseExtractionMapContextType = ReturnType<typeof useExtractionMapContext>

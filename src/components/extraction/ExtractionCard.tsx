@@ -4,7 +4,7 @@ import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
 import { format } from 'date-fns'
 import { GrInProgress } from "react-icons/gr"
-import { FcOk } from "react-icons/fc"
+import { FcHighPriority, FcOk } from "react-icons/fc"
 import { FcCancel } from "react-icons/fc"
 import ExtractionDetailsModal from './details/ExtractionDetailsModal'
 import Badge from 'react-bootstrap/Badge'
@@ -20,7 +20,7 @@ type PropsType = {
 }
 
 const ExtractionCard = ({ extraction }: PropsType): ReactElement => {
-    const { showExtractionDetails, setShowExtractionDetails, setProgressLogs, loadProgressLogs, setIsProgressLogLoading, setProgressLogErrorMessage, dispatch, handleDelete } = useExtractionAdmin()
+    const { showExtractionDetails, setShowExtractionDetails, setProgressLogs, loadProgressLogs, setIsProgressLogLoading, setProgressLogErrorMessage, dispatch, handleDelete, handleCancel } = useExtractionAdmin()
     const { showExtractionMap, setShowExtractionMap, setExtraction } = useExtractionMap()
 
     const handleDetailsClick = (extractionId: number): void => {
@@ -36,18 +36,20 @@ const ExtractionCard = ({ extraction }: PropsType): ReactElement => {
     return (
         <Col xs lg={3}>
             <Card border={extraction.status === 'IN PROGRESS' ? 'secondary' :
-                          extraction.status === 'COMPLETED' ? 'success' : 'danger'} className='my-3 border-3'>
+                          extraction.status === 'COMPLETED' ? 'success' : 
+                          extraction.status === 'CANCELLED' ? 'warning' : 'danger'} className='my-3 border-3'>
                 <Card.Header>
                     Repo: <b>{extraction.repository.name}</b>
                     <BsInfoSquare className='ms-2' size={20} title={`Repository description: ${extraction.repository.desc ?? ''}`} />
                 </Card.Header>
                 <Card.Body>
                     <Card.Title>
-                        <b>{extraction.status}</b>
+                        <b>{extraction.status}</b>  
                         <label className='mx-2'>
                             {extraction.status === 'IN PROGRESS' && <GrInProgress /> }
                             {extraction.status === 'COMPLETED' && <FcOk /> }
-                            {extraction.status === 'FAILED' && <FcCancel /> }
+                            {extraction.status === 'FAILED' && <FcHighPriority /> }
+                            {extraction.status === 'CANCELLED' && <FcCancel /> }
                         </label>
                     </Card.Title>
                     <Card.Text>
@@ -78,12 +80,23 @@ const ExtractionCard = ({ extraction }: PropsType): ReactElement => {
                         className='me-2 mb-2' size='sm' variant="primary">
                         Map
                     </Button>
-                    <ModalConfirmation
-                        icon={<Button variant="danger" className='me-2 mb-2' size='sm' title='This operation does not delete the extracted skills, they can be removed in Skill Tree. '>Delete</Button>} 
-                        message='Are you sure to delete the extraction?'
-                        id={String(extraction.id!)}
-                        handleOperation={handleDelete}
-                        dispatch={dispatch} />
+
+                    {extraction.status !== 'IN PROGRESS' &&
+                        <ModalConfirmation
+                            icon={<Button variant="danger" className='me-2 mb-2' size='sm' title='This operation does not delete the extracted skills, they can be removed in Skill Tree. '>Delete</Button>} 
+                            message='Are you sure to delete the extraction?'
+                            id={String(extraction.id!)}
+                            handleOperation={handleDelete}
+                            dispatch={dispatch} />
+                    }
+                    {extraction.status === 'IN PROGRESS' &&
+                        <ModalConfirmation
+                            icon={<Button variant="danger" className='me-2 mb-2' size='sm' title='Interrupting the extraction'>Cancel</Button>} 
+                            message='Are you sure to cancel the extraction?'
+                            id={String(extraction.id!)}
+                            handleOperation={handleCancel}
+                            dispatch={dispatch} />
+                    }
                 </Card.Body>
             </Card>
 

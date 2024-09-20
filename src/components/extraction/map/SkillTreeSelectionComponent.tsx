@@ -1,11 +1,17 @@
 import { ReactElement } from 'react'
 import Button from 'react-bootstrap/Button'
-import useExtractionMap from '../../../hooks/useExtractionMap'
 import useSkillTree from '../../../hooks/useSkillTree'
 import Form from 'react-bootstrap/Form'
+import SkillTreeSelectionModal from './SkillTreeSelectionModal'
 
-const SkillTreeSelectionComponent = (): ReactElement => {
-    const { setShowSkillTreeSelection, selectedSkill, setSelectedSkill } = useExtractionMap()
+type PropsType = {
+    selectedSkill: string[],
+    setSelectedSkill: (s: string[]) => void,
+    showSkillTreeSelection: boolean, 
+    setShowSkillTreeSelection: (b: boolean) => void
+}
+
+const SkillTreeSelectionComponent = ({ selectedSkill, setSelectedSkill, showSkillTreeSelection, setShowSkillTreeSelection }: PropsType): ReactElement => {
     const { state, setTreeOperationErrorMessage, setSelectedProgLang } = useSkillTree()
 
     const handleShowSkillTreeSelection = (): void => {
@@ -25,7 +31,12 @@ const SkillTreeSelectionComponent = (): ReactElement => {
                     {selectedSkill[1]}
                 </>
             }
-        
+            {showSkillTreeSelection && 
+                <SkillTreeSelectionModal 
+                    showSkillTreeSelection={showSkillTreeSelection}
+                    setShowSkillTreeSelection={setShowSkillTreeSelection}
+                    setSelectedSkill={setSelectedSkill} />
+            }        
         </>
     )
 }

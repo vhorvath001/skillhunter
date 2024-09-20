@@ -1,5 +1,5 @@
 import express from 'express'
-import { deleteExtraction, extract, getDeveloperSkillMap, getDevelopersScoresBySkill, getExtractions, getProgressLogs } from '../../controllers/extractionController'
+import { changeExtraction, deleteExtraction, extract, getDeveloperProjectMap, getDeveloperSkillMap, getDevelopersOfExtraction, getDevelopersScoresBySkill, getExtractions, getProgressLogs, getProjectSkillMap, getProjectsOfExtraction } from '../../controllers/extractionController'
 
 const extractionRouter = express.Router()
 
@@ -9,15 +9,27 @@ extractionRouter.route('/')
 
 extractionRouter.route('/:id')
     .delete(deleteExtraction)
+    .patch(changeExtraction)
 
 extractionRouter.route('/:id/progressLogs')
     .get(getProgressLogs)
 
-                        
 extractionRouter.route('/:id/maps/developersScores/:skillId')
     .get(getDevelopersScoresBySkill)
 
-extractionRouter.route('/:id/maps/developerSkill/:resourceType/:resourceId?')
+extractionRouter.route('/:id/maps/developersSkills/:resourceType/:resourceId?')
     .get(getDeveloperSkillMap)
+
+extractionRouter.route('/:id/maps/developersProjects/:resourceType/:resourceId?')
+    .get(getDeveloperProjectMap)
+
+extractionRouter.route('/:id/maps/projectsSkills/:resourceType/:resourceId?')
+    .get(getProjectSkillMap)
+
+extractionRouter.route('/:id/developers')
+    .get(getDevelopersOfExtraction)
+
+extractionRouter.route('/:id/projects')
+    .get(getProjectsOfExtraction)
 
 export default extractionRouter

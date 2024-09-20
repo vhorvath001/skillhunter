@@ -26,7 +26,7 @@ const updateSkillTree = async (parent: SkillModel | null, skillNodes: TreeNode[]
             skillModel = await SkillModel.create({
                 name: skillNode.name!,
                 location: '/' + (skillNode.location.length > 0 ? ' ' : '') + skillNode.location.join(' / '),
-                level: skillNode.location.length + 1,
+                level: skillNode.location.length,
                 enabled: parent ? parent.enabled : true,
                 parentId: parent ? parent.id : null,
                 progLangId: skillNode.progLangId

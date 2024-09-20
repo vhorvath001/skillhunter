@@ -22,7 +22,7 @@ const getRepositoryById = async (req: Request, resp: Response) => {
         }
     } catch(err) {
         logError(err, `Error occurred when executing 'getRepositoryById'.`)
-        resp.status(500).send({'message': `Error occurred when trying to get a repository! - ${getErrorMessage(err)}`})
+        resp.status(500).send({'message': `${getErrorMessage(err)}`})
     }
 }
 
@@ -39,7 +39,7 @@ const getAllRepositories = async (req: Request, resp: Response) => {
         )
     } catch(err) {
         logError(err, `Error occurred when executing 'getAllRepositories'.`)
-        resp.status(500).send({'message': `Error occurred when trying to get all the repositories! - ${getErrorMessage(err)}`})
+        resp.status(500).send({'message': `${getErrorMessage(err)}`})
     }
 }
 
@@ -55,7 +55,7 @@ const createNewRepository = async (req: Request, resp: Response) => {
         resp.status(201).json(toRepositoryType(newRepositoryModel))
     } catch(err) {
         logError(err, `Error occurred when executing 'createNewRepository'.`)
-        resp.status(500).send({'message': `Error occurred when trying to save a new repository! - ${getErrorMessage(err)}`})
+        resp.status(500).send({'message': `${getErrorMessage(err)}`})
     }
 }
 
@@ -80,7 +80,7 @@ const editExistingRepository = async (req: Request, resp: Response) => {
         }
     } catch(err) {
         logError(err, `Error occurred when executing 'editExistingRepository'.`)
-        resp.status(500).send({'message': `Error occurred when trying to edit an existing repository! - ${getErrorMessage(err)}`})
+        resp.status(500).send({'message': `${getErrorMessage(err)}`})
     }
 }
 
@@ -99,7 +99,7 @@ const deleteRepository = async (req: Request, resp: Response) => {
         }
     } catch(err) {
         logError(err, `Error occurred when executing 'deleteRepository'.`)
-        resp.status(500).send({'message': `Error occurred when trying to delete a repository! - ${getErrorMessage(err)}`})
+        resp.status(500).send({'message': `${getErrorMessage(err)}`})
     }
 }
 
@@ -129,7 +129,7 @@ const getBranchesPerProjects = async (req: Request, resp: Response) => {
         resp.status(200).json(projectsBranches)
     } catch(err) {
         logError(err, `Error occurred when executing 'getBranchesPerProjects'.`)
-        resp.status(500).send({'message': `Error occurred when trying to get branches of projects! - ${getErrorMessage(err)}`})
+        resp.status(500).send({'message': `${getErrorMessage(err)}`})
     }
 }
 

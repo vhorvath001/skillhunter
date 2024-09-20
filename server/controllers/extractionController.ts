@@ -1,16 +1,20 @@
 import { Request, Response } from 'express'
-import { buildDeveloperSkillMap, start } from '../services/extractionService'
+import { buildDeveloperProjectMap, buildDeveloperSkillMap, buildProjectSkillMap, start } from '../services/extractionService'
 import logger from '../init/initLogger'
 import { parseISO } from 'date-fns'
-import { deleteExtractionById, getExtractionModels } from '../models/extraction/extractionDataService'
+import { deleteExtractionById, getExtractionModels, updateExtractionById } from '../models/extraction/extractionDataService'
 import { ExtractionModel } from '../models/extraction/extractionModel'
-import { DeveloperSkillMapType, DevelopersScoresType, ExtractionType, ProgLangType, ProgressLogType, SelectedProjectBranchesType } from '../schema/appTypes'
+import { DeveloperProjectMapType, DeveloperSkillMapType, DevelopersScoresType, DeveloperType, ExtractionType, ProgLangType, ProgressLogType, ProjectSkillMapType, SelectedProjectBranchesType } from '../schema/appTypes'
 import { toProgLangType } from './progLangController'
 import { toRepositoryType } from './repositoryController'
 import { getErrorMessage, logError } from './commonFunctions'
 import ProgressLogModel from '../models/progressLog/progressLogModel'
 import { getProgressLogsByExtractionId } from '../models/progressLog/progressLogDataService'
-import { queryDevelopersScoresBySkillId } from '../models/extractionSkillFinding/extractionSkillFindingDataService'
+import { queryDevelopersOfExtraction, queryDevelopersScoresBySkillId, queryProjectsOfExtraction } from '../models/extractionSkillFinding/extractionSkillFindingDataService'
+import { toDeveloperType } from './developerController'
+import { DeveloperModel } from '../models/developer/developerModel'
+import { ProjectModel } from '../models/project/projectModel'
+import { toProjectType } from '../models/project/projectDataService'
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
 
@@ -68,7 +72,7 @@ export const getExtractions = async (req: Request, resp: Response): Promise<void
         resp.status(200).json(extractions)
     } catch(err) {
         logError(err, `Error occurred when executing 'getBranchesPerProjects'.`)
-        resp.status(500).send({'message': `Error occurred when trying to get branches of projects! - ${getErrorMessage(err)}`})
+        resp.status(500).send({'message': `${getErrorMessage(err)}`})
     }
 }
 
@@ -85,8 +89,26 @@ export const deleteExtraction = async (req: Request, resp: Response): Promise<vo
             resp.status(404).send({'message': `The extraction [${extractionId}] cannot be found in database!`})
     } catch(err) {
         logError(err, `Error occurred when executing 'deleteExtraction'.`)
-        resp.status(500).send({'message': `Error occurred when trying to delete an extraction! - ${getErrorMessage(err)}`})
+        resp.status(500).send({'message': `${getErrorMessage(err)}`})
     }
+}
+
+export const changeExtraction = async (req: Request, resp: Response): Promise<void> => {
+    logger.info(`Request has arrived to change an extraction. - id: ${req.params.id}, body: ${JSON.stringify(req.body)}`)
+
+    try {
+        const extractionId: number  = Number(req.params.id as string)
+
+        const successful: boolean = await updateExtractionById(extractionId, req.body)
+        if (successful)
+            resp.sendStatus(200)
+        else 
+            resp.status(404).send({'message': `The extraction [${extractionId}] cannot be found in database!`})
+    } catch(err) {
+        logError(err, `Error occurred when executing 'changeExtraction'.`)
+        resp.status(500).send({'message': `${getErrorMessage(err)}`})
+    }
+
 }
 
 export const getProgressLogs = async (req: Request, resp: Response): Promise<void> => {
@@ -101,7 +123,7 @@ export const getProgressLogs = async (req: Request, resp: Response): Promise<voi
         resp.status(200).json(progressLogs)
     } catch(err) {
         logError(err, `Error occurred when executing 'getProgressLogs'.`)
-        resp.status(500).send({'message': `Error occurred when trying to get the progress logs of extraction! - ${getErrorMessage(err)}`})
+        resp.status(500).send({'message': `${getErrorMessage(err)}`})
     }
 }
 
@@ -117,7 +139,7 @@ export const getDevelopersScoresBySkill = async (req: Request, resp: Response): 
         resp.status(200).json(toDevelopersScoresType(rawDevelopersScores))
     } catch(err) {
         logError(err, `Error occurred when executing 'getDevelopersScoresBySkill'.`)
-        resp.status(500).send({'message': `Error occurred when trying to get the scores of developers by a skill! - ${getErrorMessage(err)}`})
+        resp.status(500).send({'message': `${getErrorMessage(err)}`})
     }
 }
 
@@ -135,7 +157,72 @@ export const getDeveloperSkillMap = async (req: Request, resp: Response): Promis
         resp.status(200).json(developerSkillMap)
     } catch(err) {
         logError(err, `Error occurred when executing 'getDeveloperSkillMap'.`)
-        resp.status(500).send({'message': `Error occurred when trying to get the developer-skill map! - ${getErrorMessage(err)}`})
+        resp.status(500).send({'message': `${getErrorMessage(err)}`})
+    }
+}
+
+export const getDeveloperProjectMap = async (req: Request, resp: Response): Promise<void> => {
+    logger.info(`Request has arrived to get the developer-project map  - ${JSON.stringify(req.params)}.`)
+
+    try {
+        const extractionId: number = Number(req.params.id as string)
+        const resourceType: string = req.params.resourceType
+        const resourceId: number = Number(req.params.resourceId)
+
+        const developerProjectMap: DeveloperProjectMapType[] = await buildDeveloperProjectMap(extractionId, resourceType, resourceId)
+
+        resp.status(200).json(developerProjectMap)
+    } catch(err) {
+        logError(err, `Error occurred when executing 'getDeveloperProjectsMap'.`)
+        resp.status(500).send({'message': `${getErrorMessage(err)}`})
+    }
+}
+
+export const getProjectSkillMap = async (req: Request, resp: Response): Promise<void> => {
+    logger.info(`Request has arrived to get the project-skill map  - ${JSON.stringify(req.params)}.`)
+
+    try {
+        const extractionId: number = Number(req.params.id as string)
+        const resourceType: string = req.params.resourceType
+        const resourceId: number = Number(req.params.resourceId)
+        const skillLevel = req.query.skillLevel ? Number(req.query.skillLevel) : null
+
+        const projectSkillMap: ProjectSkillMapType[] = await buildProjectSkillMap(extractionId, resourceType, resourceId, skillLevel)
+
+        resp.status(200).json(projectSkillMap)
+    } catch(err) {
+        logError(err, `Error occurred when executing 'getProjectSkillMap'.`)
+        resp.status(500).send({'message': `${getErrorMessage(err)}`})
+    }
+}
+
+export const getDevelopersOfExtraction = async(req: Request, resp: Response): Promise<void> => {
+    logger.info(`Request has arrived to get the developers of extraction  - ${JSON.stringify(req.params)}.`)
+
+    try {
+        const extractionId: number = Number(req.params.id as string)
+
+        const developerModels: DeveloperModel[] = await queryDevelopersOfExtraction(extractionId)
+
+        resp.status(200).json(developerModels.map(d => toDeveloperType(d)))
+    } catch(err) {
+        logError(err, `Error occurred when executing 'getDevelopersOfExtraction'.`)
+        resp.status(500).send({'message': `${getErrorMessage(err)}`})
+    }
+}
+
+export const getProjectsOfExtraction = async(req: Request, resp: Response): Promise<void> => {
+    logger.info(`Request has arrived to get the projects of extraction  - ${JSON.stringify(req.params)}.`)
+
+    try {
+        const extractionId: number = Number(req.params.id as string)
+
+        const projectModels: ProjectModel[] = await queryProjectsOfExtraction(extractionId)
+
+        resp.status(200).json(projectModels.map(p => toProjectType(p)))
+    } catch(err) {
+        logError(err, `Error occurred when executing 'getProjectsOfExtraction'.`)
+        resp.status(500).send({'message': `${getErrorMessage(err)}`})
     }
 }
 
@@ -169,6 +256,7 @@ const toDevelopersScoresType = (rawDevelopersScores: any[]): DevelopersScoresTyp
             developerId: r.developerId,
             totalScore: r.score,
             developerName: r.developerRef.name,
+            developerEmail: r.developerRef.email,
         } as DevelopersScoresType
     })
 }

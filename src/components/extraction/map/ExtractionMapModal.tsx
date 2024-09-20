@@ -6,9 +6,11 @@ import Tab from 'react-bootstrap/Tab'
 import ExtractionMapDevelopersScores from './developersScores/ExtractionMapDevelopersScores'
 import useExtractionMap from '../../../hooks/useExtractionMap'
 import ExtractionMapDeveloperSkillMap from './developerSkillMap/ExtractionMapDeveloperSkillMap'
+import ExtractionMapDeveloperProjectMap from './developerProjectMap/ExtractionMapDeveloperProjectMap'
+import ExtractionMapProjectSkillMap from './projectSkillMap/ExtractionMapProjectSkillMap'
 
 const ExtractionMapModal = (): ReactElement => {
-    const { showExtractionMap, setShowExtractionMap, setDevelopersScores, setDevelopersScoresColSize, setSelectedSkill, fetchDevelopers, setDevelopers, setErrorMessageDeveloperSkillMap } = useExtractionMap()
+    const { showExtractionMap, setShowExtractionMap, setDevelopersScores, setDevelopersScoresColSize, fetchDevelopers, setDevelopers, setErrorMessageDeveloperSkillMap, extraction, fetchProjects, setProjects, setErrorMessageDeveloperProjectMap, setErrorMessageProjectSkillMap } = useExtractionMap()
 
     const handleClose = (): void => {
         setShowExtractionMap(false)
@@ -19,12 +21,18 @@ const ExtractionMapModal = (): ReactElement => {
     const handleTabChange = (e: MouseEvent<HTMLElement>): void => {
         setDevelopersScores([])
         setDevelopersScoresColSize(12)
-        setSelectedSkill([])
         setErrorMessageDeveloperSkillMap('')
+        setErrorMessageDeveloperProjectMap('')
+        setErrorMessageProjectSkillMap('')
 
         const title: string = (e.target as HTMLButtonElement).textContent!
         if (title === 'Developer-Skill map') {
-            fetchDevelopers(setDevelopers, setErrorMessageDeveloperSkillMap )
+            fetchDevelopers(extraction!.id, setDevelopers, setErrorMessageDeveloperSkillMap )
+        } else if (title === 'Developer-Project map') {
+            fetchDevelopers(extraction!.id, setDevelopers, setErrorMessageDeveloperProjectMap )
+            fetchProjects(extraction!.id, setProjects, setErrorMessageDeveloperProjectMap )
+        } else if (title === 'Project-Skill map') {
+            fetchProjects(extraction!.id, setProjects, setErrorMessageProjectSkillMap )
         }
     }
     
@@ -40,10 +48,10 @@ const ExtractionMapModal = (): ReactElement => {
                             <ExtractionMapDeveloperSkillMap />
                         </Tab>
                         <Tab eventKey='developer-project-map' title='Developer-Project map'>
-                            <h2>Not yet</h2>
+                            <ExtractionMapDeveloperProjectMap />
                         </Tab>
                         <Tab eventKey='project-skill-map' title='Project-Skill map'>
-                            <h2>Not yet</h2>
+                            <ExtractionMapProjectSkillMap />
                         </Tab>
                         <Tab eventKey='developers-scores' title="Developers' scores">
                             <ExtractionMapDevelopersScores />

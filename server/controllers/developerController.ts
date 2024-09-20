@@ -16,7 +16,7 @@ const getAllDevelopers = async (req: Request, resp: Response) => {
         )
     } catch(err) {
         logError(err, `Error occurred when executing 'getAllDevelopers'.`)
-        resp.status(500).send({'message': `Error occurred when trying to get all the developers! - ${getErrorMessage(err)}`})
+        resp.status(500).send({'message': `${getErrorMessage(err)}`})
     }
 }
 
@@ -35,7 +35,7 @@ const deleteDeveloper = async (req: Request, resp: Response) => {
         }
     } catch(err) {
         logError(err, `Error occurred when executing 'deleteDeveloper'.`)
-        resp.status(500).send({'message': `Error occurred when trying to delete a developer! - ${getErrorMessage(err)}`})
+        resp.status(500).send({'message': `${getErrorMessage(err)}`})
     }
 }
 
@@ -57,7 +57,7 @@ const editExistingDeveloper = async (req: Request, resp: Response) => {
         }
     } catch(err) {
         logError(err, `Error occurred when executing 'editExistingDeveloper'.`)
-        resp.status(500).send({'message': `Error occurred when trying to edit an existing developer! - ${getErrorMessage(err)}`})
+        resp.status(500).send({'message': `${getErrorMessage(err)}`})
     }
 }
 

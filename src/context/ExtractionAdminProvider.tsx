@@ -6,7 +6,8 @@ import { ChildrenType, ExtractionType, ProgressLogType } from './AppTypes'
 
 export const EXTRACTION_ACTION_TYPES = {
     DELETE: 'DELETE',
-    POPULATE: 'POPULATE'
+    POPULATE: 'POPULATE',
+    CANCEL: 'CANCEL'
 }
 
 export type ExtractionAction = {
@@ -79,6 +80,22 @@ export const handleDelete = (dispatch: any,
         .catch(err => handleError(err, setErrorMessage))
 }
 
+export const handleCancel = (dispatch: any,
+                             handleClose: () => void,
+                             setErrorMessage: (errorMessage: string) => void,
+                             extractionId: string) => {
+    client
+        .patch(`/extractions/${extractionId}`, {
+            status: 'CANCELLED'
+        })
+        .then(() => {
+            dispatch({ type: EXTRACTION_ACTION_TYPES.CANCEL, id: extractionId })
+            handleClose()
+        })
+        .catch(err => handleError(err, setErrorMessage))
+}
+
+
 export const reducer = (state: ExtractionStateType, action: ExtractionAction): ExtractionStateType => {
     switch (action.type) {
         case EXTRACTION_ACTION_TYPES.DELETE: {
@@ -88,6 +105,13 @@ export const reducer = (state: ExtractionStateType, action: ExtractionAction): E
         }
         case EXTRACTION_ACTION_TYPES.POPULATE: {
             return {...state, list: action.payload! }
+        }
+        case EXTRACTION_ACTION_TYPES.CANCEL: {
+            const toUpdateId = Number(action.id)
+            const extractionToUpdate: ExtractionType = state.list.find(r => r.id === toUpdateId)!
+            extractionToUpdate.status = 'CANCELLED'
+            const updatedList = state.list.map(r => r.id === toUpdateId ? extractionToUpdate : r)
+            return {...state, list: updatedList}
         }
         default:
             throw new Error('Unidentified reducer action type!')
@@ -118,6 +142,7 @@ export const initState: UseExtractionAdminContextType = {
     setProgressLogErrorMessage: () => {},
     loadProgressLogs: () => {},
     handleDelete: () => {},
+    handleCancel: () => {}
 }
 
 const useExtractionAdminContext = () => {
@@ -137,7 +162,7 @@ const useExtractionAdminContext = () => {
              filterErrorMessage, setFilterErrorMessage, state, dispatch, areExtractionsLoading, setAreExtractionsLoading,
              filterStatus, setFilterStatus, showExtractionDetails, setShowExtractionDetails, progressLogs, setProgressLogs,
              isProgressLogLoading, setIsProgressLogLoading, progressLogErrorMessage, setProgressLogErrorMessage, loadProgressLogs, 
-             handleDelete }
+             handleDelete, handleCancel }
 }
 
 export type UseExtractionAdminContextType = ReturnType<typeof useExtractionAdminContext>

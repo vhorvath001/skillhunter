@@ -7,18 +7,18 @@ import Loading from '../../utils/Loading'
 import AlertMessage from '../../utils/AlertMessage'
 import Button from 'react-bootstrap/Button'
 import ModalConfirmation from '../../utils/modal/ModalConfirmation'
-import useExtractionMap from '../../hooks/useExtractionMap'
 import { SkillTreeNodeType } from '../../context/AppTypes'
 
 type PropsType = {
     mode: string,
-    extractionId?: number
+    extractionId?: number,
+    setSelectedSkill?: (s: string[]) => void,
+    setShowSkillTreeSelection?: (b: boolean) => void
 }
 
-const SkillTree = ({ mode, extractionId }: PropsType) => {
+const SkillTree = ({ mode, extractionId, setSelectedSkill, setShowSkillTreeSelection }: PropsType) => {
     const { dispatch, state, progLangs, setSelectedProgLang, isLoading, treeIsLoading, fetchError, treeErrorMessage, 
             handleStatusChange, handleDelete, treeOperationErrorMessage, setTreeOperationErrorMessage, treeMode, setTreeMode, setExtractionId } = useSkillTree()
-    const { setShowSkillTreeSelection, setSelectedSkill } = useExtractionMap()
 
     const handleChange = (e: ChangeEvent<HTMLSelectElement>): void => {
         setSelectedProgLang(Number(e.currentTarget.value))
@@ -38,7 +38,7 @@ const SkillTree = ({ mode, extractionId }: PropsType) => {
     }
 
     const handleClose = (): void => {
-        setShowSkillTreeSelection(false)
+        if (setShowSkillTreeSelection) setShowSkillTreeSelection(false)
     }
 
     const handleSelect = (treeData: SkillTreeNodeType[]): void => {
@@ -48,8 +48,8 @@ const SkillTree = ({ mode, extractionId }: PropsType) => {
         else if (ids.length === 0)
             setTreeOperationErrorMessage('Please select a skill!')
         else {
-            setSelectedSkill(ids[0])
-            setShowSkillTreeSelection(false)
+            setSelectedSkill!(ids[0])
+            if (setShowSkillTreeSelection) setShowSkillTreeSelection(false)
         }
     }
 

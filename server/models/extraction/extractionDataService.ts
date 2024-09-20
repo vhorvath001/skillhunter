@@ -92,4 +92,25 @@ const deleteExtractionById = async (id: number): Promise<boolean> => {
     return deletedRows === 1
 }
 
-export { saveExtraction, updateStatus, getExtractionModels, updateProgressProjects, updateProgressCommits, deleteExtractionById }
+const updateExtractionById = async (id: number, data: any): Promise<boolean> => {
+    logger.debug(`Updating extraction [id = ${id}, data = ${JSON.stringify(data)}] ...`)
+    const affectedRows: number[] = await ExtractionModel.update(
+        data,
+        {
+            where: {
+                id: id
+            }
+        }
+    )
+    return affectedRows[0] === 1
+}
+
+const queryExtractionById = async (id: number): Promise<ExtractionModel> => {
+    logger.debug(`Querying extraction by id [id = ${id}] ...`)
+    const extraction: ExtractionModel|null = await ExtractionModel.findByPk(id)
+    if (!extraction)
+        throw new Error(`The exctraction [${id}] cannot be found!`)
+    return extraction
+}
+
+export { saveExtraction, updateStatus, getExtractionModels, updateProgressProjects, updateProgressCommits, deleteExtractionById, updateExtractionById, queryExtractionById }

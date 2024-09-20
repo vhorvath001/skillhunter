@@ -4,8 +4,14 @@ import Container from 'react-bootstrap/Container'
 import SkillTree from '../../skillTree/SkillTree'
 import useExtractionMap from '../../../hooks/useExtractionMap'
 
-const SkillTreeSelectionModal = (): ReactElement => {
-    const { showSkillTreeSelection, setShowSkillTreeSelection, extraction } = useExtractionMap()
+type PropsType = {
+    showSkillTreeSelection: boolean, 
+    setShowSkillTreeSelection: (b: boolean) => void,
+    setSelectedSkill: (s: string[]) => void,
+}
+
+const SkillTreeSelectionModal = ({ showSkillTreeSelection, setShowSkillTreeSelection, setSelectedSkill }: PropsType): ReactElement => {
+    const { extraction } = useExtractionMap()
 
     const handleClose = (): void => {
         setShowSkillTreeSelection(false)
@@ -18,7 +24,12 @@ const SkillTreeSelectionModal = (): ReactElement => {
             </Modal.Header>
             <Modal.Body>
                 <Container fluid>
-                    <SkillTree mode='select' extractionId={extraction?.id} />
+                    <SkillTree 
+                        mode='select' 
+                        extractionId={extraction?.id} 
+                        setSelectedSkill={setSelectedSkill}
+                        setShowSkillTreeSelection={setShowSkillTreeSelection}
+                        />
                 </Container>
             </Modal.Body>
         </Modal>

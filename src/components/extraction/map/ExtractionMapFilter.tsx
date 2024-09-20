@@ -4,31 +4,50 @@ import Button from 'react-bootstrap/Button'
 import useExtractionMap from '../../../hooks/useExtractionMap'
 
 type PropsType = {
+    mapType: string,
     resourceTypes: string[][],
     componentOne: ReactElement,
     componentTwo: ReactElement,
-    handleShow: (setErrorMessageDeveloperSkillMap: (m: string) => void, extractionId: number, resourceType: string, resourceId: string, filterSkillLevel: number, setIsLoading: (isLoading: boolean) => void, setData: (data: any[]) => void) => Promise<void>,
-    selectedResource: string,
+    handleShow: (setErrorMessage: (m: string) => void, 
+                 extractionId: number, 
+                 resourceType: string, 
+                 resourceId: string, 
+                 setIsLoading: (isLoading: boolean) => void, 
+                 setData: (data: any[]) => void,
+                 filterSkillLevel?: number, ) => Promise<void>,
+    selectedResourceOne: string,
+    selectedResourceTwo?: string,
     setIsLoading: (isLoading: boolean) => void,
     setData: (data: any[]) => void,
-    resetSelectedResource: () => void
+    resetSelectedResourceOne: () => void,
+    resetSelectedResourceTwo?: () => void,
+    setErrorMessage: (errorMessage: string) => void,
+    displayShowButton: boolean, 
+    setDisplayShowButton: (b: boolean) => void,
+    selectedResourceType: string, 
+    setSelectedResourceType: (rt: string) => void,
+    selectedSkill?: string[]
 }
 
-const ExtractionMapFilter = ({ resourceTypes, componentOne, componentTwo, handleShow, selectedResource, setIsLoading, setData, resetSelectedResource }: PropsType): ReactElement => {
-    const { selectedSkill, setErrorMessageDeveloperSkillMap, extraction, selectedResourceType, setSelectedResourceType, setFilterSkillLevel, filterSkillLevel } = useExtractionMap()
+const ExtractionMapFilter = ({ mapType, resourceTypes, componentOne, componentTwo, handleShow, selectedResourceOne, selectedResourceTwo, setIsLoading, setData, 
+                               resetSelectedResourceOne, resetSelectedResourceTwo, setErrorMessage, displayShowButton, setDisplayShowButton, selectedResourceType, 
+                               setSelectedResourceType, selectedSkill }: PropsType): ReactElement => {
+    const { extraction, setFilterSkillLevel, filterSkillLevel } = useExtractionMap()
 
     const [ showComponentOne, setShowComponentOne ] = useState<boolean>(false)
     const [ showComponentTwo, setShowComponentTwo ] = useState<boolean>(false)
-    const [ showButton, setShowButton ] = useState<boolean>(true)
 
     useEffect(() => {
         setSelectedResourceType(resourceTypes[0][0])
     }, [])
 
     const changeResourceTypeOption = (e: ChangeEvent<HTMLSelectElement>): void => {
+        console.log('changeResourceTypeOption')
         const selected: string = e.target.value
         setSelectedResourceType(selected)
-        resetSelectedResource()
+        resetSelectedResourceOne()
+        if (resetSelectedResourceTwo)
+            resetSelectedResourceTwo()
         if (selected === resourceTypes[0][0]) {
             setShowComponentOne(false)
             setShowComponentTwo(false)
@@ -39,36 +58,41 @@ const ExtractionMapFilter = ({ resourceTypes, componentOne, componentTwo, handle
             setShowComponentOne(false)
             setShowComponentTwo(true)
         }
-        if (selected === 'SKILL' && (!selectedSkill || selectedSkill.length === 0)) {
-            setShowButton(false)
+        if (selected === 'SKILL' && (!selectedSkill || selectedSkill?.length === 0)) {
+            setDisplayShowButton(false)
         } else {
-            setShowButton(true)
+            setDisplayShowButton(true)
         }
     }
 
     const handleClickOnShowButton = (): void => {
-        handleShow(setErrorMessageDeveloperSkillMap, 
+        handleShow(setErrorMessage, 
                    extraction!.id,
                    selectedResourceType, 
-                   selectedResourceType === 'SKILL' ? selectedSkill[0] : selectedResource,
-                   filterSkillLevel,
+                   mapType === 'PROJECT-SKILL' ? (selectedResourceType === 'SKILL' ? selectedSkill![0]! : selectedResourceOne) :
+                   mapType === 'DEVELOPER-SKILL' ? (selectedResourceType === 'SKILL' ? selectedSkill![0]! : selectedResourceOne) :
+                                                  (selectedResourceType === 'DEVELOPER' ? selectedResourceOne : selectedResourceTwo!),
                    setIsLoading,
-                   setData)
+                   setData,
+                   filterSkillLevel)
     }
 
     useEffect(() => {
         if (selectedResourceType === 'SKILL' && (!selectedSkill || selectedSkill.length === 0)) {
-            setShowButton(false)
+            setDisplayShowButton(false)
         } else {
-            setShowButton(true)
+            setDisplayShowButton(true)
         }
-
     }, [ selectedSkill ])
 
     return (
-        <div>
+        <div className='mb-1'>
             <label className='me-3'>Showing </label>
-            <Form.Select onChange={changeResourceTypeOption} value={selectedResourceType} name='selectedResourceType' className='mb-2 me-1 w-auto d-lg-inline'>
+            <Form.Select 
+                onChange={changeResourceTypeOption} 
+                value={selectedResourceType} 
+                name='selectedResourceType' 
+                className='mb-2 me-1 w-auto d-lg-inline'>
                 { resourceTypes.map(rt => (
                     <option value={rt[0]} key={rt[0]}>{rt[1]}</option>    
                 ))}
@@ -80,16 +104,16 @@ const ExtractionMapFilter = ({ resourceTypes, componentOne, componentTwo, handle
                 componentTwo
             }
 
-            { (selectedResourceType === 'ALL' || selectedResourceType === 'DEVELOPER') &&
+            { ((mapType === 'DEVELOPER-SKILL' || mapType === 'PROJECT-SKILL') && (selectedResourceType === 'ALL' || selectedResourceType === 'DEVELOPER')) &&
                 <>
-                    on
+                    <label className='ms-2 me-2'>on</label>
                     <Form.Control type="number" placeholder="ALL" className='d-lg-inline' style={{width: "70px"}} 
                                   onChange={(e: ChangeEvent<HTMLInputElement>) => setFilterSkillLevel(Number(e.target.value))} />
-                    level(s)
+                    <label className='ms-2 me-2'>level(s)</label>
                 </>
             }
 
-            { showButton &&
+            { displayShowButton &&
                 <Button className='ms-4' onClick={handleClickOnShowButton}>Show</Button>
             }
         </div>

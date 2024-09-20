@@ -15,6 +15,16 @@ export type DeveloperType = {
     email: string
 }
 
+export type ProjectType = {
+    id?: number,
+    name: string,
+    desc: string,
+    path: string,
+    created_at: string,
+    http_url_to_repo: string,
+    last_activity_at: string
+}
+
 export type ProjectsBranchesType = {
     id: string,
     name: string,
@@ -96,6 +106,36 @@ export type DeveloperSkillMapType = {
     developerName: string,
     developerEmail: string,
     developerId: number,
+    skillName: string,
+    skillId: number,
+    score: number,
+    ranking: string,
+    progLang: string,
+    skillLocation: string,
+    nrOfChangedLines: number
+}
+
+export type DeveloperProjectMapType = {
+    developerName: string,
+    developerEmail: string,
+    developerId: number,
+    projectId: number,
+    projectName: string,
+    projectDesc: string,
+    projectPath: string,
+    projectCreatedAt: Date,
+    projectHttpUrlToRepo: string,
+    score: number,
+    nrOfChangedLines: number
+}
+
+export type ProjectSkillMapType = {
+    projectId: number,
+    projectName: string,
+    projectDesc: string,
+    projectPath: string,
+    projectCreatedAt: Date,
+    projectHttpUrlToRepo: string,
     skillName: string,
     skillId: number,
     score: number,

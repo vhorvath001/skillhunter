@@ -6,23 +6,23 @@ import SkillTreeSelectionComponent from '../SkillTreeSelectionComponent'
 import Form from 'react-bootstrap/Form'
 import AlertMessage from '../../../../utils/AlertMessage';
 import useExtractionMap from '../../../../hooks/useExtractionMap';
-import DeveloperSkillGraph from './DeveloperSkillGraph';
+import ProjectSkillGraph from './ProjectSkillGraph';
 
-const ExtractionMapDeveloperSkillMap = (): ReactElement => {
+const ExtractionMapProjectSkillMap = (): ReactElement => {
     const resourceTypes: string[][] = [['ALL', 'all the resources'], 
-                                       ['DEVELOPER', 'the following developer only'], 
+                                       ['PROJECT', 'the following project only'], 
                                        ['SKILL', 'the following skill only']]
 
-    const { errorMessageDeveloperSkillMap, setErrorMessageDeveloperSkillMap, developers, showDeveloperSkillMap, setIsDeveloperSkillMapLoading, setDeveloperSkillMap, showExtractionMap } = useExtractionMap()
-    const [ selectedDeveloper, setSelectedDeveloper ] = useState<string>('')
+    const { errorMessageProjectSkillMap, setErrorMessageProjectSkillMap, projects, showProjectSkillMap, setIsProjectSkillMapLoading, setProjectSkillMap, showExtractionMap } = useExtractionMap()
+    const [ selectedProject, setSelectedProject ] = useState<string>('')
     const [ displayShowButton, setDisplayShowButton ] = useState<boolean>(true)
     const [ selectedResourceType, setSelectedResourceType ] = useState<string>('')
     const [ selectedSkill, setSelectedSkill ] = useState<any[]>([])
     const [ showSkillTreeSelection, setShowSkillTreeSelection ] = useState<boolean>(false)
 
     useEffect(() => {
-        setSelectedDeveloper(String(developers[0]?.id) ?? '')
-    }, [developers])
+        setSelectedProject(String(projects[0]?.id) ?? '')
+    }, [projects])
 
     useEffect(() => {
         if (!showExtractionMap)
@@ -34,27 +34,27 @@ const ExtractionMapDeveloperSkillMap = (): ReactElement => {
             <Row>
                 <Col md={12}>
                     <ExtractionMapFilter 
-                        mapType='DEVELOPER-SKILL'
+                        mapType='PROJECT-SKILL'
                         resourceTypes={resourceTypes}
                         componentOne={
                             <Form.Select className='mb-2 me-3 w-auto d-lg-inline' 
-                                         onChange={(e: ChangeEvent<HTMLSelectElement>) => setSelectedDeveloper(e.target.value)}>
-                                {developers.map(d => (
-                                    <option value={d.id} key={d.id}>{d.name} - ({d.email})</option>    
+                                         onChange={(e: ChangeEvent<HTMLSelectElement>) => setSelectedProject(e.target.value)}>
+                                {projects.map(p => (
+                                    <option value={p.id} key={p.id}>{p.name}</option>    
                                 ))}
                             </Form.Select>        
                         }
                         componentTwo={ <SkillTreeSelectionComponent 
                                             setSelectedSkill={setSelectedSkill} 
-                                            selectedSkill={selectedSkill}
+                                            selectedSkill={selectedSkill} 
                                             showSkillTreeSelection={showSkillTreeSelection}
                                             setShowSkillTreeSelection={setShowSkillTreeSelection} /> } 
-                        handleShow={showDeveloperSkillMap}
-                        selectedResourceOne={selectedDeveloper}
-                        resetSelectedResourceOne={() => setSelectedDeveloper(String(developers[0].id) ?? '')}
-                        setIsLoading={setIsDeveloperSkillMapLoading}
-                        setData={setDeveloperSkillMap}
-                        setErrorMessage={setErrorMessageDeveloperSkillMap}
+                        handleShow={showProjectSkillMap}
+                        selectedResourceOne={selectedProject}
+                        resetSelectedResourceOne={() => setSelectedProject(String(projects[0].id) ?? '')}
+                        setIsLoading={setIsProjectSkillMapLoading}
+                        setData={setProjectSkillMap}
+                        setErrorMessage={setErrorMessageProjectSkillMap}
                         displayShowButton={displayShowButton}
                         setDisplayShowButton={setDisplayShowButton}
                         selectedResourceType={selectedResourceType}
@@ -64,15 +64,15 @@ const ExtractionMapDeveloperSkillMap = (): ReactElement => {
                 </Col>
             </Row>
             <Row>
-                <DeveloperSkillGraph selectedResourceType={selectedResourceType} />
+                <ProjectSkillGraph selectedResourceType={selectedResourceType} />
             </Row>
             <Row>
-                { errorMessageDeveloperSkillMap &&
-                    <AlertMessage errorMessage={errorMessageDeveloperSkillMap} />
+                { errorMessageProjectSkillMap &&
+                    <AlertMessage errorMessage={errorMessageProjectSkillMap} />
                 }
             </Row>
         </>
     )
 }
 
-export default ExtractionMapDeveloperSkillMap
+export default ExtractionMapProjectSkillMap

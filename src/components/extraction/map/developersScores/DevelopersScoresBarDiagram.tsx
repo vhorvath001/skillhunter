@@ -18,7 +18,7 @@ const DevelopersScoresBarDiagram = (): ReactElement => {
 
     useEffect(() => {
         if (developersScores.length > 0) {
-            const dataAxis: string[] = developersScores.map(ds => ds.developerName)
+            const dataAxis: string[] = developersScores.map(ds => ds.developerName + ' (' + ds.developerEmail + ')')
             let data: number[] = developersScores.map(ds => ds.totalScore)
             let yMax: number = 500
             let dataShadow: number[] = []
@@ -27,6 +27,7 @@ const DevelopersScoresBarDiagram = (): ReactElement => {
             }
             const option: ECBasicOption = {
                 tooltip: {
+                    show: true,
                     trigger: 'axis',
                     axisPointer: {
                         type: 'shadow',
@@ -48,7 +49,14 @@ const DevelopersScoresBarDiagram = (): ReactElement => {
                     axisTick: {
                         show: false
                     },
-                    z: 10
+                    z: 10,
+                    axisLabel: {
+                        show: true,
+                        interval: '0',
+                        width: 100,
+                        overflow: 'truncate',
+                        ellipsis: '...'
+                    }
                 },
                 yAxis: {
                     name: 'Scores',

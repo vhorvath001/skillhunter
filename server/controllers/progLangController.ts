@@ -21,7 +21,7 @@ const getProgLang = async (req: Request, resp: Response) => {
         }
     } catch(err) {
         logError(err, `Error occurred when executing 'getProgLangById'.`)
-        resp.status(500).send({'message': `Error occurred when trying to get a programming language! - ${getErrorMessage(err)}`})
+        resp.status(500).send({'message': `${getErrorMessage(err)}`})
     }
 }
 
@@ -34,7 +34,7 @@ const getAllProgLangs = async (req: Request, resp: Response) => {
         resp.status(200).json( progLangModels.map(m => toProgLangType(m)) )
     } catch(err) {
         logError(err, `Error occurred when executing 'getAllProgLangs'.`)
-        resp.status(500).send({'message': `Error occurred when trying to get all the programming languages! - ${getErrorMessage(err)}`})
+        resp.status(500).send({'message': ` ${getErrorMessage(err)}`})
     }
 }
 
@@ -49,7 +49,7 @@ const getAllProgLangsByExtraction = async (req: Request, resp: Response) => {
         resp.status(200).json( progLangModels.map(m => toProgLangType(m)) )
     } catch(err) {
         logError(err, `Error occurred when executing 'getAllProgLangs'.`)
-        resp.status(500).send({'message': `Error occurred when trying to get all the programming languages! - ${getErrorMessage(err)}`})
+        resp.status(500).send({'message': `${getErrorMessage(err)}`})
     }
 }
 
@@ -64,7 +64,7 @@ const createNewProgLang = async (req: Request, resp: Response) => {
         resp.status(201).json(toProgLangType(newProgLangModel))
     } catch(err) {
         logError(err, `Error occurred when executing 'createNewProgLang'.`)
-        resp.status(500).send({'message': `Error occurred when trying to save a new programming languages! - ${getErrorMessage(err)}`})
+        resp.status(500).send({'message': `${getErrorMessage(err)}`})
     }
 }
 
@@ -86,7 +86,7 @@ const editExistingProgLang = async (req: Request, resp: Response) => {
         }
     } catch(err) {
         logError(err, `Error occurred when executing 'editExistingProgLang'.`)
-        resp.status(500).send({'message': `Error occurred when trying to edit an existing programming language! - ${getErrorMessage(err)}`})
+        resp.status(500).send({'message': `${getErrorMessage(err)}`})
     }
 }
 
@@ -103,7 +103,7 @@ const deleteProgLang = async (req: Request, resp: Response) => {
             resp.sendStatus(200)
     } catch(err) {
         logError(err, `Error occurred when executing 'deleteProgLang'.`)
-        resp.status(500).send({'message': `Error occurred when trying to delete a programming language! - ${getErrorMessage(err)}`})
+        resp.status(500).send({'message': `${getErrorMessage(err)}`})
     }
 }
 
@@ -121,7 +121,7 @@ const calculateRankingsFromSkill = async (req: Request, resp: Response) => {
         resp.sendStatus(200)
     } catch(err) {
         logError(err, `Error occurred when executing 'calculateRankingsFromSkill'.`)
-        resp.status(500).send({'message': `Error occurred when trying to to calculate rankings from skill! - ${getErrorMessage(err)}`})
+        resp.status(500).send({'message': `${getErrorMessage(err)}`})
     }
 }
 
