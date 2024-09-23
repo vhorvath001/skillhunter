@@ -10,10 +10,11 @@ type PropsType = {
     inputName: string,
     beforeTextField?: (originalRecord: any, index: number) => JSX.Element,
     beforeTextFieldWidth?: number,
-    type?: string
+    type?: string,
+    formName?: string
 }
 
-const EditableList = ({ list, required, inputName, beforeTextField, originalList, beforeTextFieldWidth, type }: PropsType): ReactElement => {
+const EditableList = ({ list, required, inputName, beforeTextField, originalList, beforeTextFieldWidth, type, formName }: PropsType): ReactElement => {
     const [ items, setItems ] = useState<string[]>(list ?? []);
     const addToList = (): void => {
         setItems([...items, ''])
@@ -32,7 +33,8 @@ const EditableList = ({ list, required, inputName, beforeTextField, originalList
                         required={required} 
                         beforeTextField={beforeTextField}
                         beforeTextFieldWidth={beforeTextFieldWidth}
-                        originalRecord={originalList ? originalList[index] : null} />
+                        originalRecord={originalList ? originalList[index] : null}
+                        formName={formName} />
                 ))}
             </ListGroup>
             <span 

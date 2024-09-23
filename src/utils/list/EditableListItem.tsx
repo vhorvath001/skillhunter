@@ -14,10 +14,11 @@ type PropsType = {
     beforeTextField?: (originalRecord: any, index: number) => JSX.Element,
     originalRecord: any,
     beforeTextFieldWidth?: number,
-    type?: string
+    type?: string,
+    formName?: string
 }
 
-const EditableListItem = ({ index, item, controlName, required, beforeTextField, originalRecord, beforeTextFieldWidth = 0, type = 'text' }: PropsType) => {
+const EditableListItem = ({ index, item, controlName, required, beforeTextField, originalRecord, beforeTextFieldWidth = 0, type = 'text', formName }: PropsType) => {
     const [show, setShow] = useState<boolean>(true);
     const removeFromList = (): void => setShow(false);
 
@@ -36,6 +37,7 @@ const EditableListItem = ({ index, item, controlName, required, beforeTextField,
                                 <div className='d-lg-inline'>
                                     <Form.Control
                                         type={type}
+                                        form={formName}
                                         {...(type === 'number' ? {step: '0.000000000000001'} : {})}
                                         name={controlName}
                                         defaultValue={item} 

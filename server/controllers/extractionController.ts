@@ -231,6 +231,7 @@ export const toExtractionType = (model: ExtractionModel): ExtractionType => {
 
     return {
         id: model.id,
+        name: model.name,
         startDate: model.startDate,
         projectsBranches: model.projectsBranches ? JSON.parse(model.projectsBranches) : [],
         path: model.path,

@@ -91,6 +91,7 @@ const ExtractionFilter = (): ReactElement => {
                         <option key='-1' value='-1'>---</option>
                         <option key='COMPLETED' value='COMPLETED'>Completed</option>
                         <option key='FAILED' value='FAILED'>Failed</option>
+                        <option key='CANCELLED' value='CANCELLED'>Cancelled</option>
                         <option key='IN PROGRESS' value='IN PROGRESS'>In Progress</option>
                     </select>
 

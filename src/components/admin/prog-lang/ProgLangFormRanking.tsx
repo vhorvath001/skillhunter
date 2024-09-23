@@ -10,17 +10,18 @@ import Accordion from 'react-bootstrap/Accordion'
 import { ProgLangType } from '../../../context/AppTypes'
 
 type PropsType = {
+    formName: string, 
     record?: ProgLangType,
     showAttention?: boolean
 }
 
-const ProgLangFormRanking = ({ record, showAttention = true }: PropsType): ReactElement => {
+const ProgLangFormRanking = ({ formName, record, showAttention = true }: PropsType): ReactElement => {
     return (
         <>
             <Row>
                 <Col>
                     <Form.Label className='fw-bolder'>Rankings</Form.Label>
-                    <BsInfoSquare className='me-3 ms-2' size={20} title='Ranking can be specified which will appear in the skill map. It indicates how experienced the developer is. For example:&#013;Novice     0&#013;Master     500&#013;Grandmaster     1500&#013;Please make sure that the start value of the first range range is zero and the ranges are in ascending order!' />            
+                    <BsInfoSquare className='me-3 ms-2' size={20} title="Ranking can be specified which will appear in the skill map. It indicates how experienced the developer is. For example:&#013;Novice     0&#013;Master     500&#013;Grandmaster     1500&#013;Please make sure that the 'start' value of the first range range is zero and the ranges are in ascending order!" />
                 </Col>
             </Row>
             {showAttention &&
@@ -64,6 +65,7 @@ const ProgLangFormRanking = ({ record, showAttention = true }: PropsType): React
                                     <Form.Control
                                         type='text'
                                         name={'rankingListItem_name_'+index}
+                                        form={formName}
                                         defaultValue={originalRecord?.name}
                                         className='mb-2 me-3 flex-fill d-lg-inline'/>
                                     <Form.Label className='fw-bolder flex-fill'>Range start</Form.Label>
@@ -71,6 +73,7 @@ const ProgLangFormRanking = ({ record, showAttention = true }: PropsType): React
                                 </span>
                             )}
                             beforeTextFieldWidth={8}
+                            formName={formName}
                         />
                     </Form.Group>
                 </Col>

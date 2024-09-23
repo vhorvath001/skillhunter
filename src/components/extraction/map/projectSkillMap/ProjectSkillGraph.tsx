@@ -245,7 +245,7 @@ const ProjectSkillGraph = ({ selectedResourceType }: PropsType): ReactElement =>
             }
             {!isProjectSkillMapLoading && !errorMessageProjectSkillMap &&
                 <>
-                    {projectSkillMap &&
+                    {projectSkillMap && projectSkillMap.length > 0 &&
                         <div>
                             <label className='me-1'>Filtering by project:</label>
                             <Form.Select className='w-auto me-3 d-lg-inline' onChange={e => selectNode(e, graph)} size='sm'>

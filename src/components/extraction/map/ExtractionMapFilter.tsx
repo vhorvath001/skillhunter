@@ -42,7 +42,6 @@ const ExtractionMapFilter = ({ mapType, resourceTypes, componentOne, componentTw
     }, [])
 
     const changeResourceTypeOption = (e: ChangeEvent<HTMLSelectElement>): void => {
-        console.log('changeResourceTypeOption')
         const selected: string = e.target.value
         setSelectedResourceType(selected)
         resetSelectedResourceOne()

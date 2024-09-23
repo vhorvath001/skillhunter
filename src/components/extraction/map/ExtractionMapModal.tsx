@@ -10,12 +10,15 @@ import ExtractionMapDeveloperProjectMap from './developerProjectMap/ExtractionMa
 import ExtractionMapProjectSkillMap from './projectSkillMap/ExtractionMapProjectSkillMap'
 
 const ExtractionMapModal = (): ReactElement => {
-    const { showExtractionMap, setShowExtractionMap, setDevelopersScores, setDevelopersScoresColSize, fetchDevelopers, setDevelopers, setErrorMessageDeveloperSkillMap, extraction, fetchProjects, setProjects, setErrorMessageDeveloperProjectMap, setErrorMessageProjectSkillMap } = useExtractionMap()
+    const { showExtractionMap, setShowExtractionMap, setDevelopersScores, setDevelopersScoresColSize, fetchDevelopers, setDevelopers, setErrorMessageDeveloperSkillMap, extraction, fetchProjects, setProjects, setErrorMessageDeveloperProjectMap, setErrorMessageProjectSkillMap, setDeveloperProjectMap, setDeveloperSkillMap, setProjectSkillMap } = useExtractionMap()
 
     const handleClose = (): void => {
         setShowExtractionMap(false)
         setDevelopersScores([])
         setDevelopersScoresColSize(12)
+        setDeveloperProjectMap([])
+        setDeveloperSkillMap([])
+        setProjectSkillMap([])
     }
 
     const handleTabChange = (e: MouseEvent<HTMLElement>): void => {

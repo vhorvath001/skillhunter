@@ -218,7 +218,7 @@ const DeveloperProjectGraph = ({ selectedResourceType }: PropsType): ReactElemen
             }
             {!isDeveloperProjectMapLoading && !errorMessageDeveloperProjectMap &&
                 <>
-                    {developerProjectMap &&
+                    {developerProjectMap && developerProjectMap.length > 0 &&
                         <div>
                             <label className='me-1'>Filtering by developer:</label>
                             <Form.Select className='w-auto me-3 d-lg-inline' onChange={e => selectNode(e, graph)} size='sm'>

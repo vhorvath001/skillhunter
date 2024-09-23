@@ -13,7 +13,7 @@ import AlertMessage from '../../../../utils/AlertMessage'
 import SkillTreeSelectionComponent from '../SkillTreeSelectionComponent'
 
 const ExtractionMapDevelopersScores = (): ReactElement => {
-    const { developersScoresColSize, handleGenerateRankingsSubmit, extraction, showSaveSuccssfulCalculateRanking, setShowSaveSuccssfulCalculateRanking, setErrorMessageCalculateRankings, errorMessageCalculateRankings, setDevelopersScoresColSize, fetchDevelopersScores, setIsDevelopersScoresLoading, setDevelopersScores, setDevelopersScoresErrorMessage } = useExtractionMap()
+    const { developersScoresColSize, handleGenerateRankingsSubmit, extraction, showSaveSuccssfulCalculateRanking, setShowSaveSuccssfulCalculateRanking, setErrorMessageCalculateRankings, errorMessageCalculateRankings, setDevelopersScoresColSize, fetchDevelopersScores, setIsDevelopersScoresLoading, setDevelopersScores, setDevelopersScoresErrorMessage, developersScores } = useExtractionMap()
     const { selectedProgLang } = useSkillTree()
 
     const [ selectedSkill, setSelectedSkill ] = useState<any[]>([])
@@ -50,7 +50,9 @@ const ExtractionMapDevelopersScores = (): ReactElement => {
                     {selectedSkill.length > 0 &&
                         <>
                             <Button onClick={handleShowDevelopersScores} className='ms-2'>Show</Button>
-                            <Button onClick={handleClickGenerateRankings} variant='secondary' className='ms-5'>Calculate rankings</Button>
+                            { developersScores && developersScores.length > 0 &&
+                                <Button onClick={handleClickGenerateRankings} variant='secondary' className='ms-5'>Calculate rankings</Button>
+                            }
                         </>
                     }
                 </Col>
@@ -63,12 +65,13 @@ const ExtractionMapDevelopersScores = (): ReactElement => {
                     <Col xs={12-developersScoresColSize} className='p-4 mb-3 bg-light bg-gradient border'>
 
                         <Form.Label className='fw-bolder mb-3'>Please specify the rankings of the selected skill!</Form.Label>
-                        <Form id='formGenerateRankings' onSubmit={(e: FormEvent<HTMLFormElement>) => {handleGenerateRankingsSubmit(e, setErrorMessageCalculateRankings, setShowSaveSuccssfulCalculateRanking)}}>
+                        <form id='formGenerateRankings' 
+                              onSubmit={(e: FormEvent<HTMLFormElement>) => { handleGenerateRankingsSubmit(e, setErrorMessageCalculateRankings, setShowSaveSuccssfulCalculateRanking) }}>
                             <input type='hidden' value={selectedProgLang} name='selectedProgLang' />
                             <input type='hidden' value={extraction?.id} name='extractionId' />
                             <input type='hidden' value={selectedSkill[0]} name='skillId' />
 
-                            <ProgLangFormRanking showAttention={false} />
+                            <ProgLangFormRanking showAttention={false} formName='formGenerateRankings' />
 
                             <ModalConfirmation
                                 icon={<Button>Overwrite rankings</Button>} 
@@ -76,7 +79,7 @@ const ExtractionMapDevelopersScores = (): ReactElement => {
                                 id={null}
                                 handleOperation={handleConfirmationQuestion}
                                 dispatch={null} />
-                        </Form>
+                        </form>
                         { showSaveSuccssfulCalculateRanking &&
                             <Alert variant='success' className='mt-2'>The rankings of the selected programming language is successfully updated.</Alert>
                         }

@@ -26,7 +26,7 @@ const ProgLangForm = ( { record }: PropsType ): ReactElement => {
                     <ProgLangFormIgnoringLines record={record} />
                 </Tab>
                 <Tab eventKey='Ranking' title='Ranking'>
-                    <ProgLangFormRanking record={record} />
+                    <ProgLangFormRanking record={record} formName='newProgLangForm' />
                 </Tab>
             </Tabs>
         </> 

@@ -10,7 +10,7 @@ const ExtractionCards = (): ReactElement => {
 
     return (
         <Container fluid>
-            <Row>
+            <Row className='row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6'>
                 {state.list.map((e) => (
                     <ExtractionCard extraction={e} key={e.id} />
                 ))}

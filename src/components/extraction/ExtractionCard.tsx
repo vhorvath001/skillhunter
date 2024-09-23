@@ -34,10 +34,10 @@ const ExtractionCard = ({ extraction }: PropsType): ReactElement => {
     }
     
     return (
-        <Col xs lg={3}>
+        <Col xs>
             <Card border={extraction.status === 'IN PROGRESS' ? 'secondary' :
                           extraction.status === 'COMPLETED' ? 'success' : 
-                          extraction.status === 'CANCELLED' ? 'warning' : 'danger'} className='my-3 border-3'>
+                          extraction.status === 'CANCELLED' ? 'warning' : 'danger'} className='bg-light border-3 shadow mb-3 bg-white rounded'>
                 <Card.Header>
                     Repo: <b>{extraction.repository.name}</b>
                     <BsInfoSquare className='ms-2' size={20} title={`Repository description: ${extraction.repository.desc ?? ''}`} />
@@ -53,14 +53,15 @@ const ExtractionCard = ({ extraction }: PropsType): ReactElement => {
                         </label>
                     </Card.Title>
                     <Card.Text>
-                        <div>Name: <b>{extraction.name}</b></div>
-                        <div>Started: <b>{format(extraction.startDate, 'yyyy-MM-dd HH:mm:ss')}</b></div>
-                        <div>
-                            Extraction path: <b>{extraction.path}</b> 
-                            <BsInfoSquare className='ms-2' size={20} title={`Projects to be processed: ${extraction.projectsBranches.map(r => r.projectName).join(', ')}`} />
+                        <div className='text-truncate pb-1' title={`Name: ${extraction.name}`}>
+                            <BsInfoSquare className='me-1' size={20} title={`Projects to be processed: ${extraction.projectsBranches.map(r => r.projectName).join(', ')}`} />
+                            <u>{extraction.name}</u>
                         </div>
-                        <div>Prog. lang.: <b>{extraction.progLangs.map(pl => pl.name).join(', ')}</b></div>
-                        <div>
+                        <div>Started: <b>{format(extraction.startDate, 'yyyy-MM-dd HH:mm:ss')}</b></div>
+                        <div className='text-truncate' title={`Extraction path: ${extraction.path}`}>
+                            Path: <b>{extraction.path}</b> 
+                        </div>
+                        <div className='pt-1'>
                             Progress: 
                             <Badge bg="info" title='It shows how many projects have been processed and altogether how many are going to.' className='mx-1'>
                                 {extraction.progressProjects}
@@ -70,20 +71,22 @@ const ExtractionCard = ({ extraction }: PropsType): ReactElement => {
                             </Badge>
                         </div>
                     </Card.Text>
+                </Card.Body>
+                <Card.Footer>
                     <Button 
                         onClick={() => handleDetailsClick(extraction.id)} 
-                        className='me-2 mb-2' size='sm' variant="primary">
+                        className='me-2' size='sm' variant="primary">
                         Details
                     </Button>
                     <Button 
                         onClick={() => handleMapClick()} 
-                        className='me-2 mb-2' size='sm' variant="primary">
+                        className='me-2' size='sm' variant="primary">
                         Map
                     </Button>
 
                     {extraction.status !== 'IN PROGRESS' &&
                         <ModalConfirmation
-                            icon={<Button variant="danger" className='me-2 mb-2' size='sm' title='This operation does not delete the extracted skills, they can be removed in Skill Tree. '>Delete</Button>} 
+                            icon={<Button variant="danger" className='me-2' size='sm' title='This operation does not delete the extracted skills, they can be removed in Skill Tree. '>Delete</Button>} 
                             message='Are you sure to delete the extraction?'
                             id={String(extraction.id!)}
                             handleOperation={handleDelete}
@@ -91,13 +94,13 @@ const ExtractionCard = ({ extraction }: PropsType): ReactElement => {
                     }
                     {extraction.status === 'IN PROGRESS' &&
                         <ModalConfirmation
-                            icon={<Button variant="danger" className='me-2 mb-2' size='sm' title='Interrupting the extraction'>Cancel</Button>} 
+                            icon={<Button variant="danger" className='me-2' size='sm' title='Interrupting the extraction'>Cancel</Button>} 
                             message='Are you sure to cancel the extraction?'
                             id={String(extraction.id!)}
                             handleOperation={handleCancel}
                             dispatch={dispatch} />
                     }
-                </Card.Body>
+                </Card.Footer>
             </Card>
 
             {showExtractionDetails &&
