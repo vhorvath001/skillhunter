@@ -37,8 +37,8 @@ const updateStatus = async (extractionId: number, status: string) => {
     )
 }
 
-const getExtractionModels = async (repoId: number | null, status: string | null, filterFrom: Date, filterTo: Date): Promise<ExtractionModel[]> => {
-    logger.debug(`Getting extractions [repoId = ${repoId}, status=${status}, filterFrom=${filterFrom}, filterTo=${filterTo}] ...`)
+const getExtractionModels = async (extractionName: string | null, repoId: number | null, status: string | null, filterFrom: Date, filterTo: Date): Promise<ExtractionModel[]> => {
+    logger.debug(`Getting extractions [extractionName = ${extractionName}, repoId = ${repoId}, status=${status}, filterFrom=${filterFrom}, filterTo=${filterTo}] ...`)
     let whereCond: {} = {
         startDate: {
             [Op.between]: [filterFrom, filterTo]
@@ -48,9 +48,23 @@ const getExtractionModels = async (repoId: number | null, status: string | null,
         whereCond = {...whereCond, 'repositoryId': repoId }
     if (status)
         whereCond = {...whereCond, 'status': status }
+    if (extractionName)
+        whereCond = {...whereCond, name: {
+            [Op.like]: `%${extractionName}%`
+        }}
     return await ExtractionModel.findAll({
         where: { 
             ...whereCond
+        },
+        include: [ RepositoryModel, ProgLangModel ]
+    })
+}
+
+const getFavouriteExtractionModels = async (): Promise<ExtractionModel[]> => {
+    logger.debug(`Getting favorite extractions ...`)
+    return await ExtractionModel.findAll({
+        where: { 
+            favourite: true
         },
         include: [ RepositoryModel, ProgLangModel ]
     })
@@ -113,4 +127,4 @@ const queryExtractionById = async (id: number): Promise<ExtractionModel> => {
     return extraction
 }
 
-export { saveExtraction, updateStatus, getExtractionModels, updateProgressProjects, updateProgressCommits, deleteExtractionById, updateExtractionById, queryExtractionById }
+export { saveExtraction, updateStatus, getExtractionModels, updateProgressProjects, updateProgressCommits, deleteExtractionById, updateExtractionById, queryExtractionById, getFavouriteExtractionModels }

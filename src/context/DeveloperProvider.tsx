@@ -9,7 +9,8 @@ export const DEVELOPER_ACTION_TYPES = {
     POPULATE: 'POPULATE',
     EDIT: 'EDIT',
     DELETE: 'DELETE',
-    FILTER: 'FILTER'
+    FILTER: 'FILTER',
+    MERGE: 'MERGE'
 }
 
 export type DeveloperAction = {
@@ -72,6 +73,23 @@ const handleFilter = (dispatch: React.Dispatch<DeveloperAction>, e: FormEvent<HT
     })
 }
 
+const handleClickOnMerge = async (currentDeveloper: number, 
+                                  selectedDeveloper: number,
+                                  dispatch: React.Dispatch<DeveloperAction>,
+                                  handleClose: () => void, 
+                                  setErrorMessage: (errorMessage: string) => void) => {
+    try {
+        await axios({
+            method: 'PUT', 
+            url: `${endpointBackEnd}/developers/${currentDeveloper}/merge/${selectedDeveloper}`
+        })
+        dispatch({ type: DEVELOPER_ACTION_TYPES.DELETE, id: Number(currentDeveloper) })
+        handleClose()
+    } catch (err) {
+        handleError(err, setErrorMessage)
+    }
+}
+
 const toDeveloperType = (formData: FormData): DeveloperType => {
     return {
         id: Number(formData.get('id')!.toString()),
@@ -81,13 +99,7 @@ const toDeveloperType = (formData: FormData): DeveloperType => {
 }
 
 const initState: UseDeveloperContextType = {
-    dispatch: () => {}, 
-    state: {} as DeveloperStateType, 
-    isLoading: false, 
-    fetchError: '', 
-    handleDelete: handleDelete, 
-    handleSave: handleSave,
-    handleFilter: handleFilter
+    dispatch: () => {}, state: {} as DeveloperStateType, isLoading: false, fetchError: '', handleDelete: handleDelete, handleSave: handleSave, handleFilter: handleFilter, data: [], handleClickOnMerge: handleClickOnMerge
 }
 
 const DeveloperContext = createContext<UseDeveloperContextType>(initState)
@@ -140,7 +152,7 @@ const useDeveloperContext = () => {
         dispatch({ type: DEVELOPER_ACTION_TYPES.POPULATE, payload: data })
     }, [data])
 
-    return { dispatch, state, isLoading, fetchError, handleDelete, handleSave, handleFilter }
+    return { dispatch, state, isLoading, fetchError, handleDelete, handleSave, handleFilter, data, handleClickOnMerge }
 }
 
 export type UseDeveloperContextType = ReturnType<typeof useDeveloperContext>

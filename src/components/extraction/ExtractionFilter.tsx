@@ -10,7 +10,8 @@ import useExtractionStartNew from '../../hooks/useExtractionStartNew'
 
 const ExtractionFilter = (): ReactElement => {
     const { handleFilterClick, filterDateFrom, setFilterDateFrom, filterDateTo, setFilterDateTo,
-            filterErrorMessage, setFilterErrorMessage, dispatch, setAreExtractionsLoading, filterStatus, setFilterStatus } = useExtractionAdmin()
+            filterErrorMessage, setFilterErrorMessage, dispatch, setAreExtractionsLoading, filterStatus, setFilterStatus, 
+            filterName, setFilterName } = useExtractionAdmin()
     const { repositoryOptions, filterRepoId, setFilterRepoId } = useExtractionStartNew()
     
     const changeFilterRepositoryOptions = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -27,6 +28,10 @@ const ExtractionFilter = (): ReactElement => {
 
     const changeFilterStatusOptions = (e: ChangeEvent<HTMLSelectElement>) => {
         setFilterStatus(e.target.value)
+    }
+
+    const handleFilterNameChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setFilterName(e.target.value)
     }
 
     const changeFilterDateFromTo = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -76,8 +81,10 @@ const ExtractionFilter = (): ReactElement => {
         <Container fluid>
             <Row>
                 <Col xs={12} md={12}>
-                    <label>Repository:</label>
-                    <select className='m-2' onChange={changeFilterRepositoryOptions}>
+                    <label className='me-1'>Name:</label>
+                    <input type='text' name={filterName} onChange={handleFilterNameChange} placeholder='Name of the extraction' className='form-inline me-5' />
+                    <label className='me-1'>Repository:</label>
+                    <select className='me-5' onChange={changeFilterRepositoryOptions}>
                         <option key='-1' value='-1'>---</option>
                         {repositoryOptions.map(ro => (
                             <option key={ro.key} value={ro.key}>
@@ -86,8 +93,8 @@ const ExtractionFilter = (): ReactElement => {
                         ))}
                     </select>
 
-                    <label>Status:</label>
-                    <select className='m-2' onChange={changeFilterStatusOptions}>
+                    <label className='me-1'>Status:</label>
+                    <select className='me-5' onChange={changeFilterStatusOptions}>
                         <option key='-1' value='-1'>---</option>
                         <option key='COMPLETED' value='COMPLETED'>Completed</option>
                         <option key='FAILED' value='FAILED'>Failed</option>
@@ -95,7 +102,7 @@ const ExtractionFilter = (): ReactElement => {
                         <option key='IN PROGRESS' value='IN PROGRESS'>In Progress</option>
                     </select>
 
-                    <label className='m-2'>Date range:</label>
+                    <label className='me-1'>Date range:</label>
                     <input type='datetime-local' step='1' value={filterDateFrom} onChange={handleFilterDateFrom} data-testid='iFilterDateFrom' />
                     <label className='mx-3'>&#8213;</label>
                     <input type='datetime-local' step='1' value={filterDateTo} onChange={handleFilterDateTo} data-testid='iFilterDateTo' />
@@ -115,7 +122,7 @@ const ExtractionFilter = (): ReactElement => {
                         <option key='ALL_TIME' value='ALL_TIME'>All time</option>
                     </select>
 
-                    <Button className='mx-3 my-2' variant='primary' onClick={() => handleFilterClick(filterRepoId, filterStatus, filterDateFrom, filterDateTo, setFilterErrorMessage, dispatch, setAreExtractionsLoading)}>Filter</Button>
+                    <Button className='mx-3 my-2' variant='primary' size='sm' onClick={() => handleFilterClick(filterName, filterRepoId, filterStatus, filterDateFrom, filterDateTo, setFilterErrorMessage, dispatch, setAreExtractionsLoading)}>Filter</Button>
 
                 </Col>
             </Row>

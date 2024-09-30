@@ -51,6 +51,7 @@ export type ExtractionType = {
     projectsBranches: SelectedProjectBranchesType[],
     path: string,
     status: string,
+    favourite?: boolean,
     progressProjects?: string,
     progressCommits?: string,
     repository: RepositoryType,

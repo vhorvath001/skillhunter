@@ -5,6 +5,7 @@ import { ReactElement } from 'react'
 import { DeveloperAction } from '../../../context/DeveloperProvider'
 import DeveloperForm from './DeveloperForm'
 import { DeveloperType } from '../../../context/AppTypes'
+import DeveloperMergeModal from './DeveloperMergeModal'
 
 type PropsType = {
     record: DeveloperType, 
@@ -23,7 +24,7 @@ const DeveloperRow = ({ record, formId, handleSave, handleDelete, dispatch }: Pr
             <td>
                 <span>{record.email}</span>
             </td>
-            <td className='adminIconsCell'>
+            <td className='developerAdminIconsCell'>
                 <ModalForm 
                     body={ <DeveloperForm record={record} />} 
                     formId={formId}
@@ -43,6 +44,7 @@ const DeveloperRow = ({ record, formId, handleSave, handleDelete, dispatch }: Pr
                     id={record.id!}
                     handleOperation={handleDelete}
                     dispatch={dispatch} />
+                <DeveloperMergeModal id={record.id!} />
             </td>
         </tr>
     )

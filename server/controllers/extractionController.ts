@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import { buildDeveloperProjectMap, buildDeveloperSkillMap, buildProjectSkillMap, start } from '../services/extractionService'
 import logger from '../init/initLogger'
 import { parseISO } from 'date-fns'
-import { deleteExtractionById, getExtractionModels, updateExtractionById } from '../models/extraction/extractionDataService'
+import { deleteExtractionById, getExtractionModels, getFavouriteExtractionModels, updateExtractionById } from '../models/extraction/extractionDataService'
 import { ExtractionModel } from '../models/extraction/extractionModel'
 import { DeveloperProjectMapType, DeveloperSkillMapType, DevelopersScoresType, DeveloperType, ExtractionType, ProgLangType, ProgressLogType, ProjectSkillMapType, SelectedProjectBranchesType } from '../schema/appTypes'
 import { toProgLangType } from './progLangController'
@@ -61,12 +61,19 @@ export const getExtractions = async (req: Request, resp: Response): Promise<void
     logger.info(`Request has arrived to get extractions. - ${JSON.stringify(req.query)}`)
 
     try {
-        const repoId: number | null = Number(req.query.repoId as string) === -1 ? null : Number(req.query.repoId as string)
-        const dateTo: string = req.query.dateTo as string
-        const dateFrom: string = req.query.dateFrom as string
-        const status: string | null = req.query.status as string === '-1' ? null : req.query.status as string
+        let extractionModels: ExtractionModel[] = []
+        const favourites: boolean = req.query.favourites === 'true' 
+        if (favourites) {
+            extractionModels = await getFavouriteExtractionModels()
+        } else {
+            const extractionName: string | null = req.query.extractionName as string
+            const repoId: number | null = Number(req.query.repoId as string) === -1 ? null : Number(req.query.repoId as string)
+            const dateTo: string = req.query.dateTo as string
+            const dateFrom: string = req.query.dateFrom as string
+            const status: string | null = req.query.status as string === '-1' ? null : req.query.status as string
 
-        const extractionModels: ExtractionModel[] = await getExtractionModels(repoId, status, parseISO(dateFrom), parseISO(dateTo))
+            extractionModels = await getExtractionModels(extractionName, repoId, status, parseISO(dateFrom), parseISO(dateTo))
+        }
         const extractions: ExtractionType[] = extractionModels.map(m => toExtractionType(m))
 
         resp.status(200).json(extractions)
@@ -236,6 +243,7 @@ export const toExtractionType = (model: ExtractionModel): ExtractionType => {
         projectsBranches: model.projectsBranches ? JSON.parse(model.projectsBranches) : [],
         path: model.path,
         status: model.status,
+        favourite: model.favourite,
         progressProjects: model.progressProjects,
         progressCommits: model.progressCommits,
         repository: toRepositoryType(model.repositoryRef),

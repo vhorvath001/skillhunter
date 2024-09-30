@@ -41,7 +41,8 @@ export type ExtractionType = {
     progressProjects?: string,
     progressCommits?: string,
     repository: RepositoryType,
-    progLangs: ProgLangType[]
+    progLangs: ProgLangType[],
+    favourite: boolean
 }
 
 export type SelectedProjectBranchesType = {

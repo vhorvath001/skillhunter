@@ -6,11 +6,11 @@ import { DeveloperModel } from '../developer/developerModel'
 
 @Table({ 
     tableName: 'extraction_skill_finding',
-    indexes: [{
-        name: 'unique-extraction-skill-project-developer',
-        unique: true,
-        fields: ['extraction_id', 'skill_id', 'project_id', 'developer_id']
-    }]
+    // indexes: [{
+    //     name: 'unique-extraction-skill-project-developer',
+    //     unique: true,
+    //     fields: ['extraction_id', 'skill_id', 'project_id', 'developer_id']
+    // }]
 })
 export default class ExtractionSkillFindingModel extends Model {
 

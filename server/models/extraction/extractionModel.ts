@@ -36,6 +36,10 @@ export class ExtractionModel extends Model {
     @Column(DataType.STRING)
     declare progressCommits?: string
 
+    @AllowNull(true)
+    @Column(DataType.BOOLEAN)
+    declare favourite?: boolean
+
     @ForeignKey(() => RepositoryModel)
     @Column({ field: 'repository_id' })
     declare repositoryId: number

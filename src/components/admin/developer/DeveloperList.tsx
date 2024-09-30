@@ -34,6 +34,7 @@ const DeveloperList = (): ReactElement => {
                     handleDelete={handleDelete} 
                     dispatch={dispatch}/>
             )}
+            showCreateButton={false}
         />
     )
 }

@@ -1,4 +1,5 @@
 import logger from '../../init/initLogger'
+import ExtractionSkillFindingModel from '../extractionSkillFinding/extractionSkillFindingModel'
 import { DeveloperModel } from './developerModel'
 
 const getOrCreateDeveloper = async (committerName: string, committerEmail: string): Promise<number> => {
@@ -51,4 +52,17 @@ const updateDeveloperById = async (model: DeveloperModel, id: number): Promise<n
     })
 }
 
-export { getOrCreateDeveloper, getAllDevelopersOrderByName, deleteDeveloperById, getDeveloperById, updateDeveloperById }
+const mergeDeveloperInto = async (currentDeveloperModel: DeveloperModel, selectedDeveloperModel: DeveloperModel) => {
+    await ExtractionSkillFindingModel.update(
+        {
+            developerId: selectedDeveloperModel.id
+        },
+        {
+            where: {
+                developerId: currentDeveloperModel.id
+            }
+        }
+    )
+}
+
+export { getOrCreateDeveloper, getAllDevelopersOrderByName, deleteDeveloperById, getDeveloperById, updateDeveloperById, mergeDeveloperInto }

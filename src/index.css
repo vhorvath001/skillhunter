@@ -130,6 +130,10 @@ footer {
     min-width: 80px
 }
 
+.developerAdminIconsCell {
+    min-width: 100px
+}
+
 .accordion-button {
     background-color: #ececec;
     padding: 6px;

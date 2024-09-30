@@ -2,8 +2,9 @@ import { FcDeleteRow, FcEditImage } from 'react-icons/fc'
 import ModalForm from '../../../utils/modal/ModalForm';
 import ModalConfirmation from '../../../utils/modal/ModalConfirmation';
 import ProgLangForm from './ProgLangForm';
-import { ProgLangAction, ProgLangType } from '../../../context/ProgLangProvider';
+import { ProgLangAction } from '../../../context/ProgLangProvider';
 import { ReactElement } from 'react';
+import { ProgLangType } from '../../../context/AppTypes';
 
 type PropsType = {
     record: ProgLangType, 

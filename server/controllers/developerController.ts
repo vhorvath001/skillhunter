@@ -3,7 +3,8 @@ import logger from '../init/initLogger'
 import { DeveloperModel } from '../models/developer/developerModel'
 import { DeveloperType } from '../schema/appTypes'
 import { getErrorMessage, logError } from './commonFunctions'
-import { deleteDeveloperById, getAllDevelopersOrderByName, getDeveloperById, updateDeveloperById } from '../models/developer/developerDataService'
+import { deleteDeveloperById, getAllDevelopersOrderByName, getDeveloperById, mergeDeveloperInto, updateDeveloperById } from '../models/developer/developerDataService'
+import sequelize from '../init/initSequelize'
 
 const getAllDevelopers = async (req: Request, resp: Response) => {
     logger.info(`Request has arrived to get all the developers.`)
@@ -25,8 +26,8 @@ const deleteDeveloper = async (req: Request, resp: Response) => {
 
     try {
         const id: number = Number(req.params.id)
-        const developerModel: DeveloperModel | null = await getDeveloperById(id)
 
+        const developerModel: DeveloperModel | null = await getDeveloperById(id)
         if (!developerModel) {
             resp.status(404).send({'message': `The developer [${id}] cannot be found in database!`})
         } else {
@@ -61,6 +62,33 @@ const editExistingDeveloper = async (req: Request, resp: Response) => {
     }
 }
 
+const mergeDeveloper = async (req: Request, resp: Response) => {
+    logger.info(`Request has arrived to merge the developer into another. - ${JSON.stringify(req.params)}`)
+
+    try {
+        const currentDeveloperId: number = Number(req.params.id)
+        const selectedDeveloperId: number = Number(req.params.selectedDeveloper)
+
+        const currentDeveloperModel: DeveloperModel | null = await getDeveloperById(currentDeveloperId)
+        const selectedDeveloperModel: DeveloperModel | null = await getDeveloperById(selectedDeveloperId)
+        if (!currentDeveloperModel) {
+            resp.status(404).send({'message': `The developer [${currentDeveloperId}] cannot be found in database!`})
+        } else if (!selectedDeveloperModel) {
+            resp.status(404).send({'message': `The developer [${selectedDeveloperId}] cannot be found in database!`})
+        } else {
+            const result = await sequelize.transaction(async t => {
+                await mergeDeveloperInto(currentDeveloperModel, selectedDeveloperModel)
+                await deleteDeveloperById(currentDeveloperId)    
+            })
+
+            resp.sendStatus(200)
+        }
+    } catch(err) {
+        logError(err, `Error occurred when executing 'mergeDeveloper'.`)
+        resp.status(500).send({'message': `${getErrorMessage(err)}`})
+    }
+}
+
 const toDeveloperType = (model: DeveloperModel): DeveloperType => {
     return {
         id: model.id,
@@ -77,4 +105,4 @@ const toDeveloperModel = (d: DeveloperType): DeveloperModel => {
     })
 }
 
-export { getAllDevelopers, deleteDeveloper, editExistingDeveloper, toDeveloperType, toDeveloperModel }
+export { getAllDevelopers, deleteDeveloper, editExistingDeveloper, toDeveloperType, toDeveloperModel, mergeDeveloper }

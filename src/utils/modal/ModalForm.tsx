@@ -17,8 +17,8 @@ type PropsType = {
 }
 
 const ModalForm = ({ formId, title, body, icon, handleSave, dispatch }: PropsType): ReactElement => {
-    const [show, setShow] = useState<boolean>(false);
-    const [errorMessage, setErrorMessage] = useState<string>('');
+    const [ show, setShow ] = useState<boolean>(false);
+    const [ errorMessage, setErrorMessage ] = useState<string>('');
 
     const handleClose = (): void => {
         setShow(false);

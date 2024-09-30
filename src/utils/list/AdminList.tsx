@@ -23,11 +23,12 @@ type PropsType = {
     formEl: ReactElement, 
     newFormTitleAdd: string, 
     addButtonTooltip: string,
-    dispatch: React.Dispatch<any>
+    dispatch: React.Dispatch<any>,
+    showCreateButton?: boolean
 }
 
 const AdminList = ({ list, isLoading, fetchError, maxItemsPerPage, handleDelete, handleSave, title, listHeaderEl, renderListRowEl, formEl, 
-                     newFormTitleAdd, addButtonTooltip, dispatch }: PropsType) => {
+                     newFormTitleAdd, addButtonTooltip, dispatch, showCreateButton = true }: PropsType) => {
     const newFormId = 'newForm';
 
     const [ showedList, setShowedList ] = useState<any[]>([]);
@@ -64,21 +65,23 @@ const AdminList = ({ list, isLoading, fetchError, maxItemsPerPage, handleDelete,
                         <Container>
                             <Row>
                                 <Col className='col-4'>
-                                    <ModalForm 
-                                        body={ formEl } 
-                                        formId={newFormId}
-                                        title={newFormTitleAdd} 
-                                        icon={ <Button 
-                                                variant='primary' 
-                                                title={addButtonTooltip}>
-                                                    Create
-                                                    <FcAddRow 
-                                                        size={25} 
-                                                        className='ms-2' 
-                                                        role='button'/>
-                                              </Button> }
-                                        handleSave={handleSave}
-                                        dispatch={dispatch} />                                    
+                                    {showCreateButton &&
+                                        <ModalForm 
+                                            body={ formEl } 
+                                            formId={newFormId}
+                                            title={newFormTitleAdd} 
+                                            icon={ <Button 
+                                                    variant='primary' 
+                                                    title={addButtonTooltip}>
+                                                        Create
+                                                        <FcAddRow 
+                                                            size={25} 
+                                                            className='ms-2' 
+                                                            role='button'/>
+                                                </Button> }
+                                            handleSave={handleSave}
+                                            dispatch={dispatch} />
+                                    }
                                 </Col>
                                 {showedList && showedList.length > 0 &&
                                     <Col className='col-8'>

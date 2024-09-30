@@ -3,7 +3,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { FaStarOfLife } from 'react-icons/fa';
 import { ReactElement } from 'react';
-import { DeveloperType } from '../../../context/DeveloperProvider';
+import { DeveloperType } from '../../../context/AppTypes';
 
 type PropsType = {
     record?: DeveloperType

@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import Col from 'react-bootstrap/Col'
 import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
@@ -14,14 +14,18 @@ import { ExtractionType } from '../../context/AppTypes'
 import useExtractionAdmin from '../../hooks/useExtractionAdmin'
 import useExtractionMap from '../../hooks/useExtractionMap'
 import { BsInfoSquare } from 'react-icons/bs'
+import Form from 'react-bootstrap/Form'
+import ModalErrorMessage from '../../utils/modal/ModalErrorMessage'
 
 type PropsType = {
     extraction: ExtractionType
 }
 
 const ExtractionCard = ({ extraction }: PropsType): ReactElement => {
-    const { showExtractionDetails, setShowExtractionDetails, setProgressLogs, loadProgressLogs, setIsProgressLogLoading, setProgressLogErrorMessage, dispatch, handleDelete, handleCancel } = useExtractionAdmin()
+    const { showExtractionDetails, setShowExtractionDetails, setProgressLogs, loadProgressLogs, setIsProgressLogLoading, setProgressLogErrorMessage, dispatch, handleDelete, handleCancel, handleFavouriteChange } = useExtractionAdmin()
     const { showExtractionMap, setShowExtractionMap, setExtraction } = useExtractionMap()
+
+    const [errorMessage, setErrorMessage] = useState<string>('')
 
     const handleDetailsClick = (extractionId: number): void => {
         loadProgressLogs(extractionId, setProgressLogs, setIsProgressLogLoading, setProgressLogErrorMessage)
@@ -40,7 +44,15 @@ const ExtractionCard = ({ extraction }: PropsType): ReactElement => {
                           extraction.status === 'CANCELLED' ? 'warning' : 'danger'} className='bg-light border-3 shadow mb-3 bg-white rounded'>
                 <Card.Header>
                     Repo: <b>{extraction.repository.name}</b>
-                    <BsInfoSquare className='ms-2' size={20} title={`Repository description: ${extraction.repository.desc ?? ''}`} />
+                    <BsInfoSquare className='ms-2 mb-1' size={20} title={`Repository description: ${extraction.repository.desc ?? ''}`} />
+                    <label className="form-switch float-end">
+                        <Form.Control 
+                            type='checkbox' 
+                            title='Mark it as favourite' 
+                            className='mb-1 form-check-input' 
+                            onChange={(e) => handleFavouriteChange(e, dispatch, setErrorMessage, extraction.id)} 
+                            checked={extraction.favourite} />
+                    </label>
                 </Card.Header>
                 <Card.Body>
                     <Card.Title>
@@ -54,7 +66,7 @@ const ExtractionCard = ({ extraction }: PropsType): ReactElement => {
                     </Card.Title>
                     <Card.Text>
                         <div className='text-truncate pb-1' title={`Name: ${extraction.name}`}>
-                            <BsInfoSquare className='me-1' size={20} title={`Projects to be processed: ${extraction.projectsBranches.map(r => r.projectName).join(', ')}`} />
+                            <BsInfoSquare className='me-1 mb-1' size={20} title={`Projects to be processed: ${extraction.projectsBranches.map(r => r.projectName).join(', ')}`} />
                             <u>{extraction.name}</u>
                         </div>
                         <div>Started: <b>{format(extraction.startDate, 'yyyy-MM-dd HH:mm:ss')}</b></div>
@@ -109,6 +121,10 @@ const ExtractionCard = ({ extraction }: PropsType): ReactElement => {
 
             {showExtractionMap &&
                 <ExtractionMapModal />
+            }
+
+            {errorMessage &&
+                <ModalErrorMessage errorMessage={errorMessage} />
             }
         </Col>
     )
