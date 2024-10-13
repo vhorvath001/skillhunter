@@ -40,6 +40,22 @@ export class ExtractionModel extends Model {
     @Column(DataType.BOOLEAN)
     declare favourite?: boolean
 
+    @AllowNull(false)
+    @Column({ type: DataType.STRING, field: 'nr_of_commits_type'})
+    declare nrOfCommitsType: string
+    
+    @AllowNull(true)
+    @Column({ type: DataType.INTEGER, field: 'nr_of_commits'})
+    declare nrOfCommits?: number
+    
+    @AllowNull(true)
+    @Column({ type: DataType.DATE, field: 'nr_of_commits_type_between_from'})
+    declare nrOfCommitsTypeBetweenFrom: Date
+
+    @AllowNull(true)
+    @Column({ type: DataType.DATE, field: 'nr_of_commits_type_between_to'})
+    declare nrOfCommitsTypeBetweenTo: Date
+
     @ForeignKey(() => RepositoryModel)
     @Column({ field: 'repository_id' })
     declare repositoryId: number

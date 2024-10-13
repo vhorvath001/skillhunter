@@ -14,9 +14,10 @@ const ExtractionDetailsRight = ({ extractionId }: PropsType): ReactElement => {
 
     return (
         <>
-            <Button onClick={() => loadProgressLogs(extractionId, setProgressLogs, setIsProgressLogLoading, setProgressLogErrorMessage)} size='sm' className='m-2' title='Reloading the progress log list.'>
-                <MdOutlineRefresh />
+            <Button onClick={() => loadProgressLogs(extractionId, setProgressLogs, setIsProgressLogLoading, setProgressLogErrorMessage)} size='sm' className='m-2 ms-1' title='Reloading the progress log list.'>
+                <MdOutlineRefresh size={20}/>
             </Button>
+            <label className='ms-4'><b>Log messages about the progress of extraction</b></label>
 
             <div className='extractionDetailsProgressLogsList'>
                 <Table striped bordered hover >

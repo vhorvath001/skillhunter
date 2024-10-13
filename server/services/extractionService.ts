@@ -23,12 +23,16 @@ const start = async (repoId: number,
                      name: string,
                      projectsBranches: SelectedProjectBranchesType[], 
                      path: string, 
-                     progLangIds: number[]): Promise<void> => {
-    logger.info(`Extraction starting, repoId=[${repoId}], name=[${name}], branches=[${JSON.stringify(projectsBranches)}], path=[${path}], progLangIds=[${progLangIds}] ...`)
+                     progLangIds: number[],
+                     nrOfCommitsType: string,
+                     nrOfCommits: string|undefined,
+                     nrOfCommitsTypeBetweenFrom: string|undefined,
+                     nrOfCommitsTypeBetweenTo: string|undefined): Promise<void> => {
+    logger.info(`Extraction starting, repoId=[${repoId}], name=[${name}], branches=[${JSON.stringify(projectsBranches)}], path=[${path}], progLangIds=[${progLangIds}], nrOfCommitsType=[${nrOfCommitsType}], nrOfCommits=[${nrOfCommits}], nrOfCommitsTypeBetweenFrom=[${nrOfCommitsTypeBetweenFrom}], nrOfCommitsTypeBetweenTo=[${nrOfCommitsTypeBetweenTo}] ...`)
     let extractionId: number = -1
 
     try {
-        extractionId = await saveExtraction(repoId, name, projectsBranches, path, progLangIds);
+        extractionId = await saveExtraction(repoId, name, projectsBranches, path, progLangIds, nrOfCommitsType, nrOfCommits, nrOfCommitsTypeBetweenFrom, nrOfCommitsTypeBetweenTo)
         await log('Extraction has started.', extractionId);
 
         const gitlabAPI: GitlabAPI = await GitlabAPI.createGitlapAPI(repoId)
@@ -51,7 +55,7 @@ const start = async (repoId: number,
             const projectId = await saveProject(project, extractionId)
 
             // getting all the commits of the specific project and looping through them
-            const commits = await getGitLabCommits(gitlabAPI, gitlabProjectId, projectBranches.branch)
+            const commits = await getGitLabCommits(gitlabAPI, gitlabProjectId, projectBranches.branch, nrOfCommitsType, nrOfCommits, nrOfCommitsTypeBetweenFrom, nrOfCommitsTypeBetweenTo)
             await log(`Found ${commits.length} commits to process.`, extractionId)
 
             for(const [indCommit, commit] of commits.entries()) {

@@ -60,10 +60,26 @@ const getGitLabProject = async (gitlabAPI: GitlabAPI, id: string): Promise<GitLa
     }
 }
 
-const getGitLabCommits = async (gitlabAPI: GitlabAPI, projectId: number, branch: string): Promise<GitLabCommitType[]> => {
-    logger.debug(`Getting GitLab commits [projectId=${projectId}, branch=${branch}] ...`)
+const getGitLabCommits = async (gitlabAPI: GitlabAPI, 
+                                projectId: number, 
+                                branch: string,
+                                nrOfCommitsType: string,
+                                nrOfCommits: string|undefined,
+                                nrOfCommitsTypeBetweenFrom: string|undefined,
+                                nrOfCommitsTypeBetweenTo: string|undefined): Promise<GitLabCommitType[]> => {
+    logger.debug(`Getting GitLab commits [projectId=${projectId}, branch=${branch}], nrOfCommitsType=[${nrOfCommitsType}], nrOfCommits=[${nrOfCommits}], nrOfCommitsTypeBetweenFrom=[${nrOfCommitsTypeBetweenFrom}], nrOfCommitsTypeBetweenTo=[${nrOfCommitsTypeBetweenTo}] ...`)
 
-    const commits: CommitSchema[] = await getAll(`/projects/${projectId}/repository/commits`, gitlabAPI, { 'ref_name': branch } )
+    let commitFilter: any = {}
+    if (nrOfCommitsType === 'BETWEEN') {
+        if (nrOfCommitsTypeBetweenFrom)
+            commitFilter['since'] = nrOfCommitsTypeBetweenFrom
+        if (nrOfCommitsTypeBetweenTo)
+            commitFilter['until'] = nrOfCommitsTypeBetweenTo
+    }
+    const commits: CommitSchema[] = await getAll(`/projects/${projectId}/repository/commits`, 
+                                                 gitlabAPI, 
+                                                 { 'ref_name': branch,  ...commitFilter },
+                                                 nrOfCommitsType === 'LAST' ? Number(nrOfCommits) : null)
 
     const gitLabCommits: GitLabCommitType[] = commits
         .map(c => { return {
@@ -126,25 +142,29 @@ const getGitLabBranches = async (gitlabAPI: GitlabAPI, projectId: number) => {
     return result
 }
 
-const getAll = async (resource: string, gitLabApi: GitlabAPI, queryParams: {} = {}): Promise<any[]> => {
+const getAll = async (resource: string, 
+                      gitLabApi: GitlabAPI, 
+                      queryParams: {} = {},
+                      _maxRows?: number | null): Promise<any[]> => {
+    let maxRows = _maxRows ? _maxRows : 9999999999999
     const allResult: any[] = []
     let page: number = 1
-    const perPage = 100
-    let result: any[] = [...Array(100).keys()]
+    const perPage = 300
+    let result: any[] = [...Array(perPage).keys()]
 
     while (result.length === perPage) {
         result = await gitLabApi.call(resource, {
             'page': String(page++),
-            'per_page': String(perPage),
+            'per_page': String(maxRows > perPage ? perPage : maxRows),
             ...queryParams
         }) as any[]
         if (result && result.length > 0) {
             allResult.push(...result)
         } else
             result = []
+        maxRows = maxRows - perPage
     }
     return allResult
 }
 
-export { getGitLabProjects, getGitLabProject, getGitLabCommits, getGitLabDiffList, getGitLabContentByCommitId, getGitLabFolders, getGitLabBranches, 
-         GitLabProjectType, GitLabCommitType, GitLabDiff }
+export { getGitLabProjects, getGitLabProject, getGitLabCommits, getGitLabDiffList, getGitLabContentByCommitId, getGitLabFolders, getGitLabBranches, GitLabProjectType, GitLabCommitType, GitLabDiff }

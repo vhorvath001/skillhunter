@@ -51,7 +51,11 @@ export const extract = async (req: Request, resp: Response): Promise<void> => {
               req.body.name as string,
               req.body.projectsBranches as SelectedProjectBranchesType[], 
               req.body.path as string, 
-              req.body.progLangs as number[])
+              req.body.progLangs as number[],
+              req.body.nrOfCommitsType as string,
+              req.body.nrOfCommits as string|undefined,
+              req.body.nrOfCommitsTypeBetweenFrom as string|undefined,
+              req.body.nrOfCommitsTypeBetweenTo as string|undefined)
 
         resp.sendStatus(201)
     }
@@ -246,6 +250,10 @@ export const toExtractionType = (model: ExtractionModel): ExtractionType => {
         favourite: model.favourite,
         progressProjects: model.progressProjects,
         progressCommits: model.progressCommits,
+        nrOfCommitsType: model.nrOfCommitsType,
+        nrOfCommits: model.nrOfCommits,
+        nrOfCommitsTypeBetweenFrom: model.nrOfCommitsTypeBetweenFrom,
+        nrOfCommitsTypeBetweenTo: model.nrOfCommitsTypeBetweenTo,
         repository: toRepositoryType(model.repositoryRef),
         progLangs: progLangs ?? []
     }

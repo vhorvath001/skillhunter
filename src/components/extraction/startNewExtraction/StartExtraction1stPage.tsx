@@ -7,7 +7,7 @@ import Loading from '../../../utils/Loading'
 import useExtractionStartNew from '../../../hooks/useExtractionStartNew';
 
 const StartExtraction1stPage = (): ReactElement => {
-    const { repositoryOptions, setPathTextfield, progLangOptions, setSelectedProgLangs, pathTextfield, setNameTextfield, nameTextfield, selectedProgLangs, setRepoId, isLoading } = useExtractionStartNew()
+    const { repositoryOptions, setPathTextfield, progLangOptions, setSelectedProgLangs, pathTextfield, setNameTextfield, nameTextfield, selectedProgLangs, setRepoId, isLoading, nrOfCommitsType, setNrOfCommitsType, nrOfCommitsBetweenFrom, setNrOfCommitsBetweenFrom, nrOfCommitsBetweenTo, setNrOfCommitsBetweenTo, nrOfCommits, setNrOfCommits } = useExtractionStartNew()
 
     const changeRepositoryOptions = (e: ChangeEvent<HTMLSelectElement>) => {
         setRepoId(Number(e.target.value))
@@ -55,6 +55,44 @@ const StartExtraction1stPage = (): ReactElement => {
                 <Col>
                     <Form.Control name='path' type='text' value={pathTextfield} onChange={e => setPathTextfield(e.target.value)}/>
                 </Col>
+            </Form.Group>
+            <Form.Group as={Row} className='mb-3' controlId='nrOfCommits'>
+                <Form.Label className='w-auto d-lg-inline mt-1'>Processing</Form.Label>
+                <Form.Select 
+                        name='nrOfCommitsType' 
+                        value={nrOfCommitsType} 
+                        onChange={(e: ChangeEvent<HTMLSelectElement>) => setNrOfCommitsType(e.target.value)} 
+                        className='w-auto mb-2'>
+                    <option value='ALL'>all the</option>
+                    <option value='LAST'>the last</option>
+                    <option value='BETWEEN'>commits between</option>
+                </Form.Select>
+                {nrOfCommitsType === 'LAST' &&
+                    <Form.Control type='number' name='nrOfCommits' value={nrOfCommits} onChange={e => setNrOfCommits(Number(e.target.value))} className='w-auto d-lg-inline mb-1 ms-3' />
+                }
+                {nrOfCommitsType !== 'BETWEEN' &&
+                    <Form.Label column sm='2'>commits</Form.Label>
+                }
+                {nrOfCommitsType === 'BETWEEN' &&  
+                    <>
+                        <Form.Control
+                            type='datetime-local' 
+                            name='nrOfCommitsTypeBetweenFrom'
+                            step='1' 
+                            value={nrOfCommitsBetweenFrom} 
+                            onChange={(e: ChangeEvent<HTMLInputElement>) => setNrOfCommitsBetweenFrom(e.target.value)} 
+                            className='w-auto d-lg-inline mb-1 ms-4'
+                            />
+                        <label className='mt-2 w-auto d-lg-inline'>&#8213;</label>
+                        <Form.Control 
+                            type='datetime-local' 
+                            name='nrOfCommitsTypeBetweenTo'
+                            step='1' 
+                            value={nrOfCommitsBetweenTo} 
+                            onChange={(e: ChangeEvent<HTMLInputElement>) => setNrOfCommitsBetweenTo(e.target.value)} 
+                            className='w-auto d-lg-inline mb-1 ms-2'/>
+                    </>
+            }
             </Form.Group>
         </>
     )

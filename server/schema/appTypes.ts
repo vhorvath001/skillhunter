@@ -54,6 +54,10 @@ export type ExtractionType = {
     favourite?: boolean,
     progressProjects?: string,
     progressCommits?: string,
+    nrOfCommitsType: string,
+    nrOfCommits?: number,
+    nrOfCommitsTypeBetweenFrom?: Date,
+    nrOfCommitsTypeBetweenTo?: Date,
     repository: RepositoryType,
     progLangs: ProgLangType[]
 }

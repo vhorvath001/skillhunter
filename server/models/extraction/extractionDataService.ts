@@ -5,15 +5,26 @@ import { SelectedProjectBranchesType } from '../../schema/appTypes'
 import RepositoryModel from '../repository/repositoryModel'
 import ProgLangModel from '../progLang/progLangModel'
 
-const saveExtraction = async (repoId: number, name:string, projectsBranches: SelectedProjectBranchesType[], path: string, progLangs: number[]) => {
-    logger.debug(`Saving an extraction [repoId = ${repoId}, projectsBranches = ${JSON.stringify(projectsBranches)}, path = ${path}, progLangs = ${progLangs}] to DB...`)
+const saveExtraction = async (repoId: number, 
+                              name:string, 
+                              projectsBranches: SelectedProjectBranchesType[], 
+                              path: string, progLangs: number[],
+                              nrOfCommitsType: string,
+                              nrOfCommits: string|undefined,
+                              nrOfCommitsTypeBetweenFrom: string|undefined,
+                              nrOfCommitsTypeBetweenTo: string|undefined) => {
+    logger.debug(`Saving an extraction [repoId = ${repoId}, projectsBranches = ${JSON.stringify(projectsBranches)}, path = ${path}, progLangs = ${progLangs}], , nrOfCommitsType=[${nrOfCommitsType}], nrOfCommits=[${nrOfCommits}], nrOfCommitsTypeBetweenFrom=[${nrOfCommitsTypeBetweenFrom}], nrOfCommitsTypeBetweenTo=[${nrOfCommitsTypeBetweenTo}] to DB...`)
     
     const extraction = await ExtractionModel.create({
         repositoryId: repoId,
         name: name,
         projectsBranches: JSON.stringify(projectsBranches),
         path: path,
-        status: 'IN PROGRESS'
+        status: 'IN PROGRESS',
+        nrOfCommitsType: nrOfCommitsType,
+        nrOfCommits: Number(nrOfCommits),
+        nrOfCommitsTypeBetweenFrom: nrOfCommitsTypeBetweenFrom ? new Date(nrOfCommitsTypeBetweenFrom) : null,
+        nrOfCommitsTypeBetweenTo: nrOfCommitsTypeBetweenTo ? new Date(nrOfCommitsTypeBetweenTo) : null
     })
 
     for (const progLang of progLangs) {

@@ -54,6 +54,10 @@ export const handleStartExtraction = async (e: FormEvent<HTMLFormElement>,
                 repoId: formData.get('repository'),
                 path: formData.get('path'),
                 name: formData.get('name'),
+                nrOfCommitsType: formData.get('nrOfCommitsType'),
+                nrOfCommits: formData.get('nrOfCommits'),
+                nrOfCommitsTypeBetweenFrom: formData.get('nrOfCommitsTypeBetweenFrom'),
+                nrOfCommitsTypeBetweenTo: formData.get('nrOfCommitsTypeBetweenTo'),
                 progLangs: selectedProgLangs,
                 projectsBranches: projectsBranches
             })
@@ -68,26 +72,7 @@ export const handleStartExtraction = async (e: FormEvent<HTMLFormElement>,
 }
 
 export const initState: UseExtractionStartNewContextType = {
-    handleStartExtraction: handleStartExtraction,
-    show2ndPage: false,
-    setShow2ndPage: () => {}, 
-    showStartExtraction: false,
-    setShowStartExtraction: () => {},
-    repositoryOptions: [], 
-    errorMessage: '',
-    setErrorMessage: () => {},
-    isLoading: true,
-    pathTextfield: '', 
-    setPathTextfield: () => {},
-    nameTextfield: '', 
-    setNameTextfield: () => {},
-    projectsBranchesData: [],
-    progLangOptions: [],
-    selectedProgLangs: [], 
-    setSelectedProgLangs: () => {},
-    setRepoId: () => {}, 
-    filterRepoId: -1,
-    setFilterRepoId: () => {},
+    handleStartExtraction: handleStartExtraction, show2ndPage: false, setShow2ndPage: () => {}, showStartExtraction: false, setShowStartExtraction: () => {}, repositoryOptions: [], errorMessage: '', setErrorMessage: () => {}, isLoading: true, pathTextfield: '', setPathTextfield: () => {}, nameTextfield: '', setNameTextfield: () => {}, projectsBranchesData: [], progLangOptions: [], selectedProgLangs: [], setSelectedProgLangs: () => {}, setRepoId: () => {}, filterRepoId: -1, setFilterRepoId: () => {}, nrOfCommitsType: '', setNrOfCommitsType: () => {}, nrOfCommitsBetweenFrom: '', setNrOfCommitsBetweenFrom: () => {}, nrOfCommitsBetweenTo: '', setNrOfCommitsBetweenTo: () => {}, nrOfCommits: 0, setNrOfCommits: () => {}
 }
 
 const useExtractionStartNewContext = () => {
@@ -103,6 +88,10 @@ const useExtractionStartNewContext = () => {
     const [ selectedProgLangs, setSelectedProgLangs ] = useState<string[]>([])
     const [ repoId, setRepoId ] = useState<number>(-1)
     const [ filterRepoId, setFilterRepoId ] = useState<number>(-1)
+    const [ nrOfCommitsType, setNrOfCommitsType ] = useState<string>('ALL')
+    const [ nrOfCommitsBetweenFrom, setNrOfCommitsBetweenFrom ] = useState<string>('')
+    const [ nrOfCommitsBetweenTo, setNrOfCommitsBetweenTo ] = useState<string>('')
+    const [ nrOfCommits, setNrOfCommits ] = useState<number>()
 
     const fetchProjectsBranches = async () => {
         setIsLoading(true)
@@ -166,7 +155,8 @@ const useExtractionStartNewContext = () => {
 
     return { handleStartExtraction, show2ndPage, setShow2ndPage, showStartExtraction, setShowStartExtraction, repositoryOptions, errorMessage, setErrorMessage, 
              isLoading, pathTextfield, setPathTextfield, nameTextfield, setNameTextfield, projectsBranchesData, progLangOptions, selectedProgLangs, setSelectedProgLangs,
-             setRepoId, filterRepoId, setFilterRepoId }
+             setRepoId, filterRepoId, setFilterRepoId, nrOfCommitsType, setNrOfCommitsType, nrOfCommitsBetweenFrom, setNrOfCommitsBetweenFrom,
+             nrOfCommitsBetweenTo, setNrOfCommitsBetweenTo, nrOfCommits, setNrOfCommits }
 }
 
 export type UseExtractionStartNewContextType = ReturnType<typeof useExtractionStartNewContext>
